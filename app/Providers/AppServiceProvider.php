@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Experience;
+use App\Models\Post;
+use App\Models\Project;
+use App\Models\User;
+use App\Support\Markdown\MarkdownRenderer;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(MarkdownRenderer::class);
     }
 
     /**
@@ -21,6 +28,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Stable, short morph names for taggables and media (never class names in the database).
+        Relation::enforceMorphMap([
+            'experience' => Experience::class,
+            'post' => Post::class,
+            'project' => Project::class,
+            'user' => User::class,
+        ]);
+
+        // Catch N+1 queries, silently discarded attributes and missing attributes outside production.
+        Model::shouldBeStrict(! $this->app->isProduction());
     }
 }

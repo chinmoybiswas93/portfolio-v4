@@ -9,5 +9,9 @@ parameters:
         - config/
         - database/
         - routes/
+    excludePaths:
+        # Vendor-published configs that reference optional packages we do not install
+        - config/media-library.php
+        - config/settings.php
     level: 6
     checkModelProperties: true
