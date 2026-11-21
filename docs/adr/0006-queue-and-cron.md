@@ -1,6 +1,6 @@
 # ADR-0006: Queues and scheduled jobs on shared hosting
 
-**Status:** Proposed (cron interval to be confirmed in the deploy proof)
+**Status:** Accepted (owner, 2026-11-22), details to confirm in the staging deploy test
 **Date:** 2026-11-22
 **Deciders:** Owner
 

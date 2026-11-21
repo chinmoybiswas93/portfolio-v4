@@ -1,6 +1,6 @@
 # ADR-0008: Caching and performance (Hostinger-native, no DNS change)
 
-**Status:** Proposed. Revised 2026-11-22: the Cloudflare proxy is dropped at the owner's request.
+**Status:** Accepted (owner, 2026-11-22), details to confirm in the staging deploy test
 **Date:** 2026-11-22
 **Deciders:** Owner
 

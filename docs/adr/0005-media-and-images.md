@@ -1,6 +1,6 @@
 # ADR-0005: Media and images
 
-**Status:** Proposed
+**Status:** Accepted (owner, 2026-11-22)
 **Date:** 2026-11-22
 **Deciders:** Owner
 

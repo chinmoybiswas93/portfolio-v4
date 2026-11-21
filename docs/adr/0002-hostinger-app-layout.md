@@ -1,6 +1,6 @@
 # ADR-0002: Hostinger app layout and release folders
 
-**Status:** Proposed (Option A to be proven in the Phase 1 deploy proof)
+**Status:** Accepted (owner, 2026-11-22), details to confirm in the staging deploy test
 **Date:** 2026-11-22
 **Deciders:** Owner
 

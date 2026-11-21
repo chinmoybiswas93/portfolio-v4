@@ -1,6 +1,6 @@
 # ADR-0001: Application stack
 
-**Status:** Proposed
+**Status:** Accepted (owner, 2026-11-22)
 **Date:** 2026-11-22
 **Deciders:** Owner (Chinmoy Biswas)
 

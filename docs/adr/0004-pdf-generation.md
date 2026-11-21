@@ -1,6 +1,6 @@
 # ADR-0004: Invoice PDF generation and storage
 
-**Status:** Proposed
+**Status:** Accepted (owner, 2026-11-22)
 **Date:** 2026-11-22
 **Deciders:** Owner
 
