@@ -33,7 +33,6 @@ Claude never handles passwords or private keys. Do these steps yourself. Hosting
    | `SSH_PRIVATE_KEY` | step 4 | same |
    | `DEPLOY_PATH` | `domains/dev.chinmoybiswas.com/app` | `domains/chinmoybiswas.com/app` |
    | `APP_URL` | `https://dev.chinmoybiswas.com` | `https://chinmoybiswas.com` |
-   | `DEPLOY_TOKEN` | random 40+ chars (`openssl rand -hex 32`) | a different random value |
 6. **Settings → Code security:** enable Dependabot alerts and security updates, and secret scanning with push protection.
 
 ### B2. hPanel: databases

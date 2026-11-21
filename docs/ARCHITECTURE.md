@@ -280,7 +280,6 @@ Framework tables (not shown): `sessions`, `cache`, `cache_locks`, `jobs`, `job_b
 | GET | `/sitemap.xml` | (static file) | Generated (ADR-0006) |
 | GET | `/robots.txt` | robots | Env-aware (staging disallows all) |
 | GET | `/up` | health | Laravel health + release id + last scheduler run |
-| POST | `/_deploy/opcache-reset` | — | Bearer `DEPLOY_TOKEN`, throttled, excluded from the cache |
 | * | fallback | — | `redirects` lookup (301 + hit count), else the 404 view |
 
 Trailing-slash and `www` are redirected to the apex canonical (`public/.htaccess` rule plus a Laravel fallback).

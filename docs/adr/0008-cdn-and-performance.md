@@ -22,7 +22,7 @@ Use three Hostinger-native and in-app layers. They need no DNS change and no thi
 2. **Static assets: long-lived browser cache, plus Hostinger CDN where it helps.**
    - `/build/*` (Vite-hashed) and `/storage/*` (media-ID paths, ADR-0005) get `Cache-Control: public, max-age=31536000, immutable` via `public/.htaccess`.
    - **Hostinger CDN:** kept **on** if the deploy proof shows it respects origin headers and **does not cache admin, Livewire or `/up` responses**. Otherwise it is turned off for our sites in hPanel (owner action). The deploy runs `hosting_cache_clear` only if the CDN is caching HTML. That would need an API token in CI, so it is avoided if possible.
-3. **LiteSpeed server cache:** the app sends `X-LiteSpeed-Cache-Control: no-cache` on admin, Livewire, `/up` and `/_deploy/*` responses, so the server cache can never store private pages. Public pages rely on layer 1, so there is one cache to reason about and purge. The deploy proof checks the actual behaviour, and this ADR records the result.
+3. **LiteSpeed server cache:** the app sends `X-LiteSpeed-Cache-Control: no-cache` on admin, Livewire, and `/up` responses, so the server cache can never store private pages. Public pages rely on layer 1, so there is one cache to reason about and purge. The deploy proof checks the actual behaviour, and this ADR records the result.
 
 **Front-end budget measures** (these matter more than the CDN for Lighthouse):
 - One CSS file (Tailwind v4, purged) and one small JS bundle (Alpine only where needed).
@@ -45,6 +45,10 @@ Use three Hostinger-native and in-app layers. They need no DNS change and no thi
 - `HSTS` can be enabled once HTTPS is confirmed on both sites (Hostinger SSL).
 - Revisit if PageSpeed Insights on staging (from an EU location) misses LCP < 2.0s: first try the LiteSpeed page-cache fallback, then reconsider the hosting location.
 
+## Deploy-test results (staging, 2026-11-22)
+- Staging settings (read via the API): SSL active (lifetime), HTTPS redirect on, **Hostinger CDN on**, **server cache off**.
+- The CDN marks Laravel responses `x-hcdn-cache-status: DYNAMIC` (passed through, never cached): `/`, `/_probe`, `/up` and `/storage/*` through PHP-less static were all dynamic or uncached. A plain static file (`robots.txt`) showed `MISS`, so the CDN caches static files. **Conclusion: keep the Hostinger CDN on.** It does not cache app HTML, so layer 1 (response cache) owns HTML caching and no CDN purge is needed on publish.
+
 ## Action items
-1. [ ] Deploy proof: record `hosting_websites_get-settings` for staging (read-only), check the CDN and server-cache behaviour with `curl -I` on a public page, `/up`, and an admin page.
+1. [x] Deploy proof: recorded `hosting_websites_get-settings` for staging (read-only), check the CDN and server-cache behaviour with `curl -I` on a public page, `/up`, and an admin page.
 2. [ ] Phase 3: add `spatie/laravel-responsecache` (check the Laravel 13 version), the observer and the `.htaccess` cache headers.

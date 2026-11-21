@@ -1,6 +1,6 @@
 # ADR-0002: Hostinger app layout and release folders
 
-**Status:** Accepted (owner, 2026-11-22), details to confirm in the staging deploy test
+**Status:** Accepted (owner, 2026-11-22). **Option A proven on staging on 2026-11-22.**
 **Date:** 2026-11-22
 **Deciders:** Owner
 
@@ -37,7 +37,8 @@ Use the same layout per environment (`<d>` = `dev.chinmoybiswas.com` or `chinmoy
 
 - **Switch** a release with an atomic rename: `ln -sfn releases/<id> current.new && mv -Tf current.new current`.
 - **Rollback** means pointing `current` at the previous release. It takes seconds and needs no rebuild. Migrations must be backward-compatible (expand/contract), so the previous release still runs against the new schema.
-- After a switch, call a token-protected `POST /_deploy/opcache-reset` route (`opcache_reset()` + `clearstatcache(true)`). This stops LiteSpeed's PHP processes serving stale realpath/opcache entries. Check in the deploy proof whether it is needed.
+- **No opcache reset is needed** (verified 2026-11-22): after `current` was switched from r1 to r2, the very first request already served r2. LiteSpeed resolves the symlinked docroot per request (`base_path()` reports the real release path), so opcache entries are keyed per release.
+- **Permissions:** deploy commands run with `umask 022`. Only `shared/.env` and the SQLite/DB files are `600`. A `600` file under `storage/app/public` gives a LiteSpeed **403** (observed in the test).
 
 ## Options considered
 
@@ -63,7 +64,13 @@ Use the same layout per environment (`<d>` = `dev.chinmoybiswas.com` or `chinmoy
 - Harder: `storage:link` must be replaced by a shell `ln -s` in the deploy script. Production cutover (Phase 5) has to move the live WordPress `public_html` aside (after a backup) before the symlink is created.
 - Inode use: about 3 releases × roughly 15k files. Check the account's inode quota in hPanel before Phase 3.
 
+## Deploy-test results (staging, 2026-11-22)
+- `public_html -> app/current/public` (shell symlink) is served by LiteSpeed (`200`, `sapi: litespeed`, PHP 8.3.37, opcache on). HTTPS works (Hostinger lifetime SSL).
+- The nested `public/storage -> shared/storage/app/public` symlink serves files (`200`) once the file is `644`.
+- The atomic switch (`ln -sfn` + `mv -Tf`) takes effect on the next request, with no reset needed.
+- `rsync --link-dest` to the previous release: an unchanged release costs about 4 MB instead of 32 MB, because unchanged files are hard-linked.
+- The Hostinger original `public_html` is kept as `public_html.hostinger-default` (plus a tar backup in `~/backups/`).
+
 ## Action items
-1. [ ] Deploy proof (staging): create the layout, set `public_html` as a symlink, confirm LiteSpeed serves it, confirm HTTPS and that `/storage/*` serves through the nested symlink.
-2. [ ] If A fails, switch to B and update this ADR.
+1. [x] Deploy proof (staging): layout, symlinked docroot, HTTPS and `/storage/*`, all verified.
 3. [ ] Phase 5: back up WordPress (`tar` + `mysqldump` into `~/backups/`), then cut over.
