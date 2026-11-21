@@ -38,7 +38,8 @@ Claude never handles passwords or private keys. Do these steps yourself. Hosting
 ### B2. hPanel: databases
 1. **Databases → Management:** create **two** databases and users, one for **staging** and one for **production** (for example `u…_pf4dev` / `u…_pf4prod`), each with a long random password stored in your password manager.
 2. Record the MariaDB server version shown in hPanel (for ADR-0001).
-3. You write each `shared/.env` on the server yourself (or Claude writes a template **without** secrets and you fill it in over SSH). `chmod 600`.
+3. **Quote secrets in `.env` with single quotes** (`DB_PASSWORD='…'`). An unquoted value starting with `#` is read as a comment, and `$`, spaces or `"` can also break parsing. Single quotes are read literally (the value itself must not contain `'`).
+4. You write each `shared/.env` on the server yourself (or Claude writes a template **without** secrets and you fill it in over SSH). `chmod 600`.
 
 ### B3. hPanel: mailbox
 1. **Emails → chinmoybiswas.com:** create **`hello@chinmoybiswas.com`** with a strong password.

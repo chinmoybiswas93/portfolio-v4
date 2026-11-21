@@ -73,13 +73,15 @@ rollback() {
 }
 
 log "Health check"
-CURL_AUTH=()
-if [ -f "$SHARED/.healthcheck" ]; then
-  CURL_AUTH=(--user "$(cat "$SHARED/.healthcheck")")
-fi
+# Credentials go to curl through a config on stdin, never on the command line (visible in `ps`).
+curl_config() {
+  if [ -f "$SHARED/.healthcheck" ]; then
+    printf 'user = "%s"\n' "$(cat "$SHARED/.healthcheck")"
+  fi
+}
 ok=0
 for _ in 1 2 3 4 5; do
-  if curl -fsS --max-time 15 "${CURL_AUTH[@]}" "$APP_URL/up" | grep -q "\"release\":\"$RELEASE\""; then
+  if curl_config | curl -fsS --max-time 15 --config - "$APP_URL/up" | grep -q "\"release\":\"$RELEASE\""; then
     ok=1
     break
   fi
