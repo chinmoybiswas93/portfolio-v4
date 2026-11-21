@@ -1,0 +1,22 @@
+# Private content export (contains contact details) — never commit; repo is public
+portfolio-export-*.json
+
+# Local / secrets
+.env
+.env.*
+!.env.example
+.claude/settings.local.json
+*.sql
+*.sql.gz
+/storage/*.key
+.DS_Store
+/node_modules
+/vendor
+/public/build
+/public/hot
+
+# Private documents dropped in the repo root (invoices, CVs)
+/*.pdf
+
+# Private notes, server/account details, legacy assets (never commit)
+/.private/

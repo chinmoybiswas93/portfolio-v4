@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "ask": [
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+      "Bash(rsync:*)",
+      "Bash(sftp:*)",
+      "mcp__plugin_hostinger_hostinger__execute",
+      "mcp__plugin_hostinger_hostinger__multi-execute"
+    ]
+  }
+}
