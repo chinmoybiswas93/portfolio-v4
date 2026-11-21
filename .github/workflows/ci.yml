@@ -37,8 +37,9 @@ jobs:
       DB_HOST: 127.0.0.1
       DB_PORT: 3306
       DB_DATABASE: testing
-      DB_USERNAME: testing
-      DB_PASSWORD: testing
+      # root of the throwaway service container: parallel Pest creates one database per process
+      DB_USERNAME: root
+      DB_PASSWORD: root
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
