@@ -1,0 +1,59 @@
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release id to switch back to (leave empty for the previous release)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-refs/heads/development
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    if: github.ref == 'refs/heads/development'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: staging
+    steps:
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          printf 'Host target\n  HostName %s\n  Port %s\n  User %s\n  IdentityFile ~/.ssh/deploy_key\n  IdentitiesOnly yes\n  StrictHostKeyChecking yes\n' "$SSH_HOST" "$SSH_PORT" "$SSH_USER" > ~/.ssh/config
+
+      - name: Switch release
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          TARGET: ${{ inputs.release }}
+        run: |
+          case "$TARGET" in *[!A-Za-z0-9-]*) echo "Invalid release id"; exit 1 ;; esac
+          ssh target "bash -s" -- "$DEPLOY_PATH" "$TARGET" <<'REMOTE'
+          set -euo pipefail
+          APP="$HOME/$1"; TARGET="${2:-}"
+          cd "$APP"
+          CURRENT="$(basename "$(readlink current)")"
+          if [ -z "$TARGET" ]; then
+            TARGET="$(ls -1t releases | grep -v -x "$CURRENT" | head -n 1)"
+          fi
+          [ -n "$TARGET" ] && [ -d "releases/$TARGET" ] || { echo "Release not found"; exit 1; }
+          ln -sfn "releases/$TARGET" current.new && mv -Tf current.new current
+          echo "current -> releases/$TARGET (was $CURRENT)"
+          REMOTE
+
+      - name: Clean up key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

@@ -1,0 +1,122 @@
+name: Deploy
+
+on:
+  push:
+    branches: [development]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  # Builds the release with no secrets available: third-party package scripts never see the deploy key.
+  build:
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      release: ${{ steps.meta.outputs.release }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, gd, bcmath, pdo_mysql, zip, exif, fileinfo
+          coverage: none
+          tools: composer:v2
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Release id
+        id: meta
+        run: echo "release=$(date -u +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        run: |
+          composer install --no-dev --no-interaction --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
+          npm ci --no-fund --no-audit
+          npm run build
+          echo "${{ steps.meta.outputs.release }}" > RELEASE
+
+      - name: Package
+        run: |
+          tar -czf /tmp/release.tgz \
+            --exclude=./.git --exclude=./.github --exclude=./node_modules --exclude=./tests \
+            --exclude=./docs --exclude=./storage --exclude=./.env --exclude=./database/database.sqlite \
+            .
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release
+          path: /tmp/release.tgz
+          retention-days: 7
+
+  # Only this job can read the environment secrets. It runs no package code.
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/development' # production (main) is enabled in Phase 5
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: staging
+    env:
+      RELEASE: ${{ needs.build.outputs.release }}
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release
+          path: /tmp/artifact
+
+      - name: Unpack
+        run: mkdir -p /tmp/release && tar -xzf /tmp/artifact/release.tgz -C /tmp/release
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
+          {
+            echo "Host target"
+            echo "  HostName $SSH_HOST"
+            echo "  Port $SSH_PORT"
+            echo "  User $SSH_USER"
+            echo "  IdentityFile ~/.ssh/deploy_key"
+            echo "  IdentitiesOnly yes"
+            echo "  StrictHostKeyChecking yes"
+            echo "  ServerAliveInterval 30"
+          } > ~/.ssh/config
+
+      - name: Upload release
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh target "mkdir -p '$DEPLOY_PATH/releases/$RELEASE'"
+          rsync -az --delete --link-dest="../../current/" /tmp/release/ "target:$DEPLOY_PATH/releases/$RELEASE/"
+
+      - name: Activate release
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          APP_URL: ${{ secrets.APP_URL }}
+        run: ssh target "bash '$DEPLOY_PATH/releases/$RELEASE/deploy/activate.sh' '$DEPLOY_PATH' '$RELEASE' '$APP_URL'"
+
+      - name: Clean up key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
