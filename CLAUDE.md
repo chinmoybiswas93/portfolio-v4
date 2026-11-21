@@ -17,6 +17,7 @@ The GitHub repo is **public**. Only project and deployment files go to git. Acco
 
 ## Git rules
 - Branches: `main` is production, `development` is staging, and `feat/*`, `fix/*` and `chore/*` branch off `development`.
+- **No AI attribution:** never add `Co-Authored-By` trailers, "Generated with Claude Code" lines or any other AI/tool attribution to commits, PR titles/bodies, issues or code comments. The owner is the sole author.
 - Use Conventional Commits. Keep commits small. Commit or push only when the owner asks, or as a phase plan they have approved says.
 - Never commit `.env`, credentials, DB dumps or the `storage/` contents.
 - Never push to or deploy `main` without the owner's explicit go-ahead.

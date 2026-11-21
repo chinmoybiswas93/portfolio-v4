@@ -1,0 +1,59 @@
+# Owner's manual steps (hPanel / GitHub)
+
+Claude never handles passwords or private keys. Do these steps yourself. Hostinger writes that Claude performs over SSH or the API are listed separately and each one needs your approval.
+
+## A. Before the Phase 1 deploy proof (staging only)
+1. **hPanel → Websites → dev.chinmoybiswas.com → Advanced:** check whether a "custom document root" option exists and note the result (ADR-0002 Option C).
+2. **hPanel → Files → Inodes / Disk usage:** note the inode limit (ADR-0002, release retention).
+3. **Approve** the commands Claude will propose (shown in full before running). For example:
+   - `tar -czf ~/backups/dev.chinmoybiswas.com-$(date +%F).tgz -C ~/domains dev.chinmoybiswas.com`
+   - create `~/domains/dev.chinmoybiswas.com/app/{releases,shared}`
+   - rsync a skeleton Laravel 13 build (built locally, SQLite, no DB needed)
+   - move `public_html` to `public_html.hostinger-default` and create the `public_html` symlink
+   - create the staging cron (`* * * * *`) via the API
+   - `curl` checks
+
+## B. Before Phase 3 (deploy pipeline and app)
+
+### B1. GitHub
+1. Repo `chinmoybiswas93/portfolio-v4`: after Claude's first push, set the **default branch = `development`**.
+2. **Settings → Branches → rulesets** for `main` and `development`: require a PR, require status check `ci`, block force-push and deletion.
+3. **Settings → Environments:** create `staging` (branch `development` only) and `production` (branch `main` only, **required reviewer: you**).
+4. **Deploy key pair (on your Mac):**
+   `ssh-keygen -t ed25519 -C "gha-deploy-portfolio-v4" -f ~/.ssh/gha_portfolio_v4 -N ""`
+   - Add the **public** key in **hPanel → Advanced → SSH Access → SSH keys**.
+   - Put the **private** key into both Environments as secret `SSH_PRIVATE_KEY`, then delete the local private key file (or store it in your password manager).
+5. **Environment secrets** (both envs, values differ where noted):
+   | Secret | staging | production |
+   |---|---|---|
+   | `SSH_HOST` | server hostname/IP from hPanel → SSH Access | same |
+   | `SSH_PORT` | SSH port from hPanel → SSH Access | same |
+   | `SSH_USER` | your `u…` user | same |
+   | `SSH_KNOWN_HOSTS` | output of `ssh-keyscan -p <port> <host>` (check the fingerprint against hPanel) | same |
+   | `SSH_PRIVATE_KEY` | step 4 | same |
+   | `DEPLOY_PATH` | `domains/dev.chinmoybiswas.com/app` | `domains/chinmoybiswas.com/app` |
+   | `APP_URL` | `https://dev.chinmoybiswas.com` | `https://chinmoybiswas.com` |
+   | `DEPLOY_TOKEN` | random 40+ chars (`openssl rand -hex 32`) | a different random value |
+6. **Settings → Code security:** enable Dependabot alerts and security updates, and secret scanning with push protection.
+
+### B2. hPanel: databases
+1. **Databases → Management:** create **two** databases and users, one for **staging** and one for **production** (for example `u…_pf4dev` / `u…_pf4prod`), each with a long random password stored in your password manager.
+2. Record the MariaDB server version shown in hPanel (for ADR-0001).
+3. You write each `shared/.env` on the server yourself (or Claude writes a template **without** secrets and you fill it in over SSH). `chmod 600`.
+
+### B3. hPanel: mailbox
+1. **Emails → chinmoybiswas.com:** create **`hello@chinmoybiswas.com`** with a strong password.
+2. Note the SMTP settings (`smtp.hostinger.com`, port 465 SSL), then put `MAIL_*` into each `shared/.env` yourself.
+3. Check that **DKIM, SPF and DMARC** are enabled (Emails → DNS settings). Add `DMARC p=quarantine` if missing.
+4. Send a test from the mailbox to mail-tester.com and aim for at least 9/10.
+
+### B4. hPanel: cron (or approve Claude's API call)
+- Staging: `* * * * *` → `/usr/bin/php /home/<user>/domains/dev.chinmoybiswas.com/app/current/artisan schedule:run`
+- Production cron is added only at cutover (Phase 5).
+
+## C. Before launch (Phase 5, listed now for planning)
+1. DNS stays in **hPanel** (Hostinger nameservers, domain at Namecheap). No DNS provider change.
+2. Confirm SSL is active for `chinmoybiswas.com` and `dev.` in hPanel. Turn on "Force HTTPS".
+3. Hostinger CDN: keep it or turn it off per the deploy-proof result (ADR-0008).
+4. Create a Cloudflare account **only** for the Web Analytics JS beacon (no DNS change) and copy the beacon token into production `.env`.
+5. Back up WordPress (files + DB) before the docroot switch. Claude prepares the commands and you approve them.
