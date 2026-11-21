@@ -1,6 +1,6 @@
 # ADR-0006: Queues and scheduled jobs on shared hosting
 
-**Status:** Accepted (owner, 2026-11-22), details to confirm in the staging deploy test
+**Status:** Accepted (owner, 2026-11-22). Every-minute cron verified on staging on 2026-11-22.
 **Date:** 2026-11-22
 **Deciders:** Owner
 
@@ -11,7 +11,8 @@
 
 ## Decision
 - One cron job per environment, **every minute** (`* * * * *`), created in hPanel or via the API after owner approval:
-  `/usr/bin/php ~/domains/<d>/app/current/artisan schedule:run` (absolute paths, with the PHP path confirmed in the deploy proof).
+  `/usr/bin/php /home/<user>/domains/<d>/app/current/artisan schedule:run` (absolute paths; `/usr/bin/php` is the CloudLinux PHP selector, which gives 8.3).
+- **Verified (staging, 2026-11-22):** Hostinger accepted `* * * * *` via the API, and a scheduler heartbeat ran at 20:32:04, 20:33:03 and 20:34:04, so the real interval is **1 minute**. The cron output can be read via `hosting_cron-jobs_output`.
 - `QUEUE_CONNECTION=database`, `CACHE_STORE=database` (needed for locks: `withoutOverlapping`, `migrate --isolated`), `SESSION_DRIVER=database`.
 - Scheduler (`routes/console.php`):
   | Task | Schedule |
@@ -35,4 +36,4 @@
 - If cron stops, nothing financial breaks. A `/up` health extension reports the last scheduler run (`cache:scheduler:last-run`) so this can be monitored.
 
 ## Action items
-1. [ ] Deploy proof: create the staging cron (owner-approved) and confirm the allowed interval and PHP path from the job output (`hosting_cron-jobs_output`).
+1. [x] Deploy proof: created the staging cron (owner-approved) and confirm the allowed interval and PHP path from the job output (`hosting_cron-jobs_output`).
