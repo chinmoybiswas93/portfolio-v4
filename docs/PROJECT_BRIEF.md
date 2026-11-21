@@ -79,6 +79,21 @@ Laravel web app: a public business portfolio for UK/EU clients and a private adm
 - **Syntax highlighting:** `tempest/highlight` (pure PHP at render time). Shiki is ruled out because posts are edited at runtime and there is no Node runtime.
 - **Media:** Spatie Laravel Media Library with Filament's Spatie plugin. See ADR-0005.
 
+## Design decisions (Phase 2, approved by the owner on 2026-11-22)
+Designs live in a private Claude design canvas (link in `.private/`). They are the reference for Phase 3 UI work.
+- **Direction:** an updated version of the current site, not a redesign. It is minimal, clean and Apple-like calm, with nothing distracting.
+- **Colour:** navy `#0F172A` background, slate text (`#E2E8F0` / `#94A3B8` / `#8291A8`), lines `#1E293B`. **One accent, teal `#2DD4BF`**, used only for links and titles on hover and the active state. Light theme: `#FFFFFF`, `#0F172A`, `#475569`, accent `#0F766E`. Every text pair passes WCAG AA.
+- **Type:** the current site's **system font stack** (`-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, …`). No web fonts are loaded. Labels and dates are 12 px uppercase with letter-spacing.
+- **Layout (home):** 1280 px container with 96 px side padding. The left column is 48% and **always fixed (sticky, full height)** on ≥1024 px: name, role, intro, section nav, and socials + theme toggle at the bottom. The right column is 52% and scrolls. Below 1024 px it is one column. There are no Email/CV buttons and no availability line in the left column.
+- **Nav:** line-style section nav (About, Services, Experience, Projects, Writing). The active section is set by scroll position (its section top passes 30% of the viewport, and the last section is active at the page bottom). Smooth scrolling, turned off for reduced motion.
+- **Lists:** Experience, Projects and Writing use a 150 px date/thumbnail column + content grid. Experience rows get a hover card (soft background + border, title turns teal). Projects have no hover box (title teal, thumbnail border brightens). Tags are outlined chips with a 5 px radius.
+- **Motion:** a **mouse-following spotlight** (600 px radial, `rgba(29,78,216,0.15)`, as on the current site; off on touch and reduced motion) and 200 ms colour fades. Nothing else.
+- **"More" links:** 17 px semibold, thin underline, teal on hover.
+- **Logo:** the existing favicon traced to an exact SVG (98.4% pixel match). It is used for the favicon, social images and the invoice header, **not** in the site header.
+- **Inner pages:** a slim top bar (name + theme toggle) and a centred reading column (case study, blog post).
+- **Admin:** Filament 5 themed with the same navy surfaces and teal primary, using the system font.
+- **Invoice PDF:** A4, table-based for DomPDF, logo + teal hairline accent, "VAT not applicable" note.
+
 ## Phases (each ends with a gate where the owner approves)
 1. **Architecture:** ADRs (stack, hosting layout, CI/CD, PDF, media), data model/ERD, routes, security model, test strategy. Prove deploy with a "hello" Laravel app on the staging subdomain.
 2. **UI design:** design every screen in a canvas (Claude design artifact) first: home, project archive, case study, blog list/post, 404, invoice PDF template, and key admin screens. The owner approves before any UI code is written.
