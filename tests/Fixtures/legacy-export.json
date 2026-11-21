@@ -1,0 +1,29 @@
+{
+  "metadata": {"exportDate": "2026-01-01T00:00:00.000Z", "version": "1.0", "source": "CB Portfolio Plugin"},
+  "portfolio": {
+    "name": "Test Person",
+    "title": "Wordpress Developer | Tech Support",
+    "tagline": "A short test tagline.",
+    "about": "<p>First paragraph with <strong>bold</strong> text.</p><p>Second <script>alert(1)</script>paragraph.</p>",
+    "email": "person@example.test",
+    "phone": "+00 0000 000000",
+    "location": "1 Example Street, Testville",
+    "github_url": "https://github.com/example",
+    "linkedin_url": "https://www.linkedin.com/in/example/",
+    "twitter_url": "javascript:alert(1)",
+    "website_url": "https://example.test",
+    "resume_url": "https://example.test/resume.pdf",
+    "profile_image": "",
+    "footer_text": "Footer",
+    "id": "1"
+  },
+  "experience": [
+    {"id": 1, "company": "Acme Plugins", "company_website": "https://acme.example", "position": "Support Engineer", "start_date": "May 2024", "end_date": "", "current": 1, "description": "Supported plugins.", "skills": "Wordpress Plugin Dev, Bug Tracking", "order_index": 1},
+    {"id": 2, "company": "Beta Agency", "company_website": "https://beta.example", "position": "Developer", "start_date": "Sep 2023", "end_date": "Apr 2024", "current": 0, "description": "Built sites.", "skills": "wordpress, Woocommerce, PHP, javascript", "order_index": 2}
+  ],
+  "projects": [
+    {"id": 10, "title": "Sample Shop", "description": "A sample shop website.", "image_url": "https://example.test/wp-content/uploads/sample-shop.png", "live_url": "https://shop.example", "github_url": "", "technologies": "Wordpress, Woocommerce", "year": "2022", "made_at": "Personal", "featured": 1, "order_index": 1},
+    {"id": 11, "title": "Sample Plugin", "description": "A sample plugin.", "image_url": "https://example.test/wp-content/uploads/Sample-–-Plugin.png", "live_url": "https://plugin.example", "github_url": "https://github.com/example/plugin", "technologies": "Vue JS, PHP", "year": "2025", "made_at": "Personal", "featured": 0, "order_index": 2}
+  ],
+  "settings": {"enabled": true}
+}
