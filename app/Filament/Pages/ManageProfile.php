@@ -9,15 +9,18 @@ use App\Filament\Support\SettingsTab;
 use App\Settings\ProfileSettings;
 use App\Support\Markdown\MarkdownRenderer;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Alignment;
 use Filament\Support\Icons\Heroicon;
 
 class ManageProfile extends SettingsPage
@@ -52,11 +55,15 @@ class ManageProfile extends SettingsPage
                 TextInput::make('email')->email()->maxLength(255)->helperText('Public contact address.'),
                 TextInput::make('location_public')->label('Location')->maxLength(120)
                     ->helperText('City and country only, e.g. "Remote · UK & EU hours". Never a street address.'),
-                Repeater::make('socials')->columnSpanFull()->columns(2)->reorderable()->maxItems(6)->defaultItems(0)->schema([
-                    Select::make('network')->required()->options(['github' => 'GitHub', 'linkedin' => 'LinkedIn', 'x' => 'X (Twitter)', 'email' => 'Email']),
-                    TextInput::make('url')->required()->maxLength(255)->rule('regex:#^(https://|mailto:)#')
-                        ->helperText('https://… or mailto:…'),
-                ]),
+                Repeater::make('socials')->columnSpanFull()->reorderable()->maxItems(6)->defaultItems(0)->compact()
+                    ->table([TableColumn::make('Network')->width('30%'), TableColumn::make('Link')])
+                    ->addActionLabel('+ Add link')->addActionAlignment(Alignment::Start)
+                    ->addAction(fn (Action $action) => $action->link()->size('sm'))
+                    ->schema([
+                        Select::make('network')->required()->options(['github' => 'GitHub', 'linkedin' => 'LinkedIn', 'x' => 'X (Twitter)', 'email' => 'Email']),
+                        TextInput::make('url')->required()->maxLength(255)->rule('regex:#^(https://|mailto:)#')
+                            ->helperText('https://… or mailto:…'),
+                    ]),
             ]),
             Section::make('Files')->columns(2)->columnSpanFull()->schema([
                 FileUpload::make('cv_path')->label('CV (PDF)')

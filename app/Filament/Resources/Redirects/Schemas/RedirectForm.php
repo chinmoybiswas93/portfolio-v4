@@ -6,7 +6,7 @@ namespace App\Filament\Resources\Redirects\Schemas;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 
 class RedirectForm
@@ -14,7 +14,7 @@ class RedirectForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make()->columns(3)->columnSpanFull()->schema([
+            Grid::make(3)->columnSpanFull()->schema([
                 TextInput::make('from_path')->label('From')->required()->maxLength(512)
                     ->startsWith('/')->unique(ignoreRecord: true)->placeholder('/old-page'),
                 TextInput::make('to_path')->label('To')->required()->maxLength(512)
