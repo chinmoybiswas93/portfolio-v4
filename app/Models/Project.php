@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\PublishStatus;
 use App\Models\Concerns\HasResponsiveImages;
+use App\Models\Concerns\HasSlug;
 use App\Models\Concerns\HasTags;
 use App\Models\Concerns\RendersMarkdown;
 use Database\Factories\ProjectFactory;
@@ -23,6 +24,7 @@ class Project extends Model implements HasMedia
     use HasFactory;
 
     use HasResponsiveImages;
+    use HasSlug;
     use HasTags;
     use InteractsWithMedia;
     use RendersMarkdown;

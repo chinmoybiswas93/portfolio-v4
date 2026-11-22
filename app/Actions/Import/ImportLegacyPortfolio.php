@@ -6,7 +6,6 @@ namespace App\Actions\Import;
 
 use App\Data\ImportReport;
 use App\Enums\PublishStatus;
-use App\Enums\TagType;
 use App\Models\Experience;
 use App\Models\Project;
 use App\Settings\ProfileSettings;
@@ -144,7 +143,7 @@ final class ImportLegacyPortfolio
             'is_published' => true,
         ])->save();
 
-        $experience->syncTagNames($this->tagNames($row['skills'] ?? null), TagType::Tech);
+        $experience->syncTagNames($this->tagNames($row['skills'] ?? null));
         $exists ? $report->experiencesUpdated++ : $report->experiencesCreated++;
     }
 
@@ -179,7 +178,7 @@ final class ImportLegacyPortfolio
         }
         $project->save();
 
-        $project->syncTagNames($this->tagNames($row['technologies'] ?? null), TagType::Tech);
+        $project->syncTagNames($this->tagNames($row['technologies'] ?? null));
         $exists ? $report->projectsUpdated++ : $report->projectsCreated++;
 
         $this->attachCover($project, $this->str($row['image_url'] ?? null), $assetsDir, $report);

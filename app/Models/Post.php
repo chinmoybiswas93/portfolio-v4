@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\PostStatus;
 use App\Models\Concerns\HasResponsiveImages;
+use App\Models\Concerns\HasSlug;
 use App\Models\Concerns\HasTags;
 use App\Models\Concerns\RendersMarkdown;
 use App\Support\Markdown\ReadingTime;
@@ -25,6 +26,7 @@ class Post extends Model implements HasMedia
     use HasFactory;
 
     use HasResponsiveImages;
+    use HasSlug;
     use HasTags;
     use InteractsWithMedia;
     use RendersMarkdown;

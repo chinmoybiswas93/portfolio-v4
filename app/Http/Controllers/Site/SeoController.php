@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Site;
 
-use App\Enums\TagType;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Project;
@@ -35,7 +34,7 @@ final class SeoController
             ->concat($posts->map(fn (Post $p): array => [route('posts.show', $p, false), $p->updated_at]))
             ->concat(Category::query()->whereHas('posts', fn (Builder $q) => $q->published())->get(['slug'])
                 ->map(fn (Category $c): array => [route('posts.category', $c, false), null]))
-            ->concat(Tag::query()->where('type', TagType::Topic)->whereHas('posts', fn (Builder $q) => $q->published())->get(['slug'])
+            ->concat(Tag::query()->whereHas('posts', fn (Builder $q) => $q->published())->get(['slug'])
                 ->map(fn (Tag $t): array => [route('posts.tag', $t, false), null]))
             ->map(fn (array $u): array => ['loc' => Seo::absolute($u[0]), 'lastmod' => $u[1] ? Carbon::parse($u[1])->toAtomString() : null]);
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\TagType;
+use App\Models\Concerns\HasSlug;
 use Database\Factories\TagFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,19 +16,14 @@ class Tag extends Model
     /** @use HasFactory<TagFactory> */
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'type'];
+    use HasSlug;
 
-    protected function casts(): array
-    {
-        return ['type' => TagType::class];
-    }
+    protected $fillable = ['name', 'slug'];
 
-    public static function findOrCreateByName(string $name, TagType $type): self
+    /** One shared pool: "WordPress", "wordpress" and "Word Press" all resolve to the same tag. */
+    public static function findOrCreateByName(string $name): self
     {
-        return self::query()->firstOrCreate(
-            ['slug' => Str::slug($name), 'type' => $type],
-            ['name' => $name],
-        );
+        return self::query()->firstOrCreate(['slug' => Str::slug($name)], ['name' => trim($name)]);
     }
 
     /**
@@ -53,5 +48,10 @@ class Tag extends Model
     public function experiences(): MorphToMany
     {
         return $this->morphedByMany(Experience::class, 'taggable');
+    }
+
+    public static function slugSource(): string
+    {
+        return 'name';
     }
 }

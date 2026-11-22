@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Posts\Schemas;
 
 use App\Enums\PostStatus;
-use App\Enums\TagType;
 use App\Filament\Support\Fields;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
@@ -45,7 +44,7 @@ class PostForm
                 ]),
                 Section::make('Organise')->schema([
                     Select::make('category_id')->relationship('category', 'name')->searchable()->preload(),
-                    Fields::tags(TagType::Topic),
+                    Fields::tags(),
                 ]),
                 Section::make('Cover image')->schema([
                     SpatieMediaLibraryFileUpload::make('cover')->collection('cover')->disk('public')->image()->imageEditor()

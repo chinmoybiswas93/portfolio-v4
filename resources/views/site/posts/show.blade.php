@@ -32,7 +32,7 @@
 
                 <div class="prose">{!! $post->body_html !!}</div>
 
-                @php($topics = $post->tags->filter(fn ($tag) => $tag->type === \App\Enums\TagType::Topic))
+                @php($topics = $post->tags)
                 @if ($topics->isNotEmpty())
                     <ul class="chips mt-3" aria-label="Tags">
                         @foreach ($topics as $tag)

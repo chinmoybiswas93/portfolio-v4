@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\TagType;
 use App\Models\Experience;
 use App\Models\Post;
 use App\Models\Project;
@@ -44,17 +43,19 @@ it('treats an experience without an end date as current', function (): void {
         ->and(Experience::factory()->create()->isCurrent())->toBeFalse();
 });
 
-it('syncs tags by name without duplicates and keeps tag types apart', function (): void {
+it('shares one tag pool across posts and projects without duplicates', function (): void {
     $project = Project::factory()->create();
-    $project->syncTagNames(['PHP', 'PHP ', 'WordPress'], TagType::Tech);
-    Post::factory()->create()->syncTagNames(['PHP'], TagType::Topic);
+    $project->syncTagNames(['PHP', 'PHP ', 'WordPress', 'wordpress']);
+    $post = Post::factory()->create();
+    $post->syncTagNames(['php']);
 
     expect($project->tags()->pluck('name')->sort()->values()->all())->toBe(['PHP', 'WordPress'])
-        ->and(Tag::query()->where('slug', 'php')->count())->toBe(2);
+        ->and(Tag::query()->where('slug', 'php')->count())->toBe(1)
+        ->and($post->tags()->value('name'))->toBe('PHP');
 });
 
 it('stores the morph alias instead of the class name', function (): void {
-    Project::factory()->create()->syncTagNames(['Laravel'], TagType::Tech);
+    Project::factory()->create()->syncTagNames(['Laravel']);
 
     expect(DB::table('taggables')->value('taggable_type'))->toBe('project');
 });

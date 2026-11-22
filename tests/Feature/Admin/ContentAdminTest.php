@@ -44,7 +44,7 @@ it('creates a project and sets the publish date when published', function (): vo
     expect(Project::query()->where('slug', 'new-site')->firstOrFail()->published_at)->not->toBeNull();
 });
 
-it('rejects duplicate slugs and unsafe slug characters', function (): void {
+it('rejects duplicate slugs and cleans unsafe slug characters', function (): void {
     Project::factory()->create(['slug' => 'taken']);
 
     Livewire::test(CreateProject::class)
@@ -55,7 +55,9 @@ it('rejects duplicate slugs and unsafe slug characters', function (): void {
     Livewire::test(CreateProject::class)
         ->fillForm(['title' => 'X', 'slug' => '../etc', 'status' => 'draft'])
         ->call('create')
-        ->assertHasFormErrors(['slug']);
+        ->assertHasNoFormErrors();
+
+    expect(Project::query()->where('slug', 'etc')->exists())->toBeTrue();
 });
 
 it('stores payment details encrypted from the settings page', function (): void {
