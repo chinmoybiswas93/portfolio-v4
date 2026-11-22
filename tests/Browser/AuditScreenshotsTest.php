@@ -71,3 +71,17 @@ it('captures the public post and case study screens', function (): void {
     visit('/projects/shop')->resize(1440, 900)->click('[data-lightbox-open="1"]')->screenshot(filename: 'public-lightbox-desktop');
     expect(true)->toBeTrue();
 })->skip(fn (): bool => ! env('AUDIT_SCREENSHOTS'), 'Audit screenshots run only with AUDIT_SCREENSHOTS=1');
+
+it('captures the MCP admin screens', function (): void {
+    $this->actingAs(adminWithMfa());
+    \Laravel\Passport\Passport::client()->newQuery()->forceCreate(['name' => 'Claude Code', 'secret' => null, 'provider' => null, 'redirect_uris' => ['http://localhost:53682/callback'], 'grant_types' => ['authorization_code', 'refresh_token'], 'revoked' => false, 'scopes' => ['mcp:use', 'content:read', 'content:write', 'media:upload']]);
+    \Laravel\Passport\Passport::client()->newQuery()->forceCreate(['name' => 'Claude.ai', 'secret' => null, 'provider' => null, 'redirect_uris' => ['https://claude.ai/api/mcp/auth_callback'], 'grant_types' => ['authorization_code', 'refresh_token'], 'revoked' => false, 'scopes' => null]);
+    foreach ([['save-content', 'post', '12', 'Speeding up WordPress', ['action' => 'updated', 'fields' => ['title' => [], 'body_md' => []]], 'ok', 200], ['trash-content', 'post', '9', 'Old draft', ['action' => 'trashed'], 'ok', 200], ['list-invoices', null, null, null, null, 'denied', 403]] as [$tool, $type, $id, $label, $changes, $result, $status]) {
+        \App\Models\McpAuditLog::query()->create(['method' => 'tools/call', 'client_id' => 'x', 'client_name' => 'Claude Code', 'tool' => $tool, 'target_type' => $type, 'target_id' => $id, 'target_label' => $label, 'changes' => $changes, 'result' => $result, 'http_status' => $status, 'error' => $result === 'denied' ? 'insufficient_scope' : null, 'ip' => '203.0.113.24']);
+    }
+
+    foreach (['settings-mcp' => '/settings/mcp', 'mcp-apps' => '/mcp/apps', 'mcp-audit' => '/mcp/audit'] as $name => $path) {
+        visit(adminPath($path))->resize(1440, 900)->screenshot(fullPage: true, filename: "admin-{$name}-desktop");
+    }
+    expect(true)->toBeTrue();
+})->skip(fn (): bool => ! env('AUDIT_SCREENSHOTS'), 'Audit screenshots run only with AUDIT_SCREENSHOTS=1');

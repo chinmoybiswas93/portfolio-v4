@@ -4,7 +4,7 @@
      * toolbar, search on the right. Rendered into every admin table through TablesRenderHook::TOOLBAR_START.
      */
     $component = \Livewire\Livewire::current();
-    $tabs = $component instanceof \Filament\Resources\Pages\ListRecords ? $component->getTabs() : [];
+    $tabs = in_array(\Filament\Resources\Concerns\HasTabs::class, class_uses_recursive($component), true) ? $component->getCachedTabs() : [];
     $filters = $component instanceof \Filament\Tables\Contracts\HasTable
         ? collect($component->getTable()->getFilters())->filter(fn ($f): bool => $f instanceof \Filament\Tables\Filters\SelectFilter && ! $f->isMultiple())
         : collect();
@@ -30,7 +30,7 @@
                 $options = $filter instanceof \Filament\Tables\Filters\TernaryFilter
                     ? ['1' => $filter->getTrueLabel(), '0' => $filter->getFalseLabel()]
                     : $filter->getOptions();
-                $placeholder = $filter instanceof \Filament\Tables\Filters\TernaryFilter ? $filter->getPlaceholder() : 'All';
+                $placeholder = $filter instanceof \Filament\Tables\Filters\TernaryFilter ? $filter->getPlaceholder() : ($filter->getPlaceholder() ?: 'All');
                 $id = 'cb-filter-'.$filter->getName();
             @endphp
             <label class="cb-filter" for="{{ $id }}">

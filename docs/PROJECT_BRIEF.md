@@ -198,6 +198,19 @@ The canvas is updated to match; it remains the source of truth for UI.
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 
+
+### Built in slice 3.9b MCP writing tools (2026-11-23, ADR-0009)
+- `save-content`: create or update posts, projects, services, experience, categories and tags in Markdown. Fields are whitelisted per type with the admin's limits; `*_html`, ids and media are refused. Tags and the post category are given by name; a trashed tag or category with the same name is restored.
+- `trash-content`: move to the trash and restore. Services, tags and categories gained soft deletes; every content table has a trash filter with Restore and Delete permanently (admin only). There is no permanent-delete tool.
+- `update-seo` (post/project SEO and the site defaults), `update-profile` (profile settings only).
+- `upload-image`: base64 only, JPEG/PNG/WebP sniffed with finfo, 8 MB and 6000 px, re-encoded with GD (strips EXIF and appended data). Returns the media id, URL and a Markdown snippet. URLs are never fetched.
+- Audit entries carry a before/after summary of the changed fields. Security review: no findings.
+
+### Built in slice 3.9c MCP invoices and admin screens (2026-11-23, ADR-0009)
+- `save-invoice-draft`: create or edit a **draft** for an existing client (lines, dates, discount, VAT) with exact integer totals. Issued invoices are refused; issuing, paying, cancelling and emailing stay admin-only.
+- Settings → MCP: the on/off switch, server URL with Copy, rate limit, token lifetime, registration Allowed/Closed, and the scope list.
+- MCP → Connected apps (All / Active / Revoked, Revoke) and MCP → Audit log (All / Changes / Denied, App and Period filters, details, CSV export with formula-injection protection).
+
 ### 3.7 Design update (canvas first, no code)
 - Design-fidelity audit of every built screen (public and admin) against its canvas artboard, desktop and mobile, as a list of deviations per screen.
 - Canvas changes, approved before any code:

@@ -39,4 +39,27 @@ class McpAuditLog extends Model
     {
         return static::query()->where('created_at', '<', now()->subDays((int) config('mcp-server.audit_retention_days')));
     }
+
+    /** "Post #12 · Speeding up WordPress" */
+    public function targetText(): string
+    {
+        $type = $this->target_type === null ? '' : ucfirst((string) $this->target_type).(is_numeric($this->target_id) ? ' #'.$this->target_id : '');
+
+        return trim($type.($type !== '' && $this->target_label !== null ? ' · ' : '').($this->target_label ?? '')) ?: '—';
+    }
+
+    /** One-line summary of the change, e.g. "title, body_md" or "moved to trash"; errors for refused calls. */
+    public function changeText(): ?string
+    {
+        if ($this->result !== 'ok') {
+            return $this->error;
+        }
+        $changes = $this->getAttribute('changes');
+        $changes = is_array($changes) ? $changes : [];
+        $action = isset($changes['action']) && is_string($changes['action']) ? $changes['action'] : null;
+        $fields = isset($changes['fields']) && is_array($changes['fields']) ? array_keys($changes['fields']) : array_keys(array_diff_key($changes, array_flip(['action', 'slot', 'media_id', 'total'])));
+        $parts = array_filter([$action === 'trashed' ? 'moved to trash' : $action, $fields === [] ? null : implode(', ', $fields)]);
+
+        return $parts === [] ? null : implode(': ', $parts);
+    }
 }

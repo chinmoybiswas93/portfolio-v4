@@ -70,6 +70,7 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Content')->collapsible(false),
                 NavigationGroup::make('Billing')->collapsible(false),
                 NavigationGroup::make('Site')->collapsible(false),
+                NavigationGroup::make('MCP')->collapsible(false),
             ])
             ->sidebarWidth('14.5rem')
             ->authenticatedRoutes(function (): void {
