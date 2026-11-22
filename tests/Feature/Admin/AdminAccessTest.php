@@ -12,11 +12,11 @@ use Livewire\Livewire;
 uses(RefreshDatabase::class);
 
 it('sends guests to the login page', function (): void {
-    $this->get('/admin')->assertRedirect('/admin/login');
+    $this->get(adminPath())->assertRedirect(adminPath('/login'));
 });
 
 it('forbids users who are not admins', function (): void {
-    $this->actingAs(User::factory()->create())->get('/admin')->assertForbidden();
+    $this->actingAs(User::factory()->create())->get(adminPath())->assertForbidden();
 });
 
 it('makes admins set up two-factor authentication before anything else', function (): void {
@@ -24,29 +24,29 @@ it('makes admins set up two-factor authentication before anything else', functio
     $admin->is_admin = true;
     $admin->save();
 
-    $this->actingAs($admin)->get('/admin')->assertRedirectContains('/admin/multi-factor-authentication/set-up');
+    $this->actingAs($admin)->get(adminPath())->assertRedirectContains(adminPath('/multi-factor-authentication/set-up'));
 });
 
 it('lets an admin with two-factor authentication into every screen', function (string $path): void {
-    $this->actingAs(adminWithMfa())->get($path)->assertOk();
+    $this->actingAs(adminWithMfa())->get(adminPath($path))->assertOk();
 })->with([
-    '/admin',
-    '/admin/services', '/admin/services/create',
-    '/admin/experiences', '/admin/experiences/create',
-    '/admin/projects', '/admin/projects/create',
-    '/admin/posts', '/admin/posts/create',
-    '/admin/categories', '/admin/tags', '/admin/redirects',
-    '/admin/settings/profile', '/admin/settings/seo', '/admin/settings/invoicing', '/admin/settings/payment',
-    '/admin/clients', '/admin/invoices', '/admin/invoices/create',
-    '/admin/profile',
+    '',
+    '/services', '/services/create',
+    '/experiences', '/experiences/create',
+    '/projects', '/projects/create',
+    '/posts', '/posts/create',
+    '/categories', '/tags', '/redirects',
+    '/settings/profile', '/settings/seo', '/settings/invoicing', '/settings/payment',
+    '/clients', '/invoices', '/invoices/create',
+    '/profile',
 ]);
 
 it('has no registration or password-reset pages', function (): void {
     $names = collect(Route::getRoutes()->getRoutesByName())->keys();
 
     expect($names->filter(fn (string $n): bool => str_contains($n, 'register') || str_contains($n, 'password-reset') || str_contains($n, 'password.reset')))->toBeEmpty();
-    $this->get('/admin/register')->assertNotFound();
-    $this->get('/admin/password-reset/request')->assertNotFound();
+    $this->get(adminPath('/register'))->assertNotFound();
+    $this->get(adminPath('/password-reset/request'))->assertNotFound();
 });
 
 it('blocks sign-in after too many attempts in an hour', function (): void {
@@ -61,12 +61,21 @@ it('blocks sign-in after too many attempts in an hour', function (): void {
         ->assertHasErrors(['data.email']);
 });
 
-it('sends the admin path from configuration', function (): void {
-    expect(config('admin.path'))->toBe('admin');
+it('serves the panel only under the configured path, so /admin is not found', function (): void {
+    expect(config('admin.path'))->toBe('panel-under-test');
+
+    $this->get(adminPath('/login'))->assertOk();
+    $this->get('/admin')->assertNotFound();
+    $this->get('/admin/login')->assertNotFound();
+});
+
+it('never lists the admin path in robots.txt and keeps admin pages out of search', function (): void {
+    $this->get('/robots.txt')->assertDontSee('panel-under-test')->assertDontSee('/admin');
+    $this->get(adminPath('/login'))->assertHeader('X-Robots-Tag', 'noindex, nofollow');
 });
 
 it('sends security headers on admin pages too', function (): void {
-    $response = $this->get('/admin/login');
+    $response = $this->get(adminPath('/login'));
 
     expect($response->headers->get('X-Frame-Options'))->toBe('DENY')
         ->and($response->headers->get('X-Content-Type-Options'))->toBe('nosniff')

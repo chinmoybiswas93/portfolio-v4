@@ -33,19 +33,19 @@ it('captures every admin screen for the design audit', function (): void {
     app(IssueInvoice::class)($issued);
 
     $screens = [
-        'dashboard' => '/admin', 'projects' => '/admin/projects', 'project-edit' => "/admin/projects/{$project->id}/edit",
-        'posts' => '/admin/posts', 'post-edit' => "/admin/posts/{$post->id}/edit", 'services' => '/admin/services',
-        'experiences' => '/admin/experiences', 'categories' => '/admin/categories', 'tags' => '/admin/tags',
-        'redirects' => '/admin/redirects', 'clients' => '/admin/clients',
-        'invoices' => '/admin/invoices', 'invoice-draft' => "/admin/invoices/{$invoice->id}/edit", 'invoice-issued' => "/admin/invoices/{$issued->id}/edit",
-        'settings-profile' => '/admin/settings/profile', 'settings-seo' => '/admin/settings/seo', 'settings-invoicing' => '/admin/settings/invoicing',
-        'settings-payment' => '/admin/settings/payment', 'account' => '/admin/profile',
+        'dashboard' => adminPath(), 'projects' => adminPath('/projects'), 'project-edit' => adminPath("/projects/{$project->id}/edit"),
+        'posts' => adminPath('/posts'), 'post-edit' => adminPath("/posts/{$post->id}/edit"), 'services' => adminPath('/services'),
+        'experiences' => adminPath('/experiences'), 'categories' => adminPath('/categories'), 'tags' => adminPath('/tags'),
+        'redirects' => adminPath('/redirects'), 'clients' => adminPath('/clients'),
+        'invoices' => adminPath('/invoices'), 'invoice-draft' => adminPath("/invoices/{$invoice->id}/edit"), 'invoice-issued' => adminPath("/invoices/{$issued->id}/edit"),
+        'settings-profile' => adminPath('/settings/profile'), 'settings-seo' => adminPath('/settings/seo'), 'settings-invoicing' => adminPath('/settings/invoicing'),
+        'settings-payment' => adminPath('/settings/payment'), 'account' => adminPath('/profile'),
     ];
     foreach ($screens as $name => $url) {
         visit($url)->resize(1440, 900)->screenshot(fullPage: true, filename: "admin-{$name}-desktop");
         visit($url)->on()->mobile()->screenshot(fullPage: true, filename: "admin-{$name}-mobile");
     }
-    visit('/admin/categories')->resize(1440, 900)->click('New category')->wait(1)->screenshot(filename: 'admin-category-modal-desktop');
+    visit(adminPath('/categories'))->resize(1440, 900)->click('New category')->wait(1)->screenshot(filename: 'admin-category-modal-desktop');
     expect(true)->toBeTrue();
 })->skip(fn (): bool => ! env('AUDIT_SCREENSHOTS'), 'Audit screenshots run only with AUDIT_SCREENSHOTS=1');
 

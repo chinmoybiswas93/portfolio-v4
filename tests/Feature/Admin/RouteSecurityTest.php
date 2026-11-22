@@ -42,7 +42,7 @@ function adminGetPaths(): array
 
     return $paths = collect($app->make('router')->getRoutes()->getRoutes())
         ->filter(fn (RoutingRoute $r): bool => in_array('GET', $r->methods(), true)
-            && (str_starts_with($r->uri(), 'admin') || str_starts_with($r->uri(), 'filament'))
+            && (str_starts_with($r->uri(), (string) $app->make('config')->get('admin.path')) || str_starts_with($r->uri(), 'filament'))
             && ! in_array($r->getName(), [...PUBLIC_ADMIN_ROUTES, ...DISABLED_ROUTES], true))
         ->mapWithKeys(fn (RoutingRoute $r): array => [(string) $r->getName() => ['/'.preg_replace('/\{[^}]+\}/', '1', $r->uri())]])
         ->all();
@@ -53,7 +53,7 @@ it('finds the admin screens to check', function (): void {
 });
 
 it('redirects guests to the login page from every admin route', function (string $path): void {
-    $this->get($path)->assertRedirect('/admin/login');
+    $this->get($path)->assertRedirect(adminPath('/login'));
 })->with(fn (): array => adminGetPaths());
 
 it('forbids signed-in non-admins on every admin route', function (string $path): void {
@@ -65,7 +65,7 @@ it('makes admins without two-factor authentication set it up first on every admi
     $admin->is_admin = true;
     $admin->save();
 
-    $this->actingAs($admin)->get($path)->assertRedirectContains('/admin/multi-factor-authentication/set-up');
+    $this->actingAs($admin)->get($path)->assertRedirectContains(adminPath('/multi-factor-authentication/set-up'));
 })->with(fn (): array => collect(adminGetPaths())->except(['filament.admin.auth.multi-factor-authentication.set-up-required'])->all());
 
 it('answers 404 for the unused export and import downloads', function (string $path): void {
@@ -94,7 +94,7 @@ it('only accepts signed storage uploads', function (): void {
 
 it('rejects a tampered Livewire snapshot for the invoice editor', function (): void {
     $this->actingAs(adminWithMfa());
-    $html = $this->get('/admin/invoices/create')->assertOk()->getContent();
+    $html = $this->get(adminPath('/invoices/create'))->assertOk()->getContent();
 
     preg_match_all('/wire:snapshot="([^"]+)"/', (string) $html, $matches);
     $snapshot = collect($matches[1])
