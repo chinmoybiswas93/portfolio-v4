@@ -60,11 +60,11 @@ final class SaveInvoiceDraft extends ScopedTool
             'due_date' => ['nullable', 'date_format:Y-m-d'],
             'lines' => ['sometimes', 'array', 'min:1', 'max:50'],
             'lines.*.description' => ['required', 'string', 'max:2000'],
-            'lines.*.quantity' => ['required', 'regex:/^\d{1,9}(\.\d{1,3})?$/'],
-            'lines.*.unit_price' => ['required', $decimal2],
+            'lines.*.quantity' => ['required', 'regex:/^\d{1,5}(\.\d{1,3})?$/'],
+            'lines.*.unit_price' => ['required', 'regex:/^\d{1,7}(\.\d{1,2})?$/'], // caps keep 50 lines of qty × price inside a 64-bit integer
             'discount_type' => ['nullable', 'in:none,percent,fixed'],
             'discount_value' => ['nullable', $decimal2],
-            'tax_rate' => ['nullable', $decimal2],
+            'tax_rate' => ['nullable', $decimal2, 'numeric', 'max:100'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ]);
         $user = $request->user();
@@ -89,6 +89,9 @@ final class SaveInvoiceDraft extends ScopedTool
 
         try {
             DB::transaction(function () use ($invoice, $data, $creating): void {
+                if (! $creating && $invoice->newQuery()->lockForUpdate()->find($invoice->getKey())?->status->allows(InvoiceAction::Edit) !== true) {
+                    throw new InvalidInvoice('Issued invoices cannot be changed.'); // issued in the admin meanwhile
+                }
                 $settings = app(InvoiceSettings::class);
                 $fill = array_filter([
                     'client_id' => $data['client_id'] ?? null,
