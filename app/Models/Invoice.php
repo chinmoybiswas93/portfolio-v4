@@ -83,6 +83,16 @@ class Invoice extends Model
     }
 
     /**
+     * Every generated PDF, newest first.
+     *
+     * @return HasMany<InvoicePdf, $this>
+     */
+    public function pdfs(): HasMany
+    {
+        return $this->hasMany(InvoicePdf::class)->orderByDesc('version');
+    }
+
+    /**
      * @return HasMany<InvoiceEmail, $this>
      */
     public function emails(): HasMany

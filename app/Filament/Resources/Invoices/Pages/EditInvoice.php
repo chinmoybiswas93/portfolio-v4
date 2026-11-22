@@ -11,7 +11,6 @@ use App\Actions\Invoicing\GenerateInvoicePdf;
 use App\Actions\Invoicing\IssueInvoice;
 use App\Actions\Invoicing\RecalculateInvoice;
 use App\Domain\Invoicing\InvalidInvoice;
-use App\Enums\EmailStatus;
 use App\Enums\InvoiceAction;
 use App\Enums\InvoiceStatus;
 use App\Filament\Resources\Invoices\InvoiceResource;
@@ -26,7 +25,9 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -76,6 +77,12 @@ class EditInvoice extends EditRecord
                     app(GenerateInvoicePdf::class)($this->invoice());
                     Notification::make()->success()->title('PDF generated')->send();
                 }),
+            Action::make('preview')->label('Preview PDF')->icon(Heroicon::Eye)->color('gray')
+                ->visible(fn (): bool => $this->invoice()->status->allows(InvoiceAction::Download) && $this->invoice()->pdf_path !== null)
+                ->modalHeading(fn (): string => $this->invoice()->number.' · PDF preview')
+                ->modalWidth(Width::SevenExtraLarge)
+                ->modalContent(fn (): View => view('filament.invoice-preview', ['invoice' => $this->invoice()]))
+                ->modalSubmitAction(false)->modalCancelActionLabel('Close'),
             Action::make('download')->label('Download')->icon(Heroicon::ArrowDownTray)->color('gray')
                 ->visible(fn (): bool => $this->invoice()->status->allows(InvoiceAction::Download) && $this->invoice()->pdf_path !== null)
                 ->action(fn (): StreamedResponse => Storage::disk(GenerateInvoicePdf::DISK)->download((string) $this->invoice()->pdf_path, $this->invoice()->number.'.pdf')),
@@ -92,7 +99,8 @@ class EditInvoice extends EditRecord
                     TextInput::make('to')->label('To')->email()->required(),
                     TagsInput::make('cc')->label('CC')->nestedRecursiveRules(['email'])->placeholder('Add an email'),
                     TextInput::make('subject')->required()->maxLength(200),
-                    Textarea::make('body')->rows(8)->required()->maxLength(5000),
+                    Textarea::make('body')->label('Message')->rows(5)->required()->maxLength(5000)
+                        ->helperText('Shown at the top of the email, above the invoice summary, the View invoice link and payment details. The PDF is attached.'),
                 ])
                 ->action(function (array $data): void {
                     $user = auth()->user();
@@ -104,9 +112,8 @@ class EditInvoice extends EditRecord
                         (string) $data['body'],
                         $user instanceof User ? $user : null,
                     );
-                    $log->status === EmailStatus::Sent
-                        ? Notification::make()->success()->title('Invoice emailed to '.$log->to_email)->send()
-                        : Notification::make()->danger()->title('Email not sent')->body((string) $log->error)->persistent()->send();
+                    Notification::make()->success()->title('Email queued for '.$log->to_email)
+                        ->body('It is sent within a minute. The email history shows Sent or Failed.')->send();
                     $this->refreshFormData(['emails']);
                 }),
             Action::make('markPaid')->label('Mark as paid')->icon(Heroicon::CheckCircle)->color('gray')
@@ -161,10 +168,9 @@ class EditInvoice extends EditRecord
     {
         $invoice = $this->invoice();
         $name = $invoice->client_snapshot['contact_name'] ?? null;
+        $for = $invoice->reference ? ' for '.$invoice->reference : '';
 
-        return ($name ? "Hi {$name},\n\n" : "Hello,\n\n")
-            ."Please find attached invoice {$invoice->number} for ".Money::format($invoice->total_minor, $invoice->currency)
-            .', due on '.$invoice->due_date?->format('j F Y').".\n\nThank you,\n".($invoice->seller_snapshot['name'] ?? '');
+        return ($name ? "Hi {$name}," : 'Hello,')."\n\nHere is invoice {$invoice->number}{$for}. The PDF is attached, and you can also view it online with the button below.\n\nThank you,\n".($invoice->seller_snapshot['name'] ?? '');
     }
 
     private function invoice(): Invoice

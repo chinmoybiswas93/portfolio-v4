@@ -9,13 +9,14 @@ use App\Domain\Invoicing\InvoiceDocument;
 use App\Enums\InvoiceAction;
 use App\Enums\InvoiceStatus;
 use App\Models\Invoice;
+use App\Models\InvoicePdf;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Renders the A4 PDF (DomPDF, ADR-0004) to the private disk: invoices/{year}/{number}.pdf. Regenerating
- * overwrites this working copy; copies attached to emails are kept separately and never change.
+ * Renders the A4 PDF (DomPDF, ADR-0004) to the private disk as a new numbered version (never overwritten).
  */
 final class GenerateInvoicePdf
 {
@@ -30,14 +31,29 @@ final class GenerateInvoicePdf
         }
 
         $pdf = $this->render($invoice);
-        $path = sprintf('invoices/%d/%s.pdf', $invoice->sequence_year, $invoice->number);
-        Storage::disk(self::DISK)->put($path, $pdf);
 
-        $invoice->forceFill([
-            'pdf_path' => $path,
-            'pdf_sha256' => hash('sha256', $pdf),
-            'pdf_generated_at' => now(),
-        ])->save();
+        // Every version is kept: invoices/{year}/{number}-v{n}.pdf is written once and never overwritten.
+        DB::transaction(function () use ($invoice, $pdf): void {
+            $version = (int) InvoicePdf::query()->where('invoice_id', $invoice->getKey())->lockForUpdate()->max('version') + 1;
+            $path = sprintf('invoices/%d/%s-v%d.pdf', $invoice->sequence_year, $invoice->number, $version);
+            $disk = Storage::disk(self::DISK);
+            if ($disk->exists($path)) {
+                throw new InvalidInvoice('A PDF version with this number already exists.');
+            }
+            $disk->put($path, $pdf);
+            $sha = hash('sha256', $pdf);
+
+            InvoicePdf::query()->create([
+                'invoice_id' => $invoice->getKey(),
+                'version' => $version,
+                'path' => $path,
+                'sha256' => $sha,
+                'status_at_render' => $invoice->status,
+            ]);
+
+            // The invoice keeps pointing at its newest version.
+            $invoice->forceFill(['pdf_path' => $path, 'pdf_sha256' => $sha, 'pdf_generated_at' => now()])->save();
+        });
 
         return $invoice;
     }

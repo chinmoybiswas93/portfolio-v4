@@ -181,6 +181,13 @@ The canvas is updated to match; it remains the source of truth for UI.
 - Bangladeshi taka (BDT, 2 decimals) alongside GBP, EUR and USD, in client defaults, invoices, filters and dashboard totals. No migration: currency columns are ISO codes.
 - Neither Inter nor DejaVu Sans has the ৳ glyph, so PDFs print the code ("BDT 1,234.50"); the admin and site show "৳". Amounts in the PDF no longer wrap, and the totals column is a little wider.
 
+### Built in slice 3.8l PDF versions, preview, invoice email (2026-11-23)
+- **PDF versions:** every generated PDF is kept as a numbered version (`invoice_pdfs`, files `{number}-v{n}.pdf`, never overwritten). The invoice points at its newest version. Existing PDFs and earlier sent copies were backfilled.
+- **Preview PDF:** an action in the invoice editor opens a modal with an inline viewer and every version, each downloadable. It's served by an admin-only route that requires login and 2FA (Filament only adds 2FA to its own pages, so the route adds it explicitly; the route-walk test covers it).
+- **Invoice email:** new template with invoice number, client, reference, issue/due dates, amount due and currency, payment methods, a "View invoice" button, the PDF attached and the seller's contact details.
+  - The button is a signed link that expires after 30 days and serves only that one PDF version (no login, no listing; `noindex`, `no-store`, no cookies). Tests cover expired, tampered and other-invoice links.
+- **Email status:** Pending (queued) → Sent (accepted by SMTP) or Failed (with the error), shown in the email history with the exact version (previewable), recipient and time. ADR-0006 is updated.
+
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 

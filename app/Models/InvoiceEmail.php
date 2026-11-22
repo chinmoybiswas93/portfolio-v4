@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class InvoiceEmail extends Model
 {
     protected $fillable = [
-        'invoice_id', 'sent_by', 'to_email', 'cc', 'subject', 'body', 'pdf_path', 'pdf_sha256',
+        'invoice_id', 'invoice_pdf_id', 'sent_by', 'to_email', 'cc', 'subject', 'body', 'pdf_path', 'pdf_sha256',
         'status', 'error', 'message_id', 'sent_at',
     ];
 
@@ -30,6 +30,14 @@ class InvoiceEmail extends Model
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
+    }
+
+    /**
+     * @return BelongsTo<InvoicePdf, $this>
+     */
+    public function pdf(): BelongsTo
+    {
+        return $this->belongsTo(InvoicePdf::class, 'invoice_pdf_id');
     }
 
     /**
