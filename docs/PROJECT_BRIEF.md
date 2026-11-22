@@ -189,6 +189,29 @@ Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 - **Deploy workflow:** SSH preflight that fails fast with "SSH is off — enable SSH Access in hPanel and re-run"; `workflow_dispatch` re-run for development and main. The owner keeps SSH off except when deploying.
 - Route inventory and admin access tests updated for new routes and screens.
 
+### Scope revision (owner, 2026-11-22, second brief)
+Changes and additions to 3.7/3.8. Items already built in 3.8a–3.8f stay unless listed here.
+
+**Design (3.7 revision, canvas v18–19)**
+- **Admin density:** stricter compactness on every screen; no nested boxes. The main content (`.fi-main-content`) has a fixed, centred max width of about 1120 px instead of full width.
+- **Project Results/metrics:** compact: no inner wrapper, 28 px rows, "+ Add metric" as a text action.
+- **Theme switch:** reversed from 3.8e. One toggle with two icons (sun/moon) and no "system" icon. The first visit follows the OS and shows the matching icon; a click stores light/dark.
+- **Page transitions:** a thin 2 px teal top progress bar plus a subtle fade, on the public site and in admin. With reduced motion, no fade and no animation.
+- **Share buttons:** each has its brand logo (inline SVG) before the name. Plain share URLs, no scripts.
+- **Invoices in admin:** a "Preview PDF" action (inline viewer with a version list) next to Regenerate/Download. The email log shows the status badge (Pending / Sent / Failed), the exact PDF version sent (previewable), recipient and time.
+- **Invoice email:** invoice number, client, issue/due dates, amount due and currency, a payment summary, a "View invoice" button (secure link), the PDF attached, and the owner's contact details.
+
+**Build (3.8 follow-up slices)**
+- **Admin path:** `/admin` becomes `/cb709` via `config('admin.path')` + env; the old `/admin` returns 404. Update tests, docs and CI health checks.
+- **2FA label:** the authenticator brand name changes to "CB Portfolio".
+- **Loading:** Filament SPA mode with a progress bar in admin; cross-document View Transitions plus a top progress bar on the public site; no flash; reduced motion respected.
+- **Theme:** two icons (as above), applied before the first paint.
+- **Currency:** BDT (Bangladeshi taka, ৳, 2 decimals). If Inter in DomPDF lacks ৳, the PDF shows the code "BDT". Tests for BDT totals and formatting.
+- **PDF versions:** every generated PDF is kept (never overwritten); each email log entry links to the exact version sent; Preview action.
+- **Invoice email:** new template. PDF attached, plus a "View invoice" button with a signed link that expires after 30 days and serves only that one PDF version (no login, no listing). Status goes Pending (queued) → Sent (accepted by SMTP) or Failed (with the error). "Sent" means accepted by the mail server, not opened. Tests cover expired, tampered and other-invoice links.
+- **Route tests:** the route inventory and access tests cover the new admin path, the signed invoice link and the preview.
+- **3.9 MCP:** the consent screen sits behind `/cb709` + 2FA. MCP starts only after these 3.8 follow-ups are merged and approved.
+
 ### 3.9 MCP server (ADR + threat model first, then slices)
 - **Transport:** official `laravel/mcp`, Streamable HTTP at `/mcp`, stateless (fits shared hosting).
 - **Auth:** OAuth 2.1 via Laravel Passport with discovery endpoints and dynamic client registration (Claude Code, Claude.ai, Codex, ChatGPT). Consent screen behind the admin login + required 2FA; the owner approves each client and its scopes. Short-lived access tokens with refresh; connected apps listed and revocable in admin.
