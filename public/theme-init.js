@@ -1,13 +1,10 @@
 // Runs before first paint (blocking, external file so the strict CSP needs no inline script).
-// Preference: "light" or "dark" when chosen (localStorage), otherwise follow the device (prefers-color-scheme).
+// The saved choice (localStorage "theme" = light|dark) wins; otherwise follow the device (prefers-color-scheme).
 (function () {
-    var root = document.documentElement;
-    var pref = 'system';
+    var saved = null;
     try {
-        var saved = localStorage.getItem('theme');
-        if (saved === 'light' || saved === 'dark') pref = saved;
+        saved = localStorage.getItem('theme');
     } catch (e) {}
-    var light = pref === 'light' || (pref === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
-    if (light) root.setAttribute('data-theme', 'light');
-    root.setAttribute('data-theme-pref', pref);
+    var light = saved === 'light' || (saved !== 'dark' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+    if (light) document.documentElement.setAttribute('data-theme', 'light');
 })();

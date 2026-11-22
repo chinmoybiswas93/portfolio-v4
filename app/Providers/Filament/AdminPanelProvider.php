@@ -69,6 +69,7 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Site')->collapsible(false),
             ])
             ->sidebarWidth('14.5rem')
+            ->spa() // no full reloads between admin screens (Livewire navigate, progress bar in config/livewire.php)
             ->maxContentWidth(Width::SixExtraLarge) // fixed, centred content (canvas v18)
             ->globalSearchKeyBindings(['mod+k'])
             ->renderHook(PanelsRenderHook::USER_MENU_BEFORE, fn (): string => view('filament.view-site-link')->render())

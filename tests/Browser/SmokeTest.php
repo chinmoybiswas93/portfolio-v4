@@ -25,16 +25,16 @@ it('loads every public page without errors or accessibility issues', function ()
     $pages->assertNoSmoke()->assertNoAccessibilityIssues();
 });
 
-it('switches between system, light and dark without cookies', function (): void {
+it('toggles the theme with one button and remembers it without cookies', function (): void {
+    // The test browser prefers light, so the first visit is light and shows the moon.
     $page = visit('/');
-    $page->assertScript('document.documentElement.dataset.themePref', 'system')
-        ->click('[data-theme-choice="light"]')
-        ->assertScript('document.documentElement.dataset.theme', 'light')
-        ->assertScript("localStorage.getItem('theme')", 'light')
-        ->click('[data-theme-choice="dark"]')
-        ->assertScript('document.documentElement.dataset.theme ?? null', null)
-        ->click('[data-theme-choice="system"]')
+    $page->assertScript('document.documentElement.dataset.theme', 'light')
         ->assertScript("localStorage.getItem('theme')", null)
+        ->click('[data-theme-toggle]')
+        ->assertScript('document.documentElement.dataset.theme ?? null', null)
+        ->assertScript("localStorage.getItem('theme')", 'dark')
+        ->click('[data-theme-toggle]')
+        ->assertScript("localStorage.getItem('theme')", 'light')
         ->assertScript('document.cookie', '');
 });
 

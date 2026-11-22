@@ -311,41 +311,14 @@
     background: var(--line);
 }
 
-/* Theme switch: System / Light / Dark segmented control (canvas v17). */
-.theme-switch {
-    display: inline-flex;
-    gap: 2px;
-    padding: 2px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
+/* Theme toggle: the sun on dark pages, the moon on light pages (canvas v18). */
+.theme-toggle .icon-moon,
+:root[data-theme='light'] .theme-toggle .icon-sun {
+    display: none;
 }
 
-.theme-switch-btn {
-    width: 30px;
-    height: 26px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    border: 0;
-    border-radius: 6px;
-    background: transparent;
-    color: var(--dim);
-    cursor: pointer;
-}
-
-.theme-switch-btn:hover {
-    color: var(--text);
-}
-
-.theme-switch-btn[aria-pressed='true'] {
-    background: var(--line);
-    color: var(--text);
-}
-
-.theme-switch-btn:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
+:root[data-theme='light'] .theme-toggle .icon-moon {
+    display: block;
 }
 
 /* ---------- Sections ---------- */
@@ -678,8 +651,9 @@
     color: var(--text);
 }
 
-.topbar-nav .theme-switch {
-    margin-left: 8px;
+.topbar-nav .icon-btn {
+    color: var(--muted);
+    margin-left: 4px;
 }
 
 .page-title {
@@ -1428,6 +1402,7 @@
     .share-btn {
         display: inline-flex;
         align-items: center;
+        gap: 7px;
         height: 32px;
         padding: 0 12px;
         border: 1px solid var(--line);
@@ -1618,5 +1593,51 @@
 
     .related {
         margin-top: 20px;
+    }
+}
+
+/* ---------- Page transitions (canvas v18 "Motion") ---------- */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 160ms;
+    animation-timing-function: ease-out;
+}
+
+/* Thin top progress bar while the next page loads. */
+:root.is-navigating::before {
+    content: '';
+    position: fixed;
+    inset: 0 auto auto 0;
+    z-index: 100;
+    height: 2px;
+    width: 100%;
+    background: var(--accent);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 60%, transparent);
+    transform-origin: left;
+    animation: page-progress 2.4s cubic-bezier(0.1, 0.7, 0.2, 1) forwards;
+}
+
+@keyframes page-progress {
+    from {
+        transform: scaleX(0.05);
+    }
+
+    to {
+        transform: scaleX(0.9);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    @view-transition {
+        navigation: none;
+    }
+
+    :root.is-navigating::before {
+        animation: none;
+        transform: none;
     }
 }
