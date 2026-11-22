@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         then: function (): void {
             Route::middleware('public')->group(base_path('routes/public.php'));
+            Route::group([], base_path('routes/oauth.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {

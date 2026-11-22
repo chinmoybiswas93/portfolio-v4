@@ -44,6 +44,12 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        // MCP bearer tokens (Passport). Never used for admin screens.
+        'api' => [
+            'driver' => 'passport',
+            'provider' => 'users',
+        ],
     ],
 
     /*

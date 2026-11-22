@@ -44,7 +44,9 @@ it('lets an admin with two-factor authentication into every screen', function (s
 it('has no registration or password-reset pages', function (): void {
     $names = collect(Route::getRoutes()->getRoutesByName())->keys();
 
-    expect($names->filter(fn (string $n): bool => str_contains($n, 'register') || str_contains($n, 'password-reset') || str_contains($n, 'password.reset')))->toBeEmpty();
+    // OAuth app registration for MCP (mcp.oauth.register) is not user sign-up; it is allowed on purpose (ADR-0009).
+    expect($names->reject(fn (string $n): bool => $n === 'mcp.oauth.register')
+        ->filter(fn (string $n): bool => str_contains($n, 'register') || str_contains($n, 'password-reset') || str_contains($n, 'password.reset')))->toBeEmpty();
     $this->get(adminPath('/register'))->assertNotFound();
     $this->get(adminPath('/password-reset/request'))->assertNotFound();
 });

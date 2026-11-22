@@ -77,6 +77,7 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
+          php artisan passport:keys --force # OAuth signing keys for the MCP tests (throwaway, CI only)
 
       - name: Pint
         run: vendor/bin/pint --test
