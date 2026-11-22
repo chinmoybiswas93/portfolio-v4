@@ -20,7 +20,7 @@ use League\HTMLToMarkdown\HtmlConverter;
 /**
  * One-off importer for the old cb-portfolio plugin export (docs/CONTENT_IMPORT.md).
  * Idempotent: experiences are keyed by (company, started_on) and projects by slug.
- * Never imports the phone number or the street address.
+ * Never imports the email, phone number or street address.
  */
 final class ImportLegacyPortfolio
 {
@@ -92,8 +92,7 @@ final class ImportLegacyPortfolio
             $this->profile->about_html = $this->markdown->render($this->profile->about_md);
         }
 
-        $email = $this->str($p['email'] ?? null);
-        $this->profile->email = filter_var($email, FILTER_VALIDATE_EMAIL) !== false ? $email : $this->profile->email;
+        // The old email is personal: never imported. The public contact address is set in admin (default hello@).
 
         $socials = [];
         foreach (['github_url' => 'github', 'linkedin_url' => 'linkedin', 'twitter_url' => 'x'] as $field => $network) {

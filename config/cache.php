@@ -34,7 +34,18 @@ return [
     |
     */
 
+    /*
+     * Full-page cache for public HTML (App\Http\Middleware\CachePublicPage).
+     */
+    'pages_enabled' => (bool) env('PAGE_CACHE_ENABLED', true),
+
     'stores' => [
+
+        'pages' => [
+            'driver' => 'file',
+            'path' => storage_path('framework/cache/pages'),
+            'lock_path' => storage_path('framework/cache/pages'),
+        ],
 
         'array' => [
             'driver' => 'array',

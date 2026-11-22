@@ -80,6 +80,35 @@ class Project extends Model implements HasMedia
         $this->addMediaCollection('og')->singleFile();
     }
 
+    /** Small label above the title: sector or "made at", then the year. */
+    public function metaLine(): string
+    {
+        return collect([$this->sector ?: $this->made_at, $this->year])->filter()->implode(' · ');
+    }
+
+    /** Where the project links to on the site: its case study, else its live site, else its repository. */
+    public function primaryUrl(): ?string
+    {
+        if ($this->has_case_study) {
+            return route('projects.show', $this);
+        }
+
+        return $this->live_url ?: $this->repo_url;
+    }
+
+    public function linksExternally(): bool
+    {
+        return ! $this->has_case_study && $this->primaryUrl() !== null;
+    }
+
+    public function linkDomain(): ?string
+    {
+        $url = $this->live_url ?: $this->repo_url;
+        $host = $url !== null ? parse_url($url, PHP_URL_HOST) : null;
+
+        return is_string($host) ? preg_replace('/^www\./', '', $host) : null;
+    }
+
     /**
      * @param  Builder<self>  $query
      */

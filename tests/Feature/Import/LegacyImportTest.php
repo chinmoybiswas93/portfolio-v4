@@ -64,7 +64,7 @@ it('imports projects as published, without case studies', function (): void {
         ->and($plugin->tags()->pluck('name')->sort()->values()->all())->toBe(['PHP', 'Vue.js']);
 });
 
-it('maps the profile and never imports phone, address or unsafe links', function (): void {
+it('maps the profile and never imports email, phone, address or unsafe links', function (): void {
     runImport();
     $profile = app(ProfileSettings::class);
 
@@ -72,6 +72,7 @@ it('maps the profile and never imports phone, address or unsafe links', function
         ->and($profile->about_md)->toContain('**bold**')
         ->and($profile->about_html)->not->toContain('<script>')
         ->and($profile->location_public)->toBeNull()
+        ->and($profile->email)->toBeNull()
         ->and(collect($profile->socials)->pluck('network')->all())->toBe(['github', 'linkedin'])
         ->and(json_encode(app(ProfileSettings::class)->toArray()))->not->toContain('0000 000000')->not->toContain('Example Street');
 });

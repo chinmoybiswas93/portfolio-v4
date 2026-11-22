@@ -44,6 +44,11 @@ class Experience extends Model
         return $this->ended_on === null;
     }
 
+    public function dateRange(): string
+    {
+        return $this->started_on->format('M Y').' – '.($this->ended_on?->format('M Y') ?? 'Now');
+    }
+
     /**
      * @param  Builder<self>  $query
      */

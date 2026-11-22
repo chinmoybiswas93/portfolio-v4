@@ -18,7 +18,7 @@ Command: `php artisan import:legacy-portfolio {path} [--dry-run] [--assets=.priv
 | title | profile.title | Kept as is. The owner rewrites it for the UK/EU positioning (current: "Wordpress Developer \| Tech Support", where "WordPress" is mis-cased). |
 | tagline | profile.tagline, seo.default_description | trim, ≤ 160 chars for SEO |
 | about (HTML) | profile.about_md (+ `about_html`) | HTML → Markdown (`league/html-to-markdown`), then re-render through the safe renderer |
-| email | profile.email | **Imported, but shown publicly only after owner review** |
+| email | — | **Not imported** (personal address). The public contact is set in admin; the site falls back to `hello@chinmoybiswas.com`. |
 | phone | — | **Not imported** (contact is links-only, which keeps PII off the public site) |
 | location | profile.location_public | **Not imported verbatim.** The source is a street address. The owner enters a city/country (for example "City, Country · Working with UK & EU clients"). |
 | github_url, linkedin_url, twitter_url | profile.socials[] `{network, url}` | validate URL |
