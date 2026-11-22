@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Http\Middleware\FeatureDisabled;
 use App\Models\Category;
 use App\Models\Experience;
 use App\Models\Post;
@@ -17,6 +18,7 @@ use App\Support\Cache\PageCache;
 use App\Support\Markdown\MarkdownRenderer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Spatie\LaravelSettings\Events\SettingsSaved;
@@ -37,6 +39,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Filament export/import downloads are not used (no exports tables): answer 404 instead of a 500.
+        $this->app->make(Router::class)->middlewareGroup('filament.actions', [FeatureDisabled::class]);
+
         // Stable, short morph names for taggables and media (never class names in the database).
         Relation::enforceMorphMap([
             'experience' => Experience::class,
