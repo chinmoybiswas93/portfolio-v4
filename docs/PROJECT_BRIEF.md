@@ -120,6 +120,12 @@ The canvas is updated to match; it remains the source of truth for UI.
 - **Deleting:** only drafts can be deleted; issued invoices are cancelled instead, so numbering stays gap-free.
 - **Dashboard:** "Outstanding by currency" and "Overdue invoices" built; "Recent posts" follows in 3.6.
 - **Admin hardening:** a route-walk test checks every admin/filament screen (guest → login, non-admin → 403, admin without 2FA → set-up); a route inventory allows only the Livewire update/upload, signed storage upload and admin logout as write routes; tampered Livewire snapshots answer 419; unused Filament export/import downloads answer 404.
+
+### Built in slice 3.6 SEO and performance (2026-11-22)
+- **SEO:** canonical, Open Graph and Twitter tags on every page; JSON-LD (Person + WebSite, BlogPosting, CreativeWork, breadcrumbs); `/sitemap.xml`, `/feed.xml`, env-aware `/robots.txt`; generated 1200×630 share cards (navy card, teal label, logo, title).
+- **Performance:** Lighthouse CI in CI on 4 URLs (all 100 locally on mobile, LCP ≈ 0.9–1.2 s, CLS 0); gzip budgets for CSS and JS; long-lived cache headers for hashed assets; LiteSpeed server cache kept off admin, Livewire and `/up`.
+- **Accessibility:** the category link in a post's meta line is now underlined (subtle teal underline), so it doesn't rely on colour alone. Canvas updated.
+- **Dashboard:** "Recent posts" widget (five most recently edited posts with status).
 ## Phases (each ends with a gate where the owner approves)
 1. **Architecture:** ADRs (stack, hosting layout, CI/CD, PDF, media), data model/ERD, routes, security model, test strategy. Prove deploy with a "hello" Laravel app on the staging subdomain.
 2. **UI design:** design every screen in a canvas (Claude design artifact) first: home, project archive, case study, blog list/post, 404, invoice PDF template, and key admin screens. The owner approves before any UI code is written.

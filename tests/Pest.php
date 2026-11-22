@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Models\User;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /*
@@ -21,6 +22,9 @@ use Tests\TestCase;
 pest()->extend(TestCase::class)
  // ->use(RefreshDatabase::class)
     ->in('Feature', 'Browser');
+
+// Generated share images must never land in the real public disk during feature tests.
+pest()->beforeEach(fn () => Storage::fake('public'))->in('Feature');
 
 /*
 |--------------------------------------------------------------------------

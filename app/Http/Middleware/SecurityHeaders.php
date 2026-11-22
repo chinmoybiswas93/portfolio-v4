@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Support\Seo\Seo;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,10 +34,15 @@ final class SecurityHeaders
             $headers->set('Strict-Transport-Security', 'max-age=31536000');
         }
 
+        if ($profile !== 'public') {
+            // Admin, Livewire and /up must never be stored by the LiteSpeed server cache (ADR-0008).
+            $headers->set('X-LiteSpeed-Cache-Control', 'no-cache');
+        }
+
         if ($profile === 'public') {
             $headers->set('Content-Security-Policy', self::PUBLIC_CSP);
             $headers->set('Cache-Control', 'public, max-age=0, must-revalidate');
-            if (! app()->isProduction()) {
+            if (! Seo::indexable()) {
                 $headers->set('X-Robots-Tag', 'noindex, nofollow');
             }
         }

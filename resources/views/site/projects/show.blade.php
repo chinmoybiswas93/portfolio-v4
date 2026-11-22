@@ -8,8 +8,13 @@
         'Role' => $project->role,
         'Timeline' => $timeline,
     ]);
+    $shareImage = \App\Support\Seo\Seo::image($project, 'Case study', $project->title);
+    $jsonLd = [
+        \App\Support\Seo\JsonLd::creativeWork($project, $shareImage),
+        \App\Support\Seo\JsonLd::breadcrumbs([['Home', '/'], ['Projects', '/projects'], [$project->title, route('projects.show', $project, false)]]),
+    ];
 @endphp
-<x-layouts.site :title="$project->seo_title ?: $project->title" :description="$project->seo_description ?: $project->summary">
+<x-layouts.site :title="$project->seo_title ?: $project->title" :description="$project->seo_description ?: $project->summary" type="article" :image="$shareImage" :json-ld="$jsonLd">
     <div class="page-wrap">
         <x-site.topbar current="projects" />
     </div>

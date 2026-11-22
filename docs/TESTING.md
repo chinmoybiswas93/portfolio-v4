@@ -115,6 +115,8 @@ Run against `php artisan serve` with production build and seeded realistic conte
 | CSS | < 25 KB gzip |
 | Fonts | ≤ 2 WOFF2 files, < 60 KB total |
 
+`php artisan serve` does not compress responses, so the gzip budgets for CSS and JS are checked on the built files by `scripts/asset-budgets.sh`. Lighthouse checks scores, LCP, CLS, TBT, total transfer and font count. Run it locally with `scripts/lighthouse.sh` (it uses its own SQLite database and restores `.env`). Reports are kept as a CI artifact for 14 days.
+
 Because CI runs from a US/EU runner against a local server, staging is also checked manually with the `playwright-cli` skill and PageSpeed Insights (real Hostinger origin and CDN) before each release to `main`.
 
 ## 7. CI order (fail fast)

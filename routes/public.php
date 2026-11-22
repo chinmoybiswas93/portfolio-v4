@@ -7,6 +7,7 @@ use App\Http\Controllers\Site\FallbackController;
 use App\Http\Controllers\Site\HomeController;
 use App\Http\Controllers\Site\PostController;
 use App\Http\Controllers\Site\ProjectController;
+use App\Http\Controllers\Site\SeoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,5 +24,9 @@ Route::get('/blog/tag/{tag:slug}', [PostController::class, 'tag'])->name('posts.
 Route::get('/blog/{post:slug}', [PostController::class, 'show'])->name('posts.show');
 
 Route::get('/cv', CvController::class)->name('cv');
+
+Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
+Route::get('/feed.xml', [SeoController::class, 'feed'])->name('feed');
+Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
 
 Route::fallback(FallbackController::class);

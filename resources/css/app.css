@@ -1017,6 +1017,15 @@
 
 .post-meta .cat {
     color: var(--accent);
+    /* Not colour alone: links inside the meta line need a second cue (WCAG 1.4.1). */
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+
+.post-meta .cat:hover {
+    text-decoration-color: currentColor;
 }
 
 .post-title {
