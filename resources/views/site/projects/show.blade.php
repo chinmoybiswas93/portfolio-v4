@@ -42,7 +42,19 @@
                         @endforeach
                     </dl>
                 @endif
-                <div class="mt-[18px]"><x-site.chips :tags="$project->tags" label="Stack" /></div>
+                <div class="cs-tags-row mt-[18px]">
+                    <x-site.chips :tags="$project->tags" label="Stack" />
+                    @if ($project->live_url || $project->repo_url)
+                        <p class="cs-links">
+                            @if ($project->live_url)
+                                <a class="more-link" href="{{ $project->live_url }}" rel="noopener" target="_blank"><span class="u">Visit {{ $project->linkDomain() }}</span><span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                            @endif
+                            @if ($project->repo_url)
+                                <a class="more-link" href="{{ $project->repo_url }}" rel="noopener" target="_blank"><span class="u">Source code</span><span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                            @endif
+                        </p>
+                    @endif
+                </div>
             </div>
         @endif
 
@@ -78,18 +90,38 @@
         </div>
 
         @if ($gallery->isNotEmpty())
+            @php
+                $slides = $gallery->map(fn ($image) => [
+                    'src' => $image->hasGeneratedConversion('hero') ? $image->getUrl('hero') : $image->getUrl(),
+                    'alt' => (string) $image->getCustomProperty('alt', ''),
+                ])->values();
+            @endphp
             <div class="cs-wide gallery mt-16">
-                @foreach ($gallery as $image)
-                    <x-site.media-image :media="$image" conversion="card" sizes="(min-width: 768px) 472px, 100vw" :width="472" :height="295" class="cs-image" />
+                @foreach ($gallery as $index => $image)
+                    <button type="button" class="gallery-item" data-lightbox-open="{{ $loop->index }}"
+                        aria-label="Open image {{ $loop->iteration }} of {{ $gallery->count() }}{{ $image->getCustomProperty('alt') ? ': '.$image->getCustomProperty('alt') : '' }}">
+                        <x-site.media-image :media="$image" conversion="card" sizes="(min-width: 768px) 472px, 100vw" :width="472" :height="295" class="cs-image" />
+                    </button>
                 @endforeach
             </div>
+
+            {{-- Gallery lightbox (canvas v17): native dialog, arrows and ← → Esc keys; no third-party script. --}}
+            <dialog class="lightbox" data-lightbox data-slides='@json($slides)' aria-label="Gallery">
+                <div class="lightbox-bar">
+                    <span data-lightbox-count aria-live="polite"></span>
+                    <button type="button" class="lightbox-btn" data-lightbox-close aria-label="Close gallery (Esc)">×</button>
+                </div>
+                <figure class="lightbox-figure">
+                    <img data-lightbox-img src="" alt="">
+                    <figcaption data-lightbox-caption></figcaption>
+                </figure>
+                @if ($gallery->count() > 1)
+                    <button type="button" class="lightbox-btn lightbox-prev" data-lightbox-prev aria-label="Previous image (←)">‹</button>
+                    <button type="button" class="lightbox-btn lightbox-next" data-lightbox-next aria-label="Next image (→)">›</button>
+                @endif
+            </dialog>
         @endif
 
-        @if ($project->live_url)
-            <div class="cs-col mt-12">
-                <a class="more-link mt-0" href="{{ $project->live_url }}" rel="noopener" target="_blank"><span class="u">Visit {{ $project->linkDomain() }}</span><span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
-            </div>
-        @endif
 
         @if ($previous || $next)
             <nav class="cs-col pager mt-20 pb-24" aria-label="More projects">

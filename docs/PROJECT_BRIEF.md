@@ -151,6 +151,11 @@ The canvas is updated to match; it remains the source of truth for UI.
   - Cancelled: download, duplicate.
 - **Invoice PDF** in Inter (Regular, Medium, SemiBold; SIL OFL, files in `resources/fonts/inter`, loaded locally by DomPDF, no remote fonts) with the compact canvas v17 layout. DomPDF writes font metrics to `storage/fonts`, created on first use.
 
+### Built in slice 3.8e Public features (2026-11-22)
+- **Theme:** System / Light / Dark switch. First visit follows `prefers-color-scheme`; a chosen theme is saved in localStorage; System clears it. `public/theme-init.js` applies it before first paint (no flash, no inline script).
+- **Post page:** breadcrumb; "On this page" contents from h2/h3 (sticky on desktop, collapsible on mobile, shown with two or more headings); share links for LinkedIn, X and Facebook (plain URLs, no scripts) and Copy link; related posts by shared tags, then same category; back to writing.
+- **Case study:** the live-site and source links sit at the end of the tags row; gallery images open in a native `<dialog>` lightbox with arrows, ← → and Esc, a counter and the alt text as caption.
+
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 
