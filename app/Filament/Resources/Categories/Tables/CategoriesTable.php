@@ -9,8 +9,11 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
 class CategoriesTable
@@ -24,7 +27,8 @@ class CategoriesTable
                 TextColumn::make('posts_count')->counts('posts')->label('Posts'),
             ])
             ->defaultSort('name')
-            ->recordActions(StandardTable::rowActions([EditAction::make()->modalWidth(Width::Large), DeleteAction::make()]))
+            ->filters([TrashedFilter::make()])
+            ->recordActions(StandardTable::rowActions([EditAction::make()->modalWidth(Width::Large), DeleteAction::make(), RestoreAction::make(), ForceDeleteAction::make()]))
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
     }
 }

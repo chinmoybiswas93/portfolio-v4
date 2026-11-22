@@ -10,6 +10,7 @@ use Database\Factories\ServiceFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Service extends Model
 {
@@ -18,6 +19,7 @@ class Service extends Model
 
     use HasSlug;
     use RendersMarkdown;
+    use SoftDeletes;
 
     protected $fillable = ['title', 'slug', 'summary', 'body_md', 'icon', 'sort_order', 'is_published'];
 

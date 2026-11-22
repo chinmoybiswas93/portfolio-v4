@@ -10,7 +10,12 @@ use App\Mcp\Tools\GetSettings;
 use App\Mcp\Tools\ListClients;
 use App\Mcp\Tools\ListContent;
 use App\Mcp\Tools\ListInvoices;
+use App\Mcp\Tools\SaveContent;
 use App\Mcp\Tools\ScopedTool;
+use App\Mcp\Tools\TrashContent;
+use App\Mcp\Tools\UpdateProfile;
+use App\Mcp\Tools\UpdateSeo;
+use App\Mcp\Tools\UploadImage;
 use Illuminate\Support\Str;
 use Laravel\Mcp\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
@@ -31,6 +36,11 @@ final class PortfolioServer extends Server
         GetInvoice::class,
         ListClients::class,
         GetSettings::class,
+        SaveContent::class,
+        TrashContent::class,
+        UpdateSeo::class,
+        UpdateProfile::class,
+        UploadImage::class,
     ];
 
     protected array $tools = self::TOOLS;
