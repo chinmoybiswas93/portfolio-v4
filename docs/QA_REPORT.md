@@ -11,7 +11,8 @@
 | Accessibility (axe, every impact level) | Public pages (light, dark, mobile), all 23 admin screens and the login pass after 4 fixes |
 | Keyboard | Skip link first on every page and reaches the content; every focusable element shows a focus ring |
 | Cross-browser | 27 browser tests pass in Chromium and WebKit; Firefox passes all but the axe checks (see notes) |
-| Tests | 380 unit and feature tests green; Pint and Larastan level 6 pass |
+| Tests | 385 unit and feature tests green; Pint and Larastan level 6 pass |
+| Coverage | 90.0% of lines (CI, PCOV); CI now fails below 88% |
 | Invoice maths | Mutation score 96.4% (target 90%) |
 | Security review (whole app) | No high findings; 4 medium fixed; low items fixed or listed below |
 
@@ -36,6 +37,15 @@ New tests: `tests/Browser/QaAccessibilityTest.php` runs all of the above on ever
 | L | A cancelled invoice's emailed link kept working for 30 days | It now answers 410 Gone |
 
 Trusted-host filtering was tried and left out: if the Hostinger CDN passes an unexpected `Host`, the whole site would answer 400. Fixing links to `APP_URL` removes the risk it was meant to cover.
+
+## Coverage gaps closed
+The coverage report showed thin spots in security-sensitive code; each now has tests (`tests/Feature/Phase4CoverageTest.php`):
+- `mcp:prune-clients` deletes only old apps that were never approved and never had a token (it had no tests).
+- The MCP `get-invoice` and `list-clients` tools: lookups, not-found errors, literal wildcards in search, and no payment details in the output.
+- Admin sign-in: blocked after the hourly limit even with the right password.
+- `app:admin-reset`: new password, two-factor reset, remember-me sign-out; weak passwords and unknown emails refused.
+
+Remaining files under 80% are thin Filament wiring (resource route bindings, form schemas) covered by the browser tests.
 
 ## Open items (low, for the owner to decide or check on staging)
 - **Client IP behind the Hostinger CDN.** Login and MCP rate limits use the client IP. If PHP sees the CDN's address, they become global. Check `REMOTE_ADDR` on staging; configure trusted proxies if needed.
