@@ -21,9 +21,22 @@ class Invoice extends Model
     /** @use HasFactory<InvoiceFactory> */
     use HasFactory;
 
+    /** Same defaults as the database, so a new model knows them before it is reloaded. */
+    protected $attributes = [
+        'status' => 'draft',
+        'discount_type' => 'none',
+        'discount_value' => 0,
+        'tax_rate_bp' => 0,
+        'subtotal_minor' => 0,
+        'discount_minor' => 0,
+        'tax_minor' => 0,
+        'total_minor' => 0,
+        'reverse_charge' => false,
+    ];
+
     protected $fillable = [
-        'client_id', 'currency', 'issue_date', 'due_date', 'discount_type', 'discount_value',
-        'notes', 'tax_note',
+        'client_id', 'currency', 'reference', 'issue_date', 'due_date', 'discount_type', 'discount_value',
+        'tax_rate_bp', 'notes',
     ];
 
     protected function casts(): array
@@ -33,6 +46,8 @@ class Invoice extends Model
             'currency' => Currency::class,
             'discount_type' => DiscountType::class,
             'discount_value' => 'integer',
+            'tax_rate_bp' => 'integer',
+            'reverse_charge' => 'boolean',
             'subtotal_minor' => 'integer',
             'discount_minor' => 'integer',
             'tax_minor' => 'integer',

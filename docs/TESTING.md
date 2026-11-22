@@ -39,20 +39,19 @@ The browser layer uses the Pest Browser plugin because it **is** Playwright unde
 
 | # | Case | Expectation |
 |---|---|---|
-| 1 | 1 line, qty 1, £100.00, 0% tax | subtotal 10000, tax 0, total 10000 |
-| 2 | qty 1.5 (`1500` milli) × £33.33 | net = round_half_up(49995) = 4999.5 → **5000** |
+| 1 | 1 line, qty 1, £100.00, no discount, 0% tax | subtotal 10000, tax 0, total 10000 |
+| 2 | qty 1.5 (`1500` milli) × £33.33 | amount = 4999.5 → **5000** (half up) |
 | 3 | 20% VAT on £10.01 | tax 200.2 → **200**, total 1201 |
-| 4 | Per-line rounding vs total rounding: 3 lines × £0.03 at 20% | per line 0.6 → 1 each = **3** (not 2 from rounding the total, documented rule) |
-| 5 | Line discount 10% on £99.99 | discount 999.9 → **1000**, net after 8999 |
-| 6 | Invoice-level 10% discount over lines 10000 / 5000 / 2500 | allocations 1000/500/250, sum = 1750 |
-| 7 | Invoice-level fixed £10.00 over 3 equal lines £33.33 | largest-remainder 334/333/333, **sum exactly 1000** |
-| 8 | Mixed tax rates (0% + 20%) with an invoice discount | tax computed on allocated amounts per line |
-| 9 | Discount larger than subtotal | rejected (validation exception) |
-| 10 | Negative qty/price | rejected (credit notes out of scope) |
-| 11 | 0 lines | total 0, cannot be issued |
-| 12 | Currency: no mixing GBP and EUR in one invoice | exception |
-| 13 | Large values (qty 1000 × £99,999.99) | no overflow (BIGINT/int64) |
-| 14 | Property test: 200 random invoices | `total = Σ(net − discounts) + Σ tax` and every allocation sums exactly |
+| 4 | Tax on the total, not per line: 3 lines × £0.03 at 20% | subtotal 9, tax 1.8 → **2**, total 11 |
+| 5 | 10% discount on £99.99 | discount 999.9 → **1000**, taxable 8999 |
+| 6 | Fixed £10.00 discount on £99.99 | discount 1000, taxable 8999 |
+| 7 | Canvas sample: £350 + 6 × £45 + 2.5 × £45, 5% discount, 0% VAT | subtotal 73250, discount 3663, total **69587** (£695.87) |
+| 8 | Discount and 20% VAT together | VAT on the discounted total |
+| 9 | Discount larger than subtotal; percent > 100%; tax rate > 100% | rejected |
+| 10 | Negative qty/price or empty description | rejected (credit notes out of scope) |
+| 11 | 0 lines | total 0 |
+| 12 | Large values (qty 1000 × £99,999.99 at 20%) | no overflow (int64) |
+| 13 | Property test: 200 random invoices | `total = subtotal − discount + tax`, `tax = round_half_up(taxable × rate)` |
 
 Other units:
 - `InvoiceNumberFormatter`: `INV` + 2026 + 1 → `INV-2026-0001`, 10000 → `INV-2026-10000`, custom prefix.

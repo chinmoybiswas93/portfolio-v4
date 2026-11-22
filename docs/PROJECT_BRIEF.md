@@ -81,7 +81,10 @@ Laravel web app: a public business portfolio for UK/EU clients and a private adm
 
 ## Invoice tax decision (owner, 2026-11-22, before slice 3.5)
 - **No per-line tax.** Lines have description, quantity and unit price only. Tax (VAT) is one optional rate applied to the **invoice total after discount**, so the "Tax" column is removed from the PDF and editor.
-- Clients get an optional **tax ID** (VAT number for UK/EU, EIN/tax ID for US). It is printed on the invoice following UK/EU/US conventions. The exact wording is confirmed at the start of 3.5.
+- **Discount:** invoice-level only (percent or fixed amount), no per-line discount.
+- **Client tax ID** (optional) is labelled by country: UK "VAT reg. no.", EU "VAT ID", US "EIN / Tax ID", other "Tax ID".
+- **0% to a UK/EU business with a tax ID:** the invoice prints "Reverse charge: the customer is liable to account for VAT." Otherwise it prints the default tax note ("VAT not applicable").
+- **Owner's own tax ID** (optional, encrypted) is printed under the business details when filled in.
 
 ## Design decisions (Phase 2, approved by the owner on 2026-11-22)
 Designs live in a private Claude design canvas (link in `.private/`). They are the reference for Phase 3 UI work.
@@ -109,6 +112,13 @@ The canvas is updated to match; it remains the source of truth for UI.
 - **Media:** every admin image upload is stored on the public disk (Filament's default was the private disk).
 - **Contact email:** the importer never imports the old personal email; the site falls back to `hello@chinmoybiswas.com` until one is set in Profile.
 
+
+### Built in slice 3.5 Invoices (2026-11-22, canvas v15)
+- **Invoice editor:** no per-line Tax column; one "VAT rate on the total" field replaces the free-text tax note (the note is chosen by the tax rules). New **Project / reference** field, printed as "Project" on the PDF. Header actions that don't apply yet are hidden, not shown disabled; the status shows under the title.
+- **PDF:** footer page numbers ("Page x / y") are drawn by DomPDF after rendering; seller tax ID prints under the business details when set.
+- **Email:** sent synchronously; each attempt is logged with an immutable copy of the attached PDF (`invoices/{year}/sent/`).
+- **Deleting:** only drafts can be deleted; issued invoices are cancelled instead, so numbering stays gap-free.
+- **Dashboard:** "Outstanding by currency" and "Overdue invoices" built; "Recent posts" follows in 3.6.
 ## Phases (each ends with a gate where the owner approves)
 1. **Architecture:** ADRs (stack, hosting layout, CI/CD, PDF, media), data model/ERD, routes, security model, test strategy. Prove deploy with a "hello" Laravel app on the staging subdomain.
 2. **UI design:** design every screen in a canvas (Claude design artifact) first: home, project archive, case study, blog list/post, 404, invoice PDF template, and key admin screens. The owner approves before any UI code is written.
