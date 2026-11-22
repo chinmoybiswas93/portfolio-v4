@@ -11,14 +11,14 @@ use App\Enums\Currency;
  */
 final class Money
 {
-    public static function format(int $minor, Currency $currency): string
+    public static function format(int $minor, Currency $currency, bool $forPdf = false): string
     {
         $sign = $minor < 0 ? '−' : '';
         $abs = abs($minor);
         $major = number_format(intdiv($abs, 100));
         $cents = str_pad((string) ($abs % 100), 2, '0', STR_PAD_LEFT);
 
-        return $sign.$currency->symbol().$major.'.'.$cents;
+        return $sign.($forPdf ? $currency->pdfPrefix() : $currency->symbol()).$major.'.'.$cents;
     }
 
     /** "12.5" -> 1250 for scale 2. Rejects anything but a plain non-negative decimal. Returns null when invalid. */

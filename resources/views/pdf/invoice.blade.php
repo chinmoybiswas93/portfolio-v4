@@ -21,7 +21,7 @@
         .accent { height: 2px; width: 40px; background: #0F766E; margin: 16px 0 14px; }
         .lines th { padding: 5px 0; border-bottom: 1px solid #CBD5E1; font-size: 8px; font-weight: 600; letter-spacing: 0.7px; text-transform: uppercase; color: #5B6B80; }
         .lines td { padding: 6px 0; border-bottom: 1px solid #E2E8F0; vertical-align: top; }
-        .num { text-align: right; }
+        .num { text-align: right; white-space: nowrap; }
         .totals td { padding: 2.5px 0; }
         .status { display: inline-block; padding: 1px 7px; border: 1px solid #99D8CF; background: #F0FDFA; color: #0F766E; font-size: 7.5px; font-weight: 600; letter-spacing: 0.9px; text-transform: uppercase; }
         .payment { width: 100%; margin-top: 18px; background: #F8FAFC; border: 1px solid #E2E8F0; }
@@ -125,7 +125,7 @@
                     <p class="muted" style="font-size: 8.5px;">{!! nl2br(e($doc->notes)) !!}</p>
                 @endif
             </td>
-            <td style="vertical-align: top; width: 210px;">
+            <td style="vertical-align: top; width: 236px;">
                 <table class="totals" style="width: 100%; font-size: 9px;">
                     @foreach ($doc->totals as $row)
                         <tr><td class="dim">{{ $row['label'] }}</td><td class="num ink">{{ $row['value'] }}</td></tr>

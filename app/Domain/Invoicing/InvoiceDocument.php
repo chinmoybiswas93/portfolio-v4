@@ -51,21 +51,21 @@ final readonly class InvoiceDocument
                 'title' => $parts[0],
                 'note' => trim($parts[1] ?? ''),
                 'qty' => Money::toDecimalString($item->quantity_milli, 3, trim: true),
-                'price' => Money::format($item->unit_price_minor, $currency),
-                'amount' => Money::format($item->amount_minor, $currency),
+                'price' => Money::format($item->unit_price_minor, $currency, forPdf: true),
+                'amount' => Money::format($item->amount_minor, $currency, forPdf: true),
             ];
         })->values()->all();
 
-        $totals = [['label' => 'Subtotal', 'value' => Money::format($invoice->subtotal_minor, $currency)]];
+        $totals = [['label' => 'Subtotal', 'value' => Money::format($invoice->subtotal_minor, $currency, forPdf: true)]];
         if ($invoice->discount_minor > 0) {
             $label = $invoice->discount_type === DiscountType::Percent
                 ? 'Discount ('.Money::toDecimalString($invoice->discount_value, 2, trim: true).'%)'
                 : 'Discount';
-            $totals[] = ['label' => $label, 'value' => Money::format(-$invoice->discount_minor, $currency)];
+            $totals[] = ['label' => $label, 'value' => Money::format(-$invoice->discount_minor, $currency, forPdf: true)];
         }
         $totals[] = [
             'label' => 'VAT ('.Money::toDecimalString($invoice->tax_rate_bp, 2, trim: true).'%)'.($invoice->discount_minor > 0 ? ' on total after discount' : ''),
-            'value' => Money::format($invoice->tax_minor, $currency),
+            'value' => Money::format($invoice->tax_minor, $currency, forPdf: true),
         ];
 
         $notes = collect([$invoice->tax_note, $invoice->notes])->filter(fn (?string $n): bool => trim((string) $n) !== '')->implode("\n\n");
@@ -89,7 +89,7 @@ final readonly class InvoiceDocument
             client: $client,
             lines: $lines,
             totals: $totals,
-            totalDue: Money::format($invoice->total_minor, $currency),
+            totalDue: Money::format($invoice->total_minor, $currency, forPdf: true),
             notes: $notes !== '' ? $notes : null,
             payment: $payment,
             footer: trim((string) ($seller['footer'] ?? '')) !== ''

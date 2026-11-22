@@ -168,3 +168,13 @@ it('duplicates an invoice as a new draft', function (): void {
         ->and($copy->items)->toHaveCount(3)
         ->and($copy->total_minor)->toBe($source->total_minor);
 });
+
+it('totals and prints a BDT invoice', function (): void {
+    $invoice = sampleInvoice(['company_name' => 'Dhaka Shop', 'country_code' => 'BD', 'default_currency' => 'BDT'], ['currency' => 'BDT']);
+    expect($invoice->total_minor)->toBe(69587);
+
+    $issued = app(IssueInvoice::class)($invoice);
+    $text = (new Parser)->parseContent((string) Storage::disk('local')->get($issued->pdf_path))->getText();
+
+    expect($text)->toContain('BDT 695.87')->toContain('BDT 350.00')->toContain('−BDT 36.63')->not->toContain('৳');
+});

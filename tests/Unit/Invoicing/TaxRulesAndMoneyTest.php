@@ -47,3 +47,11 @@ it('renders scaled integers as decimal strings', function (): void {
         ->and(Money::toDecimalString(1500, 3, trim: true))->toBe('1.5')
         ->and(Money::toDecimalString(6000, 3, trim: true))->toBe('6');
 });
+
+it('formats Bangladeshi taka with the symbol on screen and the code in PDFs', function (): void {
+    expect(Money::format(123450, Currency::BDT))->toBe('৳1,234.50')
+        ->and(Money::format(123450, Currency::BDT, forPdf: true))->toBe('BDT 1,234.50')
+        ->and(Money::format(-3663, Currency::BDT, forPdf: true))->toBe('−BDT 36.63')
+        ->and(Money::format(69587, Currency::GBP, forPdf: true))->toBe('£695.87')
+        ->and(Currency::BDT->minorUnits())->toBe(2);
+});
