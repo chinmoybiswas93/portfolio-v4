@@ -57,3 +57,19 @@ Claude never handles passwords or private keys. Do these steps yourself. Hosting
 3. Hostinger CDN: keep it or turn it off per the deploy-proof result (ADR-0008).
 4. Create a Cloudflare account **only** for the Web Analytics JS beacon (no DNS change) and copy the beacon token into production `.env`.
 5. Back up WordPress (files + DB) before the docroot switch. Claude prepares the commands and you approve them.
+
+## Deploying with SSH switched off between deploys (slice 3.8f)
+SSH Access stays off in hPanel except while deploying.
+
+1. Before merging into `development` (or before a manual run), turn **SSH Access on** in hPanel.
+2. The Deploy workflow starts with a **preflight** job that connects over SSH. If SSH is off, it stops within seconds with: *"SSH is off — enable SSH Access in hPanel and re-run"*. CI and the build don't run.
+3. To deploy again without a new commit: GitHub → **Actions → Deploy → Run workflow**, choose the branch, and run. Alternatively, open the failed run and use **Re-run all jobs**.
+   - `development` deploys to staging.
+   - `main` stops with *"Deploying main is enabled in Phase 5"* until production is switched on.
+4. The deploy job checks SSH again just before uploading, in case it was turned off while CI ran.
+5. **Rollback** uses the same check.
+6. Turn SSH Access off again in hPanel when the run is green.
+
+The preflight also tells two other failures apart:
+- **SSH key rejected:** check the `SSH_PRIVATE_KEY` secret and the authorised keys in hPanel.
+- **Host key mismatch:** stop and investigate before changing `SSH_KNOWN_HOSTS`.

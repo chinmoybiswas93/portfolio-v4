@@ -3,6 +3,7 @@ name: Deploy
 on:
   push:
     branches: [development]
+  # Manual run: "Run workflow" and choose the branch (development deploys to staging; main is enabled in Phase 5).
   workflow_dispatch:
 
 permissions:
@@ -13,7 +14,43 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Fails within seconds when SSH Access is switched off, before spending minutes on CI and the build.
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    environment: staging
+    steps:
+      - name: Production is not enabled yet
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "::error title=Production deploy disabled::Deploying main is enabled in Phase 5 (production cutover)."
+          exit 1
+
+      - name: Only development deploys
+        if: github.ref != 'refs/heads/development' && github.ref != 'refs/heads/main'
+        run: |
+          echo "::error title=Unsupported branch::Run Deploy from development (staging) or main (Phase 5)."
+          exit 1
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/actions
+
+      - uses: ./.github/actions/ssh-setup
+        with:
+          private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          user: ${{ secrets.SSH_USER }}
+
+      - name: Clean up key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
+
   ci:
+    needs: preflight
     uses: ./.github/workflows/ci.yml
 
   # Builds the release with no secrets available: third-party package scripts never see the deploy key.
@@ -82,27 +119,19 @@ jobs:
       - name: Unpack
         run: mkdir -p /tmp/release && tar -xzf /tmp/artifact/release.tgz -C /tmp/release
 
-      - name: Configure SSH
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-        run: |
-          install -m 700 -d ~/.ssh
-          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
-          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
-          {
-            echo "Host target"
-            echo "  HostName $SSH_HOST"
-            echo "  Port $SSH_PORT"
-            echo "  User $SSH_USER"
-            echo "  IdentityFile ~/.ssh/deploy_key"
-            echo "  IdentitiesOnly yes"
-            echo "  StrictHostKeyChecking yes"
-            echo "  ServerAliveInterval 30"
-          } > ~/.ssh/config
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/actions
+
+      # Checked again here: SSH may have been switched off while CI and the build ran.
+      - uses: ./.github/actions/ssh-setup
+        with:
+          private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          user: ${{ secrets.SSH_USER }}
 
       - name: Upload release
         env:
