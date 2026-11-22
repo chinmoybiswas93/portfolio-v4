@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Settings;
+use App\Filament\Support\SettingsTab;
 use App\Settings\ProfileSettings;
 use App\Support\Markdown\MarkdownRenderer;
 use BackedEnum;
@@ -17,15 +19,20 @@ use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use UnitEnum;
 
 class ManageProfile extends SettingsPage
 {
+    use SettingsTab;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserCircle;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Site';
+    protected static ?int $navigationSort = 1;
 
-    protected static ?int $navigationSort = 10;
+    protected static ?string $cluster = Settings::class;
+
+    protected static ?string $slug = 'profile';
+
+    protected static ?string $navigationLabel = 'Profile';
 
     protected static ?string $title = 'Profile';
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Settings;
+use App\Filament\Support\SettingsTab;
 use App\Settings\PaymentSettings;
 use BackedEnum;
 use Filament\Forms\Components\Textarea;
@@ -12,15 +14,20 @@ use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use UnitEnum;
 
 class ManagePayment extends SettingsPage
 {
+    use SettingsTab;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Site';
+    protected static ?int $navigationSort = 4;
 
-    protected static ?int $navigationSort = 13;
+    protected static ?string $cluster = Settings::class;
+
+    protected static ?string $slug = 'payment';
+
+    protected static ?string $navigationLabel = 'Payment';
 
     protected static ?string $title = 'Business & payment';
 

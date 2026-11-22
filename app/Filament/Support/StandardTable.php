@@ -6,6 +6,7 @@ namespace App\Filament\Support;
 
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\EmbeddedTable;
 use Filament\Schemas\Components\RenderHook;
@@ -35,6 +36,9 @@ final class StandardTable
                 ->striped(false)
                 ->extraAttributes(['class' => 'cb-table']);
         });
+
+        // Modal create/edit (canvas "Admin-Modal-Resource"): one Create button, footer on the right.
+        CreateAction::configureUsing(fn (CreateAction $action) => $action->createAnother(false));
 
         FilamentView::registerRenderHook(TablesRenderHook::TOOLBAR_START, fn (): View => view('filament.table-toolbar'));
     }

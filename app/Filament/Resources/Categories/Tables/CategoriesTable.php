@@ -6,8 +6,10 @@ namespace App\Filament\Resources\Categories\Tables;
 
 use App\Filament\Support\StandardTable;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -22,7 +24,7 @@ class CategoriesTable
                 TextColumn::make('posts_count')->counts('posts')->label('Posts'),
             ])
             ->defaultSort('name')
-            ->recordActions(StandardTable::rowActions([EditAction::make()]))
+            ->recordActions(StandardTable::rowActions([EditAction::make()->modalWidth(Width::Large), DeleteAction::make()]))
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
     }
 }

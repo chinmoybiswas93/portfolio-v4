@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Tags;
 
-use App\Filament\Resources\Tags\Pages\CreateTag;
-use App\Filament\Resources\Tags\Pages\EditTag;
-use App\Filament\Resources\Tags\Pages\ListTags;
+use App\Filament\Resources\Tags\Pages\ManageTags;
 use App\Filament\Resources\Tags\Schemas\TagForm;
 use App\Filament\Resources\Tags\Tables\TagsTable;
 use App\Models\Tag;
@@ -47,9 +45,7 @@ class TagResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListTags::route('/'),
-            'create' => CreateTag::route('/create'),
-            'edit' => EditTag::route('/{record}/edit'),
+            'index' => ManageTags::route('/'),
         ];
     }
 }

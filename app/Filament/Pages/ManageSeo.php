@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Settings;
+use App\Filament\Support\SettingsTab;
 use App\Settings\SeoSettings;
 use BackedEnum;
 use Filament\Forms\Components\FileUpload;
@@ -12,15 +14,20 @@ use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use UnitEnum;
 
 class ManageSeo extends SettingsPage
 {
+    use SettingsTab;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMagnifyingGlass;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Site';
+    protected static ?int $navigationSort = 2;
 
-    protected static ?int $navigationSort = 11;
+    protected static ?string $cluster = Settings::class;
+
+    protected static ?string $slug = 'seo';
+
+    protected static ?string $navigationLabel = 'SEO';
 
     protected static ?string $title = 'SEO';
 

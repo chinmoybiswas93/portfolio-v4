@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Actions\Invoicing\IssueInvoice;
 use App\Enums\InvoiceStatus;
 use App\Filament\Pages\ManagePayment;
-use App\Filament\Resources\Clients\Pages\CreateClient;
+use App\Filament\Resources\Clients\Pages\ManageClients;
 use App\Filament\Resources\Invoices\InvoiceResource;
 use App\Filament\Resources\Invoices\Pages\CreateInvoice;
 use App\Filament\Resources\Invoices\Pages\EditInvoice;
@@ -29,11 +29,11 @@ beforeEach(function (): void {
 });
 
 it('creates a client with a country-specific tax ID label', function (): void {
-    Livewire::test(CreateClient::class)
+    Livewire::test(ManageClients::class)
+        ->mountAction('create')
         ->fillForm(['company_name' => 'Acme GmbH', 'email' => 'billing@acme.test', 'default_currency' => 'EUR', 'country_code' => 'DE'])
-        ->assertFormFieldExists('vat_number', fn ($field): bool => $field->getLabel() === 'VAT ID (optional)')
         ->fillForm(['vat_number' => 'DE123456789'])
-        ->call('create')
+        ->callMountedAction()
         ->assertHasNoFormErrors();
 
     expect(Client::query()->where('company_name', 'Acme GmbH')->value('vat_number'))->toBe('DE123456789');

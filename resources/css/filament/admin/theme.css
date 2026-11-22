@@ -353,3 +353,43 @@ html:not(.dark) .cb-filter select {
         width: 100%;
     }
 }
+
+/* Settings tabs (canvas "Admin-Settings"): left-aligned, underlined, no pill container. */
+.fi-page-sub-navigation-tabs {
+    justify-content: flex-start;
+    margin-inline: 0;
+    padding: 0;
+    gap: 0.25rem;
+    border: 0;
+    border-bottom: 1px solid #1e293b;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item {
+    height: 2.25rem;
+    padding: 0 0.875rem;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    font-size: 0.8125rem;
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item.fi-active {
+    border-bottom-color: #2dd4bf;
+    background: transparent;
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item .fi-icon {
+    display: none;
+}
+
+html:not(.dark) .fi-page-sub-navigation-tabs {
+    border-bottom-color: #e2e8f0;
+}
+
+/* Modal footers: actions on the right, as in the canvas. */
+.fi-modal-footer-actions {
+    justify-content: flex-end;
+}
