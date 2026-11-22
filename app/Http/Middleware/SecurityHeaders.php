@@ -37,6 +37,9 @@ final class SecurityHeaders
         if ($profile !== 'public') {
             // Admin, Livewire and /up must never be stored by the LiteSpeed server cache (ADR-0008).
             $headers->set('X-LiteSpeed-Cache-Control', 'no-cache');
+            if (! $headers->has('X-Robots-Tag')) {
+                $headers->set('X-Robots-Tag', 'noindex, nofollow');
+            }
         }
 
         if ($profile === 'public') {

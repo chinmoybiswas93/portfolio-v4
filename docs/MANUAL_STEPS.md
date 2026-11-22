@@ -73,3 +73,20 @@ SSH Access stays off in hPanel except while deploying.
 The preflight also tells two other failures apart:
 - **SSH key rejected:** check the `SSH_PRIVATE_KEY` secret and the authorised keys in hPanel.
 - **Host key mismatch:** stop and investigate before changing `SSH_KNOWN_HOSTS`.
+
+## Private admin path (slice 3.8g)
+The admin panel URL comes from `ADMIN_PATH`. The repo default is `admin`, for local work only; the real path is never committed.
+
+1. In each server's `shared/.env`, add `ADMIN_PATH=<private path>` (staging and, in Phase 5, production).
+2. Deploy, or run `php artisan optimize` so the cached config picks it up. The old `/admin` then returns 404.
+3. `robots.txt` never lists the admin path; admin pages send `X-Robots-Tag: noindex, nofollow`.
+
+## Authenticator label "CB Portfolio" (slice 3.8g)
+New 2FA set-ups appear in your authenticator app as **CB Portfolio**. Existing entries keep their old label ("Chinmoy Biswas") because the app saves the label when you scan. Codes keep working because the secret is unchanged. To switch to the new label:
+
+1. Sign in with your current code.
+2. Open your profile → Two-factor authentication → turn the authenticator app off (it asks for a code), then on again.
+3. Scan the new QR code (it shows "CB Portfolio") and confirm with a code from the new entry.
+4. Save the new recovery codes somewhere safe, then delete the old entry from the app.
+
+Do it on staging first, and keep the old entry until the new one has worked once.

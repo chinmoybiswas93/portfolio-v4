@@ -26,12 +26,12 @@ beforeEach(function (): void {
 });
 
 it('shows the invoice list and the draft editor with live totals', function (): void {
-    $list = visit('/admin/invoices')->assertSee('Invoices')->assertSee('Acme Ltd')->assertNoJavaScriptErrors();
+    $list = visit(adminPath('/invoices'))->assertSee('Invoices')->assertSee('Acme Ltd')->assertNoJavaScriptErrors();
     if (env('SCREENSHOTS')) {
         $list->screenshot(filename: 'invoices-list');
     }
 
-    $edit = visit("/admin/invoices/{$this->draft->id}/edit")
+    $edit = visit(adminPath("/invoices/{$this->draft->id}/edit"))
         ->assertSee('Draft invoice')->assertSee('Assigned on issue')->assertSee('£695.87')->assertSee('Issue invoice')
         ->assertNoJavaScriptErrors();
     if (env('SCREENSHOTS')) {
@@ -42,7 +42,7 @@ it('shows the invoice list and the draft editor with live totals', function (): 
 it('shows an issued invoice as locked with its actions', function (): void {
     app(IssueInvoice::class)($this->draft);
 
-    $page = visit("/admin/invoices/{$this->draft->id}/edit")
+    $page = visit(adminPath("/invoices/{$this->draft->id}/edit"))
         ->assertSee($this->draft->refresh()->number)->assertSee('Email to client')->assertSee('Download')->assertSee('Mark as paid')
         ->assertDontSee('Issue invoice')->assertNoJavaScriptErrors();
     if (env('SCREENSHOTS')) {

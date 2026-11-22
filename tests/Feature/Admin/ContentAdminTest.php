@@ -162,6 +162,6 @@ it('puts Cancel, Preview, Delete and Save in the edit page header', function ():
 });
 
 it('shows the settings groups as tabs of one Settings page', function (): void {
-    $this->get('/admin/settings')->assertRedirect('/admin/settings/profile');
-    $this->get('/admin/settings/profile')->assertOk()->assertSee('Profile')->assertSee('SEO')->assertSee('Invoicing')->assertSee('Payment')->assertSee('Save changes');
+    $this->get(adminPath('/settings'))->assertRedirect(adminPath('/settings/profile'));
+    $this->get(adminPath('/settings/profile'))->assertOk()->assertSee('Profile')->assertSee('SEO')->assertSee('Invoicing')->assertSee('Payment')->assertSee('Save changes');
 });

@@ -138,6 +138,6 @@ it('caches the sitemap like a page and keeps admin out of the LiteSpeed cache', 
     app('cache')->forgetDriver('pages');
     $this->get('/sitemap.xml')->assertHeader('X-Page-Cache', 'MISS');
     $this->get('/sitemap.xml')->assertHeader('X-Page-Cache', 'HIT');
-    $this->get('/admin/login')->assertHeader('X-LiteSpeed-Cache-Control', 'no-cache');
+    $this->get(adminPath('/login'))->assertHeader('X-LiteSpeed-Cache-Control', 'no-cache');
     $this->get('/up')->assertHeader('X-LiteSpeed-Cache-Control', 'no-cache');
 });

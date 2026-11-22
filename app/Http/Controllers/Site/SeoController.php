@@ -55,7 +55,8 @@ final class SeoController
     public function robots(): Response
     {
         $body = Seo::indexable()
-            ? "User-agent: *\nDisallow: /admin\n\nSitemap: ".Seo::absolute('/sitemap.xml')."\n"
+            // The admin path is never listed here (it is private); admin pages send X-Robots-Tag: noindex instead.
+            ? "User-agent: *\nAllow: /\n\nSitemap: ".Seo::absolute('/sitemap.xml')."\n"
             : "User-agent: *\nDisallow: /\n";
 
         return response($body, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);

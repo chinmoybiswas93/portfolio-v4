@@ -160,6 +160,11 @@ The canvas is updated to match; it remains the source of truth for UI.
 - The Deploy workflow starts with an SSH preflight job (before CI and the build) and checks again just before upload. With SSH off, it fails within seconds: "SSH is off — enable SSH Access in hPanel and re-run". A rejected key and a host-key mismatch get their own messages. Rollback uses the same shared setup action (`.github/actions/ssh-setup`).
 - Manual re-run: Actions → Deploy → Run workflow on `development` (staging). On `main` it stops with "enabled in Phase 5". Steps are in `docs/MANUAL_STEPS.md`.
 
+### Built in slice 3.8g Private admin path and 2FA label (2026-11-22)
+- The admin path is read from `ADMIN_PATH` (repo default `admin` for local work; staging and production set a private value in their server `.env`, never committed). The old `/admin` returns 404 once it is set. Tests run under a non-default path (`phpunit.xml`), so none can rely on `/admin`.
+- `robots.txt` no longer lists the admin path; admin, Livewire and `/up` responses send `X-Robots-Tag: noindex, nofollow`.
+- Authenticator label "CB Portfolio" for new 2FA set-ups; re-enrol steps are in `docs/MANUAL_STEPS.md`.
+
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 
@@ -202,7 +207,7 @@ Changes and additions to 3.7/3.8. Items already built in 3.8a–3.8f stay unless
 - **Invoice email:** invoice number, client, issue/due dates, amount due and currency, a payment summary, a "View invoice" button (secure link), the PDF attached, and the owner's contact details.
 
 **Build (3.8 follow-up slices)**
-- **Admin path:** `/admin` becomes `/cb709` via `config('admin.path')` + env; the old `/admin` returns 404. Update tests, docs and CI health checks.
+- **Admin path:** `/admin` becomes a private path via `config('admin.path')` + `ADMIN_PATH` in each server `.env` (the value is never committed); the old `/admin` returns 404. Update tests, docs and CI health checks.
 - **2FA label:** the authenticator brand name changes to "CB Portfolio".
 - **Loading:** Filament SPA mode with a progress bar in admin; cross-document View Transitions plus a top progress bar on the public site; no flash; reduced motion respected.
 - **Theme:** two icons (as above), applied before the first paint.
@@ -210,7 +215,7 @@ Changes and additions to 3.7/3.8. Items already built in 3.8a–3.8f stay unless
 - **PDF versions:** every generated PDF is kept (never overwritten); each email log entry links to the exact version sent; Preview action.
 - **Invoice email:** new template. PDF attached, plus a "View invoice" button with a signed link that expires after 30 days and serves only that one PDF version (no login, no listing). Status goes Pending (queued) → Sent (accepted by SMTP) or Failed (with the error). "Sent" means accepted by the mail server, not opened. Tests cover expired, tampered and other-invoice links.
 - **Route tests:** the route inventory and access tests cover the new admin path, the signed invoice link and the preview.
-- **3.9 MCP:** the consent screen sits behind `/cb709` + 2FA. MCP starts only after these 3.8 follow-ups are merged and approved.
+- **3.9 MCP:** the consent screen sits behind the private admin path + 2FA. MCP starts only after these 3.8 follow-ups are merged and approved.
 
 ### 3.9 MCP server (ADR + threat model first, then slices)
 - **Transport:** official `laravel/mcp`, Streamable HTTP at `/mcp`, stateless (fits shared hosting).

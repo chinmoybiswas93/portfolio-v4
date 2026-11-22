@@ -73,3 +73,9 @@ function adminWithMfa(): User
 
     return $user->refresh();
 }
+
+/** URL of an admin screen under the configured panel path (ADMIN_PATH), e.g. adminPath('/invoices'). */
+function adminPath(string $suffix = ''): string
+{
+    return '/'.trim((string) config('admin.path'), '/').$suffix;
+}
