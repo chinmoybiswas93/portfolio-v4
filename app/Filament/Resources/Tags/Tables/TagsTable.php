@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Tags\Tables;
 
 use App\Enums\TagType;
+use App\Filament\Support\StandardTable;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -24,7 +25,7 @@ class TagsTable
             ])
             ->defaultSort('name')
             ->filters([SelectFilter::make('type')->options(TagType::class)])
-            ->recordActions([EditAction::make()])
+            ->recordActions(StandardTable::rowActions([EditAction::make()]))
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
     }
 }

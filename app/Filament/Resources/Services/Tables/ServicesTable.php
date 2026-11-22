@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Services\Tables;
 
+use App\Filament\Support\StandardTable;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -23,7 +24,7 @@ class ServicesTable
             ])
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
-            ->recordActions([EditAction::make()])
+            ->recordActions(StandardTable::rowActions([EditAction::make()]))
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
     }
 }

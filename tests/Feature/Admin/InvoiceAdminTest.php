@@ -137,3 +137,17 @@ it('shows outstanding totals per currency and overdue invoices on the dashboard'
     Livewire::test(OverdueInvoices::class)
         ->assertSee('INV-2026-0012')->assertSee('3 days overdue')->assertSee('£850.00');
 });
+
+it('draws status tabs and filters inside the table toolbar and applies them at once', function (): void {
+    $gbp = Invoice::factory()->create(['currency' => 'GBP']);
+    $eur = Invoice::factory()->create(['currency' => 'EUR', 'status' => InvoiceStatus::Sent]);
+
+    Livewire::test(ListInvoices::class)
+        ->assertSeeHtml('class="cb-toolbar"')
+        ->assertSeeHtml('wire:model.live="tableFilters.currency.value"')
+        ->set('tableFilters.currency.value', 'EUR')
+        ->assertCanSeeTableRecords([$eur])->assertCanNotSeeTableRecords([$gbp])
+        ->set('tableFilters.currency.value', null)
+        ->set('activeTab', 'draft')
+        ->assertCanSeeTableRecords([$gbp])->assertCanNotSeeTableRecords([$eur]);
+});

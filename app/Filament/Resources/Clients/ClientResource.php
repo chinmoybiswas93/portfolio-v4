@@ -21,6 +21,8 @@ use UnitEnum;
 
 class ClientResource extends Resource
 {
+    protected static ?string $recordTitleAttribute = 'company_name';
+
     protected static ?string $model = Client::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;

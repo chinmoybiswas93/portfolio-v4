@@ -126,6 +126,13 @@ The canvas is updated to match; it remains the source of truth for UI.
 - **Performance:** Lighthouse CI in CI on 4 URLs (all 100 locally on mobile, LCP ≈ 0.9–1.2 s, CLS 0); gzip budgets for CSS and JS; long-lived cache headers for hashed assets; LiteSpeed server cache kept off admin, Livewire and `/up`.
 - **Accessibility:** the category link in a post's meta line is now underlined (subtle teal underline), so it doesn't rely on colour alone. Canvas updated.
 - **Dashboard:** "Recent posts" widget (five most recently edited posts with status).
+### Built in slice 3.8a Compact admin and standard table (2026-11-22)
+- Compact admin theme (canvas v17): 232 px sidebar with uppercase, non-collapsible groups; 32 px controls; 22 px page titles; tighter cards.
+- Top bar: global search (posts, projects, services, clients, invoices) and a "View site" link; the Welcome/Sign out widget is removed.
+- One table design for every list: status tabs and filters inline in the toolbar (applied at once), search on the right, a single "⋯" row-actions button, ≈40 px rows, 25 rows per page.
+- Dashboard: greeting with New post / New invoice; widgets load immediately.
+- Invoice list: "Draft (no number yet)" in italics; amount and currency on one line.
+
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 

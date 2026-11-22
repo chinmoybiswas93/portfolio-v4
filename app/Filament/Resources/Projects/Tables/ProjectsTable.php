@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Projects\Tables;
 
 use App\Enums\PublishStatus;
+use App\Filament\Support\StandardTable;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -37,9 +38,9 @@ class ProjectsTable
                 SelectFilter::make('status')->options(PublishStatus::class),
                 TrashedFilter::make(),
             ])
-            ->recordActions([
+            ->recordActions(StandardTable::rowActions([
                 EditAction::make(),
-            ])
+            ]))
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
