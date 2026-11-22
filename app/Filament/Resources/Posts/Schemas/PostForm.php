@@ -30,7 +30,7 @@ class PostForm
                     MarkdownEditor::make('body_md')->label('Body')->required()
                         ->helperText('Markdown. Code blocks with a language (```php) are highlighted.'),
                 ]),
-                Section::make('SEO')->collapsed()->schema([
+                Section::make('SEO')->schema([
                     Fields::seoTitle(),
                     Fields::seoDescription(),
                 ]),

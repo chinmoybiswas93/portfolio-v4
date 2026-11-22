@@ -128,7 +128,7 @@ class ProjectForm
                         ->schema([
                             TextInput::make('label')->placeholder('e.g. Page load')->required()->maxLength(60),
                             TextInput::make('value')->placeholder('e.g. 1.2 s')->required()->maxLength(30),
-                        ])->reorderable(false)->maxItems(6)->defaultItems(0)->compact()
+                        ])->reorderable(false)->maxItems(6)->defaultItems(0)->compact()->extraAttributes(['class' => 'cb-inline-repeater'])
                         ->addActionLabel('+ Add metric')->addActionAlignment(Alignment::Start)
                         ->addAction(fn (Action $action) => $action->link()->size('sm'))
                         ->helperText('Only real, verifiable numbers.'),
