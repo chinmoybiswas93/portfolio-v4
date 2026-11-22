@@ -188,6 +188,13 @@ The canvas is updated to match; it remains the source of truth for UI.
   - The button is a signed link that expires after 30 days and serves only that one PDF version (no login, no listing; `noindex`, `no-store`, no cookies). Tests cover expired, tampered and other-invoice links.
 - **Email status:** Pending (queued) → Sent (accepted by SMTP) or Failed (with the error), shown in the email history with the exact version (previewable), recipient and time. ADR-0006 is updated.
 
+### Built in slice 3.9a MCP sign-in and read tools (2026-11-23, ADR-0009)
+- OAuth 2.1 with Passport 13 and `laravel/mcp` 1.2: discovery, dynamic app registration (redirects limited to Claude, ChatGPT/OpenAI and localhost), PKCE.
+- The consent screen sits behind the admin login, the admin check and 2FA. The owner ticks the permissions; tokens always carry exactly the approved set (stored per app). Access tokens last 1 h, refresh tokens 30 days.
+- `/mcp` (stateless): kill switch (`MCP_ENABLED` + Settings, also on the token endpoint), bearer auth, 60/min and 1,000/day per token, a per-call scope check (403 `insufficient_scope`), and an append-only audit log of every tool call.
+- Read tools: content (Markdown), invoices, clients, profile/SEO settings. Daily pruning: audit after 90 days, expired tokens, apps never approved after 7 days.
+- Security review: no findings. Hardening applied: the token endpoint respects the kill switch.
+
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 

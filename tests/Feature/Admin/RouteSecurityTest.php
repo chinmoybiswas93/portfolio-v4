@@ -24,7 +24,14 @@ const PUBLIC_ADMIN_ROUTES = ['filament.admin.auth.login'];
 const DISABLED_ROUTES = ['filament.exports.download', 'filament.imports.failed-rows.download'];
 
 /** The only routes allowed to change state. */
-const WRITE_ROUTES = ['default-livewire.update', 'livewire.upload-file', 'storage.local.upload', 'filament.admin.auth.logout'];
+const WRITE_ROUTES = [
+    'default-livewire.update', 'livewire.upload-file', 'storage.local.upload', 'filament.admin.auth.logout',
+    // MCP and OAuth (ADR-0009), added on purpose: token exchange, dynamic registration, consent approve/deny.
+    'passport.token', 'mcp.oauth.register', 'passport.authorizations.approve', 'passport.authorizations.deny',
+];
+
+/** Unnamed write routes allowed by URI: the MCP endpoint (POST calls, DELETE ends a client session). */
+const WRITE_URIS = ['mcp'];
 
 /**
  * @return array<string, array{string}>
@@ -82,11 +89,12 @@ it('has no state-changing routes beyond the allowed list', function (): void {
 
     $unexpected = collect(Route::getRoutes()->getRoutes())
         ->filter(fn (RoutingRoute $r): bool => array_intersect($r->methods(), ['POST', 'PUT', 'PATCH', 'DELETE']) !== []
-            && ! in_array($r->getName(), WRITE_ROUTES, true))
+            && ! in_array($r->getName(), WRITE_ROUTES, true) && ! in_array($r->uri(), WRITE_URIS, true))
         ->map(fn (RoutingRoute $r): string => implode('|', $r->methods()).' '.$r->uri())
         ->values()->all();
 
-    expect($unexpected)->toBe([])->and($writes)->toHaveCount(count(WRITE_ROUTES));
+    // WRITE_URIS: /mcp answers POST and DELETE.
+    expect($unexpected)->toBe([])->and($writes)->toHaveCount(count(WRITE_ROUTES) + 2);
 });
 
 it('only accepts signed storage uploads', function (): void {
