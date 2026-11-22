@@ -1,6 +1,6 @@
 # ADR-0009: MCP server with OAuth 2.1 (Passport) on shared hosting
 
-**Status:** Proposed (awaiting owner approval)
+**Status:** Accepted (owner, 2026-11-23)
 **Date:** 2026-11-23
 **Deciders:** Owner
 **Threat model:** [`docs/security/mcp-threat-model.md`](../security/mcp-threat-model.md)

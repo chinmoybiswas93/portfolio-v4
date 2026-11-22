@@ -10,6 +10,6 @@
 | [0006](0006-queue-and-cron.md) | Queue and cron on shared hosting | Accepted |
 | [0007](0007-auth-and-2fa.md) | Admin auth and TOTP 2FA | Accepted |
 | [0008](0008-cdn-and-performance.md) | Caching and performance (Hostinger-native, no DNS change) | Accepted |
-| [0009](0009-mcp-server.md) | MCP server with OAuth 2.1 (Passport) on shared hosting | Proposed |
+| [0009](0009-mcp-server.md) | MCP server with OAuth 2.1 (Passport) on shared hosting | Accepted |
 
 New ADRs use the next number. Supersede old ones instead of editing them after they are accepted.

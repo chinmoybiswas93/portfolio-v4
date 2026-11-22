@@ -1,6 +1,6 @@
 # Threat model: MCP server and OAuth (slice 3.9)
 
-Companion to [ADR-0009](../adr/0009-mcp-server.md). Method: assets, actors and entry points, then STRIDE per entry point, with each threat mapped to its mitigation and the test that proves it. **Status:** proposed, 2026-11-23.
+Companion to [ADR-0009](../adr/0009-mcp-server.md). Method: assets, actors and entry points, then STRIDE per entry point, with each threat mapped to its mitigation and the test that proves it. **Status:** accepted with ADR-0009, 2026-11-23.
 
 ## Assets
 | Asset | Why it matters |
