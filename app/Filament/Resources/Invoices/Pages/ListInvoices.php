@@ -6,9 +6,11 @@ namespace App\Filament\Resources\Invoices\Pages;
 
 use App\Enums\InvoiceStatus;
 use App\Filament\Resources\Invoices\InvoiceResource;
+use App\Filament\Support\StandardTable;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListInvoices extends ListRecords
@@ -18,6 +20,11 @@ class ListInvoices extends ListRecords
     protected function getHeaderActions(): array
     {
         return [CreateAction::make()->label('New invoice')];
+    }
+
+    public function content(Schema $schema): Schema
+    {
+        return StandardTable::listContent($this, $schema);
     }
 
     /**

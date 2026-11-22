@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Providers\Filament;
 
 use App\Filament\Auth\Login;
+use App\Filament\Pages\Dashboard;
+use App\Filament\Support\StandardTable;
 use App\Http\Middleware\SecurityHeaders;
 use App\Support\Filament\SystemFontProvider;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
@@ -14,11 +16,11 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
+use Filament\Support\Enums\Width;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -62,11 +64,14 @@ class AdminPanelProvider extends PanelProvider
                 'danger' => Color::Rose,
             ])
             ->navigationGroups([
-                NavigationGroup::make('Content'),
-                NavigationGroup::make('Billing'),
-                NavigationGroup::make('Site'),
+                NavigationGroup::make('Content')->collapsible(false),
+                NavigationGroup::make('Billing')->collapsible(false),
+                NavigationGroup::make('Site')->collapsible(false),
             ])
-            ->sidebarCollapsibleOnDesktop()
+            ->sidebarWidth('14.5rem')
+            ->maxContentWidth(Width::Full)
+            ->globalSearchKeyBindings(['mod+k'])
+            ->renderHook(PanelsRenderHook::USER_MENU_BEFORE, fn (): string => view('filament.view-site-link')->render())
             ->unsavedChangesAlerts()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -74,9 +79,6 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
-            ->widgets([
-                AccountWidget::class,
-            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -92,5 +94,10 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+    }
+
+    public function boot(): void
+    {
+        StandardTable::register();
     }
 }

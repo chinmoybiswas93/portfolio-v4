@@ -15,10 +15,18 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use UnitEnum;
 
 class InvoiceResource extends Resource
 {
+    protected static ?string $recordTitleAttribute = 'number';
+
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return $record instanceof Invoice ? ($record->number ?? 'Draft invoice') : '';
+    }
+
     protected static ?string $model = Invoice::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;

@@ -21,6 +21,8 @@ use UnitEnum;
 
 class PostResource extends Resource
 {
+    protected static ?string $recordTitleAttribute = 'title';
+
     protected static ?string $model = Post::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Posts\Tables;
 
 use App\Enums\PostStatus;
+use App\Filament\Support\StandardTable;
+use App\Models\Category;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -30,10 +32,10 @@ class PostsTable
             ->defaultSort('published_at', 'desc')
             ->filters([
                 SelectFilter::make('status')->options(PostStatus::class),
-                SelectFilter::make('category')->relationship('category', 'name'),
+                SelectFilter::make('category_id')->label('Category')->options(fn (): array => Category::query()->orderBy('name')->pluck('name', 'id')->all()),
                 TrashedFilter::make(),
             ])
-            ->recordActions([EditAction::make()])
+            ->recordActions(StandardTable::rowActions([EditAction::make()]))
             ->toolbarActions([
                 BulkActionGroup::make([DeleteBulkAction::make(), ForceDeleteBulkAction::make(), RestoreBulkAction::make()]),
             ]);

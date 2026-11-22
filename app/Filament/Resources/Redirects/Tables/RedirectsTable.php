@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Redirects\Tables;
 
+use App\Filament\Support\StandardTable;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -22,7 +23,7 @@ class RedirectsTable
                 TextColumn::make('hits')->numeric()->sortable(),
             ])
             ->defaultSort('from_path')
-            ->recordActions([EditAction::make()])
+            ->recordActions(StandardTable::rowActions([EditAction::make()]))
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
     }
 }

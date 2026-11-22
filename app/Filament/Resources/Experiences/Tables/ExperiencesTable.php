@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Experiences\Tables;
 
+use App\Filament\Support\StandardTable;
 use App\Models\Experience;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -26,7 +27,7 @@ class ExperiencesTable
             ])
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
-            ->recordActions([EditAction::make()])
+            ->recordActions(StandardTable::rowActions([EditAction::make()]))
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
     }
 }
