@@ -54,7 +54,7 @@ The owner wants AI assistants (Claude Code, Claude.ai, Codex, ChatGPT) to read a
   - The Settings → MCP tab has a "Closed" option that turns registration off.
 - **Consent screen** (canvas "Admin-MCP-Consent"). Passport's own routes are disabled (`Passport::ignoreRoutes()`) and re-registered under `/oauth` with our middleware:
   - `GET /oauth/authorize`, `POST /oauth/authorize` (approve) and `DELETE /oauth/authorize` (deny) run behind `web` + **the admin guard + is_admin + `EnsureMultiFactorAuthenticationIsEnabled`**. Logged-out visitors go to the private admin login (`login` route → `/{ADMIN_PATH}/login`) and come back to the consent screen after password + 2FA.
-  - The screen shows the app name, registration time, redirect URI, a "New app" badge and the requested scopes as checkboxes.
+  - The screen shows the app name, registration time, redirect URI, a "New app" badge and the requested scopes as checkboxes, **all ticked by default** (owner, 2026-11-23).
   - **Unticking narrows the grant:** our approve controller reduces the stored authorization request's scopes to the ticked subset before Passport issues the code.
   - Frame protection: `X-Frame-Options: DENY`.
 - **Tokens:**
@@ -111,7 +111,7 @@ Plus `mcp:use`, which `laravel/mcp` registers. Every token must carry it.
 - **Audit log** (`mcp_audit_logs`, admin page "MCP → Audit log", canvas "Admin-MCP-Audit"):
   - **Logged for every `tools/call`, including denied and throttled calls:** time, client, token id (never the token), tool, scope, target type/id, a before/after summary (changed field names plus short previews; never secrets), result (ok / denied / throttled / error), IP and user agent.
   - **Append-only:** no update or delete through the app.
-  - **Retention:** 365 days (proposed), pruned daily.
+  - **Retention:** 90 days (owner, 2026-11-23), pruned daily.
 - **Headers:** `/mcp` and `/oauth/*` send `Cache-Control: no-store` and `X-Robots-Tag: noindex`.
 
 ### 7. Tests (required)
@@ -144,9 +144,9 @@ Plus `mcp:use`, which `laravel/mcp` registers. Every token must carry it.
   - a public registration endpoint to rate-limit and clean up;
   - more routes on the inventory;
   - Passport upgrades to track.
-- **To revisit:** whether re-authorisation should always prompt; the rate-limit numbers once real use is known; audit retention.
+- **To revisit:** the rate-limit numbers once real use is known.
 
 ## Action items (after approval)
-1. Owner: approve the scopes, limits and the open-registration policy above. Answer the open questions in the threat model.
+1. Owner answers recorded (2026-11-23): rate limit 60/min and 1,000/day per app; audit retention 90 days; same-scope re-authorisation auto-approves; registration open (each app approved by the owner); all scopes ticked by default on the consent screen (unticking still narrows the grant).
 2. 3.9a as described; owner-approved server step to generate Passport keys on staging.
 3. Security review on every slice; update `docs/MANUAL_STEPS.md` with connect and revoke steps.

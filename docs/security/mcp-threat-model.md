@@ -89,9 +89,10 @@ An assistant with write scopes can be tricked by text it reads into making unwan
 
 Recommendation: approve write scopes only for apps you actively use, and review the audit log after large edits.
 
-## Open questions for the owner
-1. **Rate limits:** 60 calls/min and 1,000/day per app, OK?
-2. **Audit retention:** 365 days, OK?
-3. **Re-authorisation:** auto-approve when the same app asks again for the same scopes (Passport default), or always show the consent screen?
-4. **Registration:** open by default (each app still needs your approval), with a "Closed" switch in Settings. OK?
-5. **Default ticks** on the consent screen: `content:read`, `content:write`, `media:upload` ticked; trash, SEO, invoices and settings unticked, OK?
+## Owner decisions (2026-11-23)
+1. **Rate limit:** 60 calls/min and 1,000/day per app.
+2. **Audit retention:** 90 days.
+3. **Re-authorisation:** the same app with the same scopes is auto-approved; a new app or new scopes show the consent screen; revoking forces a fresh approval.
+4. **Registration:** open, with each app approved by the owner. A "Closed" switch is available in Settings.
+5. **Default ticks:** all scopes are ticked by default on the consent screen. Unticking narrows the grant.
+   - **Residual risk this adds:** least privilege now depends on the owner unticking at approval time. An app approved with every tick can trash content, edit SEO/settings and read client data. This is mitigated by the "New app" badge, the visible scope list, the audit log, revoke and the kill switch. **Recommendation:** untick invoices and settings for apps that only write posts.
