@@ -96,6 +96,21 @@ jobs:
       - name: Browser smoke and accessibility tests
         run: vendor/bin/pest --testsuite=Browser
 
+      - name: Asset budgets (gzip)
+        run: scripts/asset-budgets.sh
+
+      - name: Lighthouse CI (mobile, 3 runs)
+        run: scripts/lighthouse.sh
+
+      - name: Keep Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/reports
+          retention-days: 14
+          if-no-files-found: ignore
+
       - name: Dependency audit
         run: |
           composer audit --no-dev --abandoned=ignore

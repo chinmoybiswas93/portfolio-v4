@@ -8,6 +8,8 @@ use App\Filament\Pages\ManageProfile;
 use App\Filament\Resources\Projects\Pages\CreateProject;
 use App\Filament\Resources\Projects\Pages\EditProject;
 use App\Filament\Resources\Services\Pages\CreateService;
+use App\Filament\Widgets\RecentPosts;
+use App\Models\Post;
 use App\Models\Project;
 use App\Models\Service;
 use App\Settings\PaymentSettings;
@@ -122,4 +124,15 @@ it('locks the slug after saving until Edit is used', function (): void {
         ->assertHasNoFormErrors();
 
     expect($project->refresh()->slug)->toBe('unlocked');
+});
+
+it('shows the five most recently edited posts on the dashboard', function (): void {
+    Post::factory()->create(['title' => 'Oldest post']);
+    $this->travel(1)->minute();
+    Post::factory()->count(4)->create();
+    $this->travel(1)->minute();
+    Post::factory()->draft()->create(['title' => 'Fresh draft']);
+
+    Livewire::test(RecentPosts::class)
+        ->assertSee('Fresh draft')->assertSee('Draft · edited today')->assertDontSee('Oldest post');
 });

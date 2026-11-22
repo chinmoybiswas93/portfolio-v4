@@ -54,4 +54,4 @@ Use three Hostinger-native and in-app layers. They need no DNS change and no thi
 
 ## Action items
 1. [x] Deploy proof: recorded `hosting_websites_get-settings` for staging (read-only), check the CDN and server-cache behaviour with `curl -I` on a public page, `/up`, and an admin page.
-2. [ ] Phase 3: add `spatie/laravel-responsecache` (check the Laravel 13 version), the observer and the `.htaccess` cache headers.
+2. [x] Phase 3: in-house page cache and observer (slice 3.4, see the implementation note); `.htaccess` cache headers (hashed build assets 1 year immutable, images 30 days) and `X-LiteSpeed-Cache-Control: no-cache` on admin, Livewire and `/up` (slice 3.6).

@@ -1,5 +1,13 @@
-@php($profile = app(\App\Settings\ProfileSettings::class))
-<x-layouts.site :title="$post->seo_title ?: $post->title" :description="$post->seo_description ?: $post->excerpt">
+@php
+    $profile = app(\App\Settings\ProfileSettings::class);
+    $shareImage = \App\Support\Seo\Seo::image($post, 'Writing', $post->title);
+    $jsonLd = [
+        \App\Support\Seo\JsonLd::blogPosting($post, $shareImage),
+        \App\Support\Seo\JsonLd::breadcrumbs([['Home', '/'], ['Writing', '/blog'], [$post->title, route('posts.show', $post, false)]]),
+    ];
+@endphp
+<x-layouts.site :title="$post->seo_title ?: $post->title" :description="$post->seo_description ?: $post->excerpt" type="article" :image="$shareImage"
+    :published="$post->published_at?->toAtomString()" :modified="$post->updated_at?->toAtomString()" :json-ld="$jsonLd">
     <div class="page-wrap">
         <x-site.topbar current="writing" />
         <main id="content" class="mx-auto max-w-[680px] pb-24 pt-8 md:pt-12">

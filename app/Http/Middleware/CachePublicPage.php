@@ -35,11 +35,23 @@ final class CachePublicPage
         $response = $next($request);
 
         $type = (string) $response->headers->get('Content-Type', '');
-        if ($response->getStatusCode() === 200 && str_starts_with($type, 'text/html') && ! $response->headers->has('Set-Cookie')) {
+        if ($response->getStatusCode() === 200 && self::cacheable($type) && ! $response->headers->has('Set-Cookie')) {
             $this->cache->store()->put($key, ['content' => (string) $response->getContent(), 'type' => $type], PageCache::TTL_SECONDS);
             $response->headers->set('X-Page-Cache', 'MISS');
         }
 
         return $response;
+    }
+
+    /** HTML pages plus the sitemap, feed and robots.txt. */
+    private static function cacheable(string $type): bool
+    {
+        foreach (['text/html', 'application/xml', 'application/rss+xml', 'text/plain'] as $allowed) {
+            if (str_starts_with($type, $allowed)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

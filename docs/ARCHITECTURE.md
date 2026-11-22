@@ -318,6 +318,11 @@ Global headers (middleware): `Strict-Transport-Security: max-age=31536000; inclu
 - **RSS:** `/feed.xml`, latest 20 published posts, full content, linked via `<link rel="alternate">`.
 - **Redirects:** the `redirects` table (admin-managed) for old URLs. The old site is a Vue SPA in WordPress, so collect its indexed URLs from Search Console or `site:` before cutover (Phase 5).
 - **Performance:** see ADR-0008. Budgets are in `docs/TESTING.md`.
+- **Implementation (slice 3.6, 2026-11-22):**
+  - JSON-LD and the RSS feed are built in-house (`App\Support\Seo\JsonLd`, `resources/views/seo/feed.blade.php`) instead of `spatie/schema-org` and `spatie/laravel-feed`: a few small arrays and one view, with no extra dependencies.
+  - `/sitemap.xml`, `/feed.xml` and `/robots.txt` are routes, not static files. The page cache stores them like HTML and clears them on publish, which keeps them correct across release folders.
+  - Share cards (`App\Support\Seo\OgImage`) are drawn with GD on first use and named by a hash of the label and title. A changed title gets a new file, so no regeneration job is needed. An uploaded `og` media item still wins.
+  - Canonical and `og:url` always use `APP_URL` and keep only `?page` above 1. Indexing is allowed only when `APP_ENV=production` and `SEO_INDEXABLE` is true; otherwise every page sends `noindex` (meta and `X-Robots-Tag`) and `robots.txt` disallows everything.
 
 ## 7. Scale, reliability, monitoring
 - The response cache makes origin load trivial. MariaDB stays tiny (hundreds of rows).
