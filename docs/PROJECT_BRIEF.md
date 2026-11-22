@@ -140,6 +140,9 @@ Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
   - **Theme toggle:** system / light / dark states.
   - **Invoice PDF:** more compact A4 layout set in Inter; tighter header, rows and totals; legible at print size.
   - **MCP admin screens:** OAuth consent (lists requested scopes), Connected apps (tokens, last used, revoke), MCP audit log, MCP on/off switch in the Settings tabs.
+  - **Tables (owner, 2026-11-22):** one table design for every list. Status tabs, inline filters and search sit in one toolbar row inside the table card (canvas `Admin-Invoices` is the reference); "Showing x to y of z" plus numbered pages below; one "⋯" row-actions button.
+  - **Case study (owner, 2026-11-22):** the live-site link sits at the right end of the tags row under the facts, not at the bottom.
+  - **Gallery lightbox (owner, 2026-11-22):** case-study gallery images open in a modal with previous/next arrows, keyboard (← → Esc), a counter and the alt text as caption. Built in-house with Alpine, no third-party script.
 
 ### 3.8 UI and admin fixes (one PR per slice, CI green, staging deploy, stop)
 - Fix every audit deviation; side-by-side screenshots in each PR.
