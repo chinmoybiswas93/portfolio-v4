@@ -522,3 +522,89 @@ html:not(.dark) :is(.fi-fo-repeater-add, .fi-fo-table-repeater-add) .fi-link {
         animation: none;
     }
 }
+
+/* Invoice PDF preview modal and email log (canvas v18). */
+.cb-pdf-preview {
+    display: grid;
+    grid-template-columns: 13rem 1fr;
+    gap: 1rem;
+    min-height: 70vh;
+}
+
+.cb-pdf-versions ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.cb-pdf-versions-title {
+    margin-bottom: 0.25rem;
+    font-size: 0.71875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8291a8;
+}
+
+.cb-pdf-version {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    width: 100%;
+    padding: 0.5rem 0.625rem;
+    border-radius: 0.5rem;
+    text-align: left;
+    font-size: 0.78125rem;
+    color: #94a3b8;
+}
+
+.cb-pdf-version[aria-pressed='true'] {
+    background: rgb(45 212 191 / 0.1);
+}
+
+.cb-pdf-version-head {
+    display: flex;
+    justify-content: space-between;
+    color: #e2e8f0;
+    font-weight: 500;
+}
+
+.cb-pdf-download {
+    display: inline-block;
+    margin: 0 0 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    color: #2dd4bf;
+}
+
+.cb-pdf-note {
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+    color: #8291a8;
+}
+
+.cb-pdf-frame {
+    width: 100%;
+    min-height: 70vh;
+    border: 0;
+    border-radius: 0.5rem;
+    background: #334155;
+}
+
+.cb-email-log {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8125rem;
+}
+
+.cb-email-log-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.625rem 0;
+    border-top: 1px solid #1e293b;
+}
+
+.cb-email-log-item:first-child {
+    border-top: 0;
+    padding-top: 0;
+}

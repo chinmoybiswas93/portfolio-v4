@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Site\CvController;
 use App\Http\Controllers\Site\FallbackController;
 use App\Http\Controllers\Site\HomeController;
+use App\Http\Controllers\Site\InvoiceLinkController;
 use App\Http\Controllers\Site\PostController;
 use App\Http\Controllers\Site\ProjectController;
 use App\Http\Controllers\Site\SeoController;
@@ -28,5 +29,8 @@ Route::get('/cv', CvController::class)->name('cv');
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 Route::get('/feed.xml', [SeoController::class, 'feed'])->name('feed');
 Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
+
+// Signed, expiring link to one invoice PDF version (sent in the invoice email). No login, no listing.
+Route::get('/invoice/{pdf}', InvoiceLinkController::class)->middleware(['signed', 'throttle:30,1'])->whereNumber('pdf')->name('invoices.link');
 
 Route::fallback(FallbackController::class);

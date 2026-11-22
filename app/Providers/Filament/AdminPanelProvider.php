@@ -7,9 +7,11 @@ namespace App\Providers\Filament;
 use App\Filament\Auth\Login;
 use App\Filament\Pages\Dashboard;
 use App\Filament\Support\StandardTable;
+use App\Http\Controllers\Admin\InvoicePdfController;
 use App\Http\Middleware\SecurityHeaders;
 use App\Support\Filament\SystemFontProvider;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
+use Filament\Auth\MultiFactor\Http\Middleware\EnsureMultiFactorAuthenticationIsEnabled;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -26,6 +28,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 /**
@@ -69,6 +72,13 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Site')->collapsible(false),
             ])
             ->sidebarWidth('14.5rem')
+            ->authenticatedRoutes(function (): void {
+                Route::get('/invoices/{invoice}/pdfs/{pdf}', InvoicePdfController::class)
+                    ->whereNumber(['invoice', 'pdf'])
+                    // Filament adds the required-2FA check to its own page routes only; custom routes must add it.
+                    ->middleware(EnsureMultiFactorAuthenticationIsEnabled::class)
+                    ->name('invoices.pdf');
+            })
             ->spa() // no full reloads between admin screens (Livewire navigate, progress bar in config/livewire.php)
             ->maxContentWidth(Width::SixExtraLarge) // fixed, centred content (canvas v18)
             ->globalSearchKeyBindings(['mod+k'])

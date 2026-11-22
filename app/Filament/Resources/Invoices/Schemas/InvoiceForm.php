@@ -190,18 +190,34 @@ class InvoiceForm
 
     private static function emailHistory(?Invoice $record): HtmlString
     {
-        $emails = $record?->emails()->get() ?? collect();
-        if ($emails->isEmpty()) {
+        $emails = $record?->emails()->with('pdf')->latest()->get() ?? collect();
+        if ($record === null || $emails->isEmpty()) {
             return new HtmlString('<p class="text-sm text-gray-500 dark:text-gray-400">Not emailed yet.</p>');
         }
 
-        $html = '<ul class="space-y-3 text-sm">';
+        $badge = [
+            'pending' => ['Pending', 'bg-gray-500/15 text-gray-300'],
+            'sent' => ['Sent', 'bg-primary-500/15 text-primary-300'],
+            'failed' => ['Failed', 'bg-danger-500/15 text-danger-300'],
+        ];
+        $html = '<ul class="cb-email-log">';
         foreach ($emails as $email) {
-            $ok = $email->status === EmailStatus::Sent;
-            $html .= '<li><span class="font-medium">'.e($email->to_email).'</span><br>'
-                .'<span class="'.($ok ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400').'">'.($ok ? 'Sent' : 'Failed').'</span>'
-                .' · '.e(($email->sent_at ?? $email->created_at)?->format('j M Y, H:i') ?? '')
-                .($ok ? '' : '<br><span class="text-xs text-gray-500">'.e((string) $email->error).'</span>').'</li>';
+            [$label, $classes] = $badge[$email->status->value];
+            $pdfLink = $email->pdf !== null
+                ? '<a class="text-primary-400 hover:underline" target="_blank" rel="noopener" href="'.e(route('filament.admin.invoices.pdf', ['invoice' => $record, 'pdf' => $email->pdf])).'">PDF '.e($email->pdf->label()).' · Preview</a>'
+                : '';
+            $status = EmailStatus::from($email->status->value);
+            $note = match ($status) {
+                EmailStatus::Pending => 'Queued, sends within a minute',
+                EmailStatus::Sent => 'Accepted by the mail server',
+                EmailStatus::Failed => (string) $email->error,
+            };
+            $html .= '<li class="cb-email-log-item">'
+                .'<span class="flex justify-between gap-2"><span class="font-medium">'.e($email->to_email).'</span>'
+                .'<span class="rounded-full px-2 py-0.5 text-xs font-medium '.$classes.'">'.$label.'</span></span>'
+                .'<span class="flex justify-between gap-2 text-xs text-gray-400"><span>'.e(($email->sent_at ?? $email->created_at)?->format('j M Y, H:i') ?? '').'</span>'.$pdfLink.'</span>'
+                .'<span class="text-xs '.($status === EmailStatus::Failed ? 'text-danger-400' : 'text-gray-500').'">'.e($note).'</span>'
+                .'</li>';
         }
 
         return new HtmlString($html.'</ul>');

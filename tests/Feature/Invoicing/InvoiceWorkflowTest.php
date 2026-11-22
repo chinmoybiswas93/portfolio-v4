@@ -95,7 +95,7 @@ it('refuses to issue an empty or already issued invoice', function (): void {
 it('stores a PDF on the private disk with the right content', function (): void {
     $invoice = app(IssueInvoice::class)(sampleInvoice(['company_name' => 'Acme Ltd', 'country_code' => 'GB', 'vat_number' => 'GB123456789']));
 
-    Storage::disk('local')->assertExists('invoices/2026/INV-2026-0001.pdf');
+    Storage::disk('local')->assertExists('invoices/2026/INV-2026-0001-v1.pdf');
     expect($invoice->pdf_sha256)->toBe(hash('sha256', (string) Storage::disk('local')->get($invoice->pdf_path)));
 
     $text = (new Parser)->parseContent((string) Storage::disk('local')->get($invoice->pdf_path))->getText();
@@ -112,11 +112,12 @@ it('emails the PDF, keeps an immutable copy and logs the send', function (): voi
     Mail::fake();
     $invoice = app(IssueInvoice::class)(sampleInvoice(['email' => 'client@example.com']));
 
-    $log = app(EmailInvoice::class)($invoice, 'client@example.com', ['accounts@example.com'], 'Invoice INV-2026-0001', 'Hello');
+    $log = app(EmailInvoice::class)($invoice, 'client@example.com', ['accounts@example.com'], 'Invoice INV-2026-0001', 'Hello')->refresh();
 
     Mail::assertSent(InvoiceMail::class, fn ($mail) => $mail->hasTo('client@example.com') && $mail->hasCc('accounts@example.com'));
     expect($log->status)->toBe(EmailStatus::Sent)
-        ->and($log->pdf_path)->toBe("invoices/2026/sent/INV-2026-0001-{$log->id}.pdf")
+        ->and($log->pdf?->version)->toBe(1)
+        ->and($log->pdf_path)->toBe('invoices/2026/INV-2026-0001-v1.pdf')
         ->and($log->pdf_sha256)->toBe($invoice->pdf_sha256)
         ->and($invoice->refresh()->sent_at)->not->toBeNull();
     Storage::disk('local')->assertExists($log->pdf_path);
@@ -126,7 +127,7 @@ it('logs a failed send with the error and leaves the invoice unsent', function (
     $invoice = app(IssueInvoice::class)(sampleInvoice());
     Mail::shouldReceive('to')->andThrow(new RuntimeException('SMTP connection refused'));
 
-    $log = app(EmailInvoice::class)($invoice, 'client@example.com', [], 'Invoice', 'Hello');
+    $log = app(EmailInvoice::class)($invoice, 'client@example.com', [], 'Invoice', 'Hello')->refresh();
 
     expect($log->status)->toBe(EmailStatus::Failed)
         ->and($log->error)->toContain('SMTP connection refused')

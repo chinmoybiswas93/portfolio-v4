@@ -37,3 +37,6 @@
 
 ## Action items
 1. [x] Deploy proof: created the staging cron (owner-approved) and confirm the allowed interval and PHP path from the job output (`hosting_cron-jobs_output`).
+
+## Change (slice 3.8l, 2026-11-23, owner request)
+Invoice emails are no longer sent synchronously. The admin action logs the email as **Pending** with the exact PDF version attached and queues `SendInvoiceEmail` on the database queue. The scheduler drains it every minute (`schedule:run` → `queue:work --stop-when-empty`). The job marks the email **Sent** (accepted by the SMTP server, not proof of delivery or reading) or **Failed** with the error, and never retries automatically. The email carries a "View invoice" signed link (30 days) to that one PDF version.

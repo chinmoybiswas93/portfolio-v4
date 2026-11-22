@@ -60,6 +60,7 @@ it('forbids signed-in non-admins on every admin route', function (string $path):
     $this->actingAs(User::factory()->create(['is_admin' => false]))->get($path)->assertForbidden();
 })->with(fn (): array => adminGetPaths());
 
+// Covers custom panel routes too: Filament only adds the 2FA middleware to its own pages.
 it('makes admins without two-factor authentication set it up first on every admin route', function (string $path): void {
     $admin = User::factory()->create();
     $admin->is_admin = true;
