@@ -126,6 +126,46 @@ The canvas is updated to match; it remains the source of truth for UI.
 - **Performance:** Lighthouse CI in CI on 4 URLs (all 100 locally on mobile, LCP ≈ 0.9–1.2 s, CLS 0); gzip budgets for CSS and JS; long-lived cache headers for hashed assets; LiteSpeed server cache kept off admin, Livewire and `/up`.
 - **Accessibility:** the category link in a post's meta line is now underlined (subtle teal underline), so it doesn't rely on colour alone. Canvas updated.
 - **Dashboard:** "Recent posts" widget (five most recently edited posts with status).
+## Scope added before Phase 4 (owner, 2026-11-22)
+Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
+
+### 3.7 Design update (canvas first, no code)
+- Design-fidelity audit of every built screen (public and admin) against its canvas artboard, desktop and mobile, as a list of deviations per screen.
+- Canvas changes, approved before any code:
+  - **Admin density:** more compact spacing, padding, inputs and tables on every admin screen.
+  - **One edit layout:** title + breadcrumbs left; Save / Cancel / Preview / Delete as header actions top-right; consistent section cards.
+  - **Modal create/edit** for Categories, Tags, Redirects, Clients.
+  - **One Settings page with tabs** (Profile, SEO, Payment, Invoicing, MCP, others) instead of separate pages under "Site".
+  - **Blog post:** table of contents from h2/h3 (sticky on desktop, collapsible on mobile); breadcrumb, previous/next, back to writing, related posts by shared tags; share links for Facebook, LinkedIn, X and Copy link (plain share URLs, no third-party scripts or tracking).
+  - **Theme toggle:** system / light / dark states.
+  - **Invoice PDF:** more compact A4 layout set in Inter; tighter header, rows and totals; legible at print size.
+  - **MCP admin screens:** OAuth consent (lists requested scopes), Connected apps (tokens, last used, revoke), MCP audit log, MCP on/off switch in the Settings tabs.
+
+### 3.8 UI and admin fixes (one PR per slice, CI green, staging deploy, stop)
+- Fix every audit deviation; side-by-side screenshots in each PR.
+- **Theme:** follow `prefers-color-scheme` on first visit; a chosen light/dark persists in localStorage; "system" resets it; no flash of the wrong theme.
+- **Tags:** one shared pool for posts, projects and experience (migrate, merge duplicates). "Technologies"/"Skills" stay as field labels only. Search, preload and create work everywhere.
+- **Slugs** on every sluggable resource: auto-generated from the title when blank, normalised, inline format and uniqueness errors, existing lock/edit behaviour kept.
+- Common edit layout and modal resources as designed; Settings tabs page (each group keeps its validation and permissions); compact admin theme; blog post features.
+- **Invoice actions:** only valid next transitions are shown for each status and enforced on the server; a Pest test per status.
+- **Invoice PDF:** Inter (Regular/Medium/SemiBold TTF in the repo, loaded from the DomPDF font folder, no remote fonts) and the compact layout; PDF parser tests updated; before/after PDFs shown.
+- **Deploy workflow:** SSH preflight that fails fast with "SSH is off — enable SSH Access in hPanel and re-run"; `workflow_dispatch` re-run for development and main. The owner keeps SSH off except when deploying.
+- Route inventory and admin access tests updated for new routes and screens.
+
+### 3.9 MCP server (ADR + threat model first, then slices)
+- **Transport:** official `laravel/mcp`, Streamable HTTP at `/mcp`, stateless (fits shared hosting).
+- **Auth:** OAuth 2.1 via Laravel Passport with discovery endpoints and dynamic client registration (Claude Code, Claude.ai, Codex, ChatGPT). Consent screen behind the admin login + required 2FA; the owner approves each client and its scopes. Short-lived access tokens with refresh; connected apps listed and revocable in admin.
+- **Scopes:** `content:read`, `content:write`, `content:trash`, `seo:write`, `media:upload`, `invoices:read`, `invoices:draft`, `settings:read`, `settings:write`.
+- **Tools** reuse the existing Actions, Policies and validation. No raw SQL, file, shell or config tools; MCP never touches code, files or the database directly.
+- **Content** in and out as Markdown; rendering stays safe (CommonMark, raw HTML escaped, unsafe links blocked).
+- **Deletes** are soft deletes to a trash: SoftDeletes + admin trash filter, restore and permanent delete for posts, projects, services, tags, categories and clients. MCP can never permanently delete.
+- **Invoices:** read invoices and clients; create and edit drafts only. Issue, paid/cancelled and email stay admin-only.
+- **Settings:** read profile/SEO; write profile and SEO only. Payment, invoicing and security/2FA settings are excluded from MCP.
+- **Images:** upload from file data only (no URL fetching); jpeg/png/webp allowlist; size limit; re-encoded to strip EXIF and payloads; stored via the media library; returns media id, URL and a Markdown snippet; usable as cover, gallery or inline.
+- **Safety:** MCP on/off switch in Settings (off = 503 on `/mcp`); audit log of every tool call (client, tool, target, before/after summary, time, IP) viewable in admin; rate limit per token.
+- **Tests:** guest 401, missing scope 403, switch off blocks calls, trashed items are not public, draft-only invoices enforced; `/mcp` and OAuth routes added to the route inventory on purpose.
+- **Slices:** 3.9a OAuth + server + read tools; 3.9b content/SEO write, trash, media upload; 3.9c invoice drafts, audit log UI, switch, connected apps. Security review on every slice. After 3.9a: exact steps to connect Claude Code to `dev.chinmoybiswas.com/mcp` and verify the browser approval flow. An ADR with a threat model is written and approved before any 3.9 code.
+
 ## Phases (each ends with a gate where the owner approves)
 1. **Architecture:** ADRs (stack, hosting layout, CI/CD, PDF, media), data model/ERD, routes, security model, test strategy. Prove deploy with a "hello" Laravel app on the staging subdomain.
 2. **UI design:** design every screen in a canvas (Claude design artifact) first: home, project archive, case study, blog list/post, 404, invoice PDF template, and key admin screens. The owner approves before any UI code is written.
