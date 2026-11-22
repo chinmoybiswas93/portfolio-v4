@@ -181,7 +181,7 @@ return [
          *
          * @var string
          */
-        'default_font' => 'DejaVu Sans',
+        'default_font' => 'Inter',
 
         /**
          * Image DPI setting

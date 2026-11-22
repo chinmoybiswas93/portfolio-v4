@@ -12,6 +12,7 @@ use App\Actions\Invoicing\IssueInvoice;
 use App\Actions\Invoicing\RecalculateInvoice;
 use App\Domain\Invoicing\InvalidInvoice;
 use App\Enums\EmailStatus;
+use App\Enums\InvoiceAction;
 use App\Enums\InvoiceStatus;
 use App\Filament\Resources\Invoices\InvoiceResource;
 use App\Models\Invoice;
@@ -64,22 +65,22 @@ class EditInvoice extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        $draft = fn (): bool => $this->invoice()->status === InvoiceStatus::Draft;
+        $allows = fn (InvoiceAction $action): \Closure => fn (): bool => $this->invoice()->status->allows($action);
 
         return [
-            $this->getSaveFormAction()->formId('form')->label('Save draft')->color('gray')->visible($draft),
+            $this->getSaveFormAction()->formId('form')->label('Save draft')->color('gray')->visible($allows(InvoiceAction::Edit)),
             Action::make('generatePdf')->label(fn (): string => $this->invoice()->pdf_path ? 'Regenerate PDF' : 'Generate PDF')
                 ->icon(Heroicon::DocumentArrowDown)->color('gray')
-                ->visible(fn (): bool => ! $draft())
+                ->visible($allows(InvoiceAction::GeneratePdf))
                 ->action(function (): void {
                     app(GenerateInvoicePdf::class)($this->invoice());
                     Notification::make()->success()->title('PDF generated')->send();
                 }),
             Action::make('download')->label('Download')->icon(Heroicon::ArrowDownTray)->color('gray')
-                ->visible(fn (): bool => $this->invoice()->pdf_path !== null)
+                ->visible(fn (): bool => $this->invoice()->status->allows(InvoiceAction::Download) && $this->invoice()->pdf_path !== null)
                 ->action(fn (): StreamedResponse => Storage::disk(GenerateInvoicePdf::DISK)->download((string) $this->invoice()->pdf_path, $this->invoice()->number.'.pdf')),
             Action::make('email')->label('Email to client')->icon(Heroicon::Envelope)->color('gray')
-                ->visible(fn (): bool => in_array($this->invoice()->status, [InvoiceStatus::Sent, InvoiceStatus::Overdue, InvoiceStatus::Paid], true))
+                ->visible($allows(InvoiceAction::Email))
                 ->modalHeading('Email invoice')->modalSubmitActionLabel('Send email')
                 ->fillForm(fn (): array => [
                     'to' => $this->invoice()->client_snapshot['email'] ?? $this->invoice()->client->email,
@@ -109,11 +110,11 @@ class EditInvoice extends EditRecord
                     $this->refreshFormData(['emails']);
                 }),
             Action::make('markPaid')->label('Mark as paid')->icon(Heroicon::CheckCircle)->color('gray')
-                ->visible(fn (): bool => $this->invoice()->status->canTransitionTo(InvoiceStatus::Paid))
+                ->visible($allows(InvoiceAction::MarkPaid))
                 ->requiresConfirmation()
                 ->action(fn () => $this->changeStatus(InvoiceStatus::Paid, 'Marked as paid')),
             Action::make('issue')->label('Issue invoice')
-                ->visible($draft)
+                ->visible($allows(InvoiceAction::Issue))
                 ->requiresConfirmation()
                 ->modalDescription('This assigns the next invoice number, locks the lines and amounts, and creates the PDF.')
                 ->action(function (): void {
@@ -133,10 +134,10 @@ class EditInvoice extends EditRecord
                         $this->redirect(InvoiceResource::getUrl('edit', ['record' => $copy]));
                     }),
                 Action::make('cancel')->label('Cancel invoice')->icon(Heroicon::XCircle)->color('danger')
-                    ->visible(fn (): bool => $this->invoice()->status->canTransitionTo(InvoiceStatus::Cancelled))
+                    ->visible($allows(InvoiceAction::Cancel))
                     ->requiresConfirmation()
                     ->action(fn () => $this->changeStatus(InvoiceStatus::Cancelled, 'Invoice cancelled')),
-                DeleteAction::make()->label('Delete draft')->visible($draft),
+                DeleteAction::make()->label('Delete draft')->visible($allows(InvoiceAction::Delete)),
             ])->label('More')->icon(Heroicon::EllipsisVertical)->color('gray'),
         ];
     }

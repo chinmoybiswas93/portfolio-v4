@@ -52,3 +52,4 @@ Thumbs.db
 /.lighthouseci
 /database/lighthouse.sqlite
 /.env.lighthouse-backup
+/storage/fonts

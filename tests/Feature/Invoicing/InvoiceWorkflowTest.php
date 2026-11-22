@@ -101,6 +101,11 @@ it('stores a PDF on the private disk with the right content', function (): void 
     $text = (new Parser)->parseContent((string) Storage::disk('local')->get($invoice->pdf_path))->getText();
     expect($text)->toContain('INV-2026-0001')->toContain('Acme Ltd')->toContain('£695.87')
         ->toContain('VAT reg. no.: GB123456789')->toContain('Discount (5%)')->not->toContain('DRAFT');
+
+    // Set in the bundled Inter (Regular, Medium, SemiBold); no remote fonts.
+    $fonts = collect((new Parser)->parseContent((string) Storage::disk('local')->get($invoice->pdf_path))->getFonts())->map->getName()->unique()->values()->all();
+    expect($fonts)->toContain('Inter-Regular')->toContain('Inter-Medium')->toContain('Inter-SemiBold')
+        ->and(config('dompdf.options.enable_remote'))->toBeFalse();
 });
 
 it('emails the PDF, keeps an immutable copy and logs the send', function (): void {

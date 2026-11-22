@@ -21,11 +21,31 @@ enum InvoiceStatus: string implements HasColor, HasLabel
     public function allowedTransitions(): array
     {
         return match ($this) {
-            self::Draft => [self::Sent, self::Cancelled],
+            self::Draft => [self::Sent],
             self::Sent => [self::Overdue, self::Paid, self::Cancelled],
             self::Overdue => [self::Paid, self::Cancelled],
             self::Paid, self::Cancelled => [],
         };
+    }
+
+    /**
+     * The actions this status offers. A draft has no number yet, so it is deleted rather than cancelled.
+     *
+     * @return list<InvoiceAction>
+     */
+    public function availableActions(): array
+    {
+        return match ($this) {
+            self::Draft => [InvoiceAction::Edit, InvoiceAction::Issue, InvoiceAction::Duplicate, InvoiceAction::Delete],
+            self::Sent, self::Overdue => [InvoiceAction::GeneratePdf, InvoiceAction::Download, InvoiceAction::Email, InvoiceAction::MarkPaid, InvoiceAction::Cancel, InvoiceAction::Duplicate],
+            self::Paid => [InvoiceAction::GeneratePdf, InvoiceAction::Download, InvoiceAction::Email, InvoiceAction::Duplicate],
+            self::Cancelled => [InvoiceAction::Download, InvoiceAction::Duplicate],
+        };
+    }
+
+    public function allows(InvoiceAction $action): bool
+    {
+        return in_array($action, $this->availableActions(), true);
     }
 
     public function canTransitionTo(self $next): bool
