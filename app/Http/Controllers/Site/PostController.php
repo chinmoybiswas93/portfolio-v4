@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Site;
 
 use App\Enums\PostStatus;
-use App\Enums\TagType;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
@@ -28,7 +27,7 @@ final class PostController
 
     public function tag(Tag $tag): View
     {
-        abort_unless($tag->type === TagType::Topic, 404);
+        abort_unless($tag->posts()->published()->exists(), 404);
 
         return $this->list(Post::query()->whereHas('tags', fn (Builder $q) => $q->whereKey($tag->getKey())), '#'.$tag->name);
     }

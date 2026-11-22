@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Projects\Schemas;
 
 use App\Enums\PublishStatus;
-use App\Enums\TagType;
 use App\Filament\Support\Fields;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\MarkdownEditor;
@@ -132,7 +131,7 @@ class ProjectForm
                 ]),
 
                 Section::make('Tech stack')->schema([
-                    Fields::tags(TagType::Tech, 'Technologies')->hiddenLabel()->placeholder('Add…'),
+                    Fields::tags('Technologies')->hiddenLabel()->placeholder('Add…'),
                 ]),
 
                 Section::make('Links')->schema([

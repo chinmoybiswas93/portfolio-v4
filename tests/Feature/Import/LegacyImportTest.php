@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\TagType;
 use App\Models\Experience;
 use App\Models\Project;
 use App\Settings\ProfileSettings;
@@ -46,8 +45,7 @@ it('imports experience with parsed dates, current role and normalised tags', fun
         ->and($current->isCurrent())->toBeTrue()
         ->and($past->ended_on?->toDateString())->toBe('2024-04-01')
         ->and($current->tags()->pluck('name')->all())->toContain('WordPress Plugin Dev')
-        ->and($past->tags()->pluck('name')->sort()->values()->all())->toBe(['JavaScript', 'PHP', 'WooCommerce', 'WordPress'])
-        ->and($past->tags()->first()?->type)->toBe(TagType::Tech);
+        ->and($past->tags()->pluck('name')->sort()->values()->all())->toBe(['JavaScript', 'PHP', 'WooCommerce', 'WordPress']);
 });
 
 it('imports projects as published, without case studies', function (): void {

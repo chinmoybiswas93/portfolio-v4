@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Enums\PostStatus;
-use App\Enums\TagType;
 use App\Http\Middleware\SecurityHeaders;
 use App\Models\Category;
 use App\Models\Experience;
@@ -80,10 +79,10 @@ it('shows published posts, escapes HTML in posts and hides drafts and future pos
     $this->get('/blog/draft-post')->assertNotFound();
     $this->get('/blog/future-post')->assertNotFound();
 
-    $topic = Tag::findOrCreateByName('Plugins', TagType::Topic);
+    $topic = Tag::findOrCreateByName('Plugins');
     $post->tags()->attach($topic);
     $this->get('/blog/tag/plugins')->assertOk()->assertSee('Live post');
-    Tag::findOrCreateByName('Laravel', TagType::Tech);
+    Tag::findOrCreateByName('Laravel');
     $this->get('/blog/tag/laravel')->assertNotFound();
 });
 

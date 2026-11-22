@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\TagType;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Project;
@@ -85,7 +84,7 @@ it('generates the share card once and reuses it', function (): void {
 
 it('lists only published, public URLs in the sitemap', function (): void {
     $category = Category::factory()->create(['slug' => 'wordpress']);
-    $topic = Tag::factory()->create(['slug' => 'speed', 'type' => TagType::Topic]);
+    $topic = Tag::factory()->create(['slug' => 'speed']);
     Post::factory()->for($category)->create(['slug' => 'live'])->tags()->attach($topic);
     Post::factory()->draft()->create(['slug' => 'draft']);
     Project::factory()->caseStudy()->create(['slug' => 'case']);

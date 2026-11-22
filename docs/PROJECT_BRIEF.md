@@ -138,6 +138,11 @@ The canvas is updated to match; it remains the source of truth for UI.
 - Categories, Tags, Redirects and Clients are managed on one list page with create and edit in a modal (no separate create/edit URLs).
 - One Settings page (Filament cluster) with tabs Profile, SEO, Invoicing, Payment at `/admin/settings/*`; each tab keeps its own settings class, validation and encryption; "Save changes" sits in the header. The MCP tab arrives with 3.9c.
 
+### Built in slice 3.8c Tags and slugs (2026-11-22)
+- **One tag pool** for posts, projects and experience. A migration merged tags that shared a slug (links moved to the oldest tag) and dropped the topic/tech type. "Technologies" and "Skills" are only field labels. Every tag field searches, preloads and creates from the same pool; tag names that differ only in case or spacing resolve to the same tag.
+- `/blog/tag/{slug}` shows any tag that has published posts (404 otherwise); the sitemap follows the same rule. The Tags list shows how many posts, projects and experience entries use each tag.
+- **Slugs** on posts, projects, services, categories and tags: optional in the form (made from the title or name when empty, with -2, -3… when taken), normalised to lowercase-with-hyphens on blur, and checked inline for format and uniqueness. The lock-and-Edit behaviour is unchanged.
+
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 

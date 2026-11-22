@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Experiences\Schemas;
 
-use App\Enums\TagType;
 use App\Filament\Support\Fields;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\MarkdownEditor;
@@ -28,7 +27,7 @@ class ExperienceForm
                     ->helperText('Leave empty for your current role.'),
                 MarkdownEditor::make('description_md')->label('Description')->columnSpanFull()
                     ->toolbarButtons([['bold', 'italic', 'link', 'bulletList'], ['undo', 'redo']]),
-                Fields::tags(TagType::Tech, 'Skills')->columnSpanFull(),
+                Fields::tags('Skills')->columnSpanFull(),
                 TextInput::make('sort_order')->numeric()->default(0)->minValue(0),
                 Toggle::make('is_published')->label('Published')->default(true),
             ]),

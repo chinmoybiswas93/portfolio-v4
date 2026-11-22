@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Support;
 
-use App\Enums\TagType;
 use App\Models\Tag;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
@@ -45,11 +44,23 @@ final class Fields
                 }),
             Hidden::make('slug_unlocked')->default(false)->dehydrated(false),
             TextInput::make('slug')
-                ->required()
                 ->maxLength(255)
-                ->alphaDash()
+                ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
+                ->validationMessages([
+                    'regex' => 'Use lowercase letters, numbers and single hyphens, e.g. my-first-post.',
+                    'unique' => 'This slug is already used. Try another one.',
+                ])
                 ->unique(ignoreRecord: true)
+                ->placeholder('Made from the '.($titleField === 'title' ? 'title' : 'name').' when left empty')
                 ->live(onBlur: true)
+                ->afterStateUpdated(function (?string $state, Set $set, TextInput $component, $livewire): void {
+                    // Normalise ("My Post!" -> "my-post"), then validate at once so errors show inline.
+                    $normalised = Str::slug((string) $state);
+                    if ($normalised !== (string) $state) {
+                        $set('slug', $normalised);
+                    }
+                    $livewire->validateOnly($component->getStatePath());
+                })
                 ->readOnly(fn (string $operation, Get $get): bool => $operation === 'edit' && ! $get('slug_unlocked'))
                 ->belowContent(fn (Get $get, string $operation): Schema => Schema::between([
                     $urlPrefix !== null
@@ -67,20 +78,17 @@ final class Fields
         ];
     }
 
-    public static function tags(TagType $type, string $label = 'Tags'): Select
+    /** One shared tag pool for posts, projects and experience; the label is only what the field is called. */
+    public static function tags(string $label = 'Tags'): Select
     {
         return Select::make('tags')
             ->label($label)
-            ->relationship(
-                'tags',
-                'name',
-                modifyQueryUsing: fn (Builder $query): Builder => $query->where('type', $type->value)->orderBy('name'),
-            )
+            ->relationship('tags', 'name', modifyQueryUsing: fn (Builder $query): Builder => $query->orderBy('name'))
             ->multiple()
             ->searchable()
             ->preload()
             ->createOptionForm([TextInput::make('name')->required()->maxLength(64)])
-            ->createOptionUsing(fn (array $data): int => Tag::findOrCreateByName((string) $data['name'], $type)->getKey());
+            ->createOptionUsing(fn (array $data): int => Tag::findOrCreateByName((string) $data['name'])->getKey());
     }
 
     public static function seoTitle(): TextInput

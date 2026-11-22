@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\TagType;
 use App\Models\Tag;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -21,6 +20,6 @@ class TagFactory extends Factory
     {
         $name = fake()->unique()->word();
 
-        return ['name' => Str::title($name), 'slug' => Str::slug($name), 'type' => TagType::Topic];
+        return ['name' => Str::title($name), 'slug' => Str::slug($name)];
     }
 }
