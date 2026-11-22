@@ -171,6 +171,12 @@ The canvas is updated to match; it remains the source of truth for UI.
 - Results/metrics and profile social links are compact table repeaters with a "+ Add …" text action.
 - Follow-up (3.8i): metrics and social links stay as inline rows in narrow columns (no stacked boxes); dropdowns are 32 px like text inputs; "+ Add" links in teal; post SEO section always open.
 
+### Built in slice 3.8j Theme toggle, transitions, share logos (2026-11-23)
+- **Theme:** one sun/moon toggle, replacing the 3.8e System/Light/Dark switch. The first visit follows the device and shows the matching icon; a click saves light/dark in localStorage. Applied before the first paint.
+- **Public transitions:** cross-document View Transitions (160 ms fade) and a 2 px teal progress bar on link clicks. Reduced motion turns off the fade and the bar animation.
+- **Admin transitions:** Filament SPA mode (Livewire navigate) with a teal progress bar and a short content fade.
+- **Share buttons:** LinkedIn, X and Facebook logos (inline SVG) and a link icon.
+
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 

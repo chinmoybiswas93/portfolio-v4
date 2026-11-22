@@ -2,34 +2,50 @@
 
 const root = document.documentElement;
 
-// Theme: "system" follows the device; "light"/"dark" are saved in localStorage. No cookies.
+// Theme: one toggle. A click saves light/dark in localStorage (no cookies); until then the device setting applies.
 const systemLight = window.matchMedia('(prefers-color-scheme: light)');
 
-function applyTheme(pref) {
-    const light = pref === 'light' || (pref === 'system' && systemLight.matches);
-    if (light) root.setAttribute('data-theme', 'light');
+function savedTheme() {
+    try {
+        const value = localStorage.getItem('theme');
+        return value === 'light' || value === 'dark' ? value : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function applyTheme(theme) {
+    if (theme === 'light') root.setAttribute('data-theme', 'light');
     else root.removeAttribute('data-theme');
-    root.setAttribute('data-theme-pref', pref);
-    document.querySelectorAll('[data-theme-choice]').forEach((button) => {
-        button.setAttribute('aria-pressed', String(button.dataset.themeChoice === pref));
+    document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+        button.setAttribute('aria-label', theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
     });
 }
 
-function chooseTheme(pref) {
-    try {
-        if (pref === 'system') localStorage.removeItem('theme');
-        else localStorage.setItem('theme', pref);
-    } catch (e) {}
-    applyTheme(pref);
-}
-
-document.querySelectorAll('[data-theme-choice]').forEach((button) => {
-    button.addEventListener('click', () => chooseTheme(button.dataset.themeChoice));
+document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+    button.addEventListener('click', () => {
+        const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        try {
+            localStorage.setItem('theme', next);
+        } catch (e) {}
+        applyTheme(next);
+    });
 });
 systemLight.addEventListener('change', () => {
-    if (root.getAttribute('data-theme-pref') === 'system') applyTheme('system');
+    if (savedTheme() === null) applyTheme(systemLight.matches ? 'light' : 'dark');
 });
-applyTheme(root.getAttribute('data-theme-pref') || 'system');
+applyTheme(root.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+
+// Page transitions: a thin top progress bar while the next page loads (View Transitions do the fade in CSS).
+document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[href]');
+    if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (link.target && link.target !== '_self') return;
+    if (link.hasAttribute('download') || link.origin !== location.origin) return;
+    if (link.pathname === location.pathname && link.hash) return;
+    root.classList.add('is-navigating');
+});
+window.addEventListener('pageshow', () => root.classList.remove('is-navigating'));
 
 // Mouse-following spotlight: only for fine pointers and when motion is welcome.
 const spotlight = document.querySelector('.spotlight');
@@ -113,9 +129,10 @@ document.querySelectorAll('[data-copy-link]').forEach((button) => {
         const status = document.querySelector('[data-copy-status]');
         try {
             await navigator.clipboard.writeText(button.dataset.copyLink);
-            button.textContent = 'Copied';
+            const label = button.querySelector('[data-copy-label]') ?? button;
+            label.textContent = 'Copied';
             if (status) status.textContent = 'Link copied';
-            setTimeout(() => (button.textContent = 'Copy link'), 1600);
+            setTimeout(() => (label.textContent = 'Copy link'), 1600);
         } catch (e) {
             window.prompt('Copy this link', button.dataset.copyLink);
         }
