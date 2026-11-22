@@ -9,7 +9,10 @@ use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Post;
 use App\Models\Project;
+use App\Models\Tag;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
@@ -43,5 +46,28 @@ it('captures every admin screen for the design audit', function (): void {
         visit($url)->on()->mobile()->screenshot(fullPage: true, filename: "admin-{$name}-mobile");
     }
     visit('/admin/categories')->resize(1440, 900)->click('New category')->wait(1)->screenshot(filename: 'admin-category-modal-desktop');
+    expect(true)->toBeTrue();
+})->skip(fn (): bool => ! env('AUDIT_SCREENSHOTS'), 'Audit screenshots run only with AUDIT_SCREENSHOTS=1');
+
+it('captures the public post and case study screens', function (): void {
+    Storage::fake('public');
+    $tag = Tag::findOrCreateByName('Performance');
+    $post = Post::factory()->for(Category::factory()->create(['name' => 'WordPress']))->create([
+        'slug' => 'speed', 'title' => 'Speeding up WordPress on shared hosting',
+        'body_md' => "Intro paragraph about a slow site.\n\n## Measure first\n\nUse real numbers.\n\n### Field data\n\nCrUX and logs.\n\n## Fix the biggest cost\n\nImages and fonts.\n\n## Keep it fast\n\nBudgets in CI.",
+    ]);
+    $post->tags()->attach($tag);
+    foreach (['Caching on Hostinger', 'Fonts without layout shift'] as $title) {
+        Post::factory()->create(['title' => $title])->tags()->attach($tag);
+    }
+    $project = Project::factory()->caseStudy()->create(['slug' => 'shop', 'title' => 'TuFlamenco', 'live_url' => 'https://tuflamenco.com']);
+    foreach ([1, 2, 3] as $n) {
+        $project->addMedia(UploadedFile::fake()->image("g{$n}.jpg", 1200, 750))->withCustomProperties(['alt' => "Screen {$n}"])->toMediaCollection('gallery');
+    }
+
+    visit('/blog/speed')->resize(1440, 900)->screenshot(fullPage: true, filename: 'public-post-desktop');
+    visit('/blog/speed')->on()->mobile()->screenshot(fullPage: true, filename: 'public-post-mobile');
+    visit('/projects/shop')->resize(1440, 900)->screenshot(fullPage: true, filename: 'public-case-study-desktop');
+    visit('/projects/shop')->resize(1440, 900)->click('[data-lightbox-open="1"]')->screenshot(filename: 'public-lightbox-desktop');
     expect(true)->toBeTrue();
 })->skip(fn (): bool => ! env('AUDIT_SCREENSHOTS'), 'Audit screenshots run only with AUDIT_SCREENSHOTS=1');

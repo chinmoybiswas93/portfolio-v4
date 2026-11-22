@@ -8,8 +8,10 @@ use App\Enums\PostStatus;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Support\Markdown\TableOfContents;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 final class PostController
 {
@@ -39,8 +41,13 @@ final class PostController
         abort_unless($isLive, 404);
         $post->load(['category', 'tags', 'media']);
 
+        $toc = TableOfContents::build((string) $post->body_html);
+
         return view('site.posts.show', [
             'post' => $post,
+            'body' => $toc['html'],
+            'contents' => count($toc['items']) >= 2 ? $toc['items'] : [],
+            'related' => $this->related($post),
             'previous' => Post::query()->published()->where('published_at', '<', $post->published_at)->first(['title', 'slug']),
             'next' => Post::query()->published()->reorder()->where('published_at', '>', $post->published_at)->orderBy('published_at')->first(['title', 'slug']),
         ]);
@@ -57,5 +64,32 @@ final class PostController
             'heading' => $heading,
             'activeCategory' => $activeCategory,
         ]);
+    }
+
+    /**
+     * Up to three published posts sharing the most tags, then the same category.
+     *
+     * @return Collection<int, Post>
+     */
+    private function related(Post $post): Collection
+    {
+        $tagIds = $post->tags->modelKeys();
+        $query = Post::query()->published()->whereKeyNot($post->getKey())->reorder();
+
+        $byTags = $tagIds === [] ? new \Illuminate\Database\Eloquent\Collection : (clone $query)
+            ->whereHas('tags', fn (Builder $q) => $q->whereIn('tags.id', $tagIds))
+            ->withCount(['tags as shared_tags' => fn (Builder $q) => $q->whereIn('tags.id', $tagIds)])
+            ->orderByDesc('shared_tags')->orderByDesc('published_at')
+            ->limit(3)->get(['id', 'title', 'slug', 'published_at']);
+
+        if ($byTags->count() < 3 && $post->category_id !== null) {
+            $byTags = $byTags->concat((clone $query)
+                ->where('category_id', $post->category_id)
+                ->whereKeyNot($byTags->modelKeys())
+                ->orderByDesc('published_at')
+                ->limit(3 - $byTags->count())->get(['id', 'title', 'slug', 'published_at']));
+        }
+
+        return $byTags->values();
     }
 }
