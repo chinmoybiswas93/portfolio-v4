@@ -38,7 +38,7 @@ final class PostController
         $isLive = in_array($post->status, [PostStatus::Published, PostStatus::Scheduled], true)
             && $post->published_at !== null && $post->published_at->isPast();
         abort_unless($isLive, 404);
-        $post->load(['category', 'tags']);
+        $post->load(['category', 'tags', 'media']);
 
         return view('site.posts.show', [
             'post' => $post,
@@ -53,7 +53,7 @@ final class PostController
     private function list(Builder $query, ?string $heading = null, ?string $activeCategory = null): View
     {
         return view('site.posts.index', [
-            'posts' => $query->published()->with('category')->paginate(self::PER_PAGE),
+            'posts' => $query->published()->with(['category', 'media'])->paginate(self::PER_PAGE),
             'categories' => Category::query()->whereHas('posts', fn (Builder $q) => $q->published())->orderBy('name')->get(),
             'heading' => $heading,
             'activeCategory' => $activeCategory,

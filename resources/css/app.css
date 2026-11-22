@@ -941,6 +941,44 @@
     text-underline-offset: 8px;
 }
 
+/* Writing list: date | cover | text (stacks on phones). */
+.post-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+}
+
+@media (min-width: 768px) {
+    .post-grid {
+        grid-template-columns: 150px 200px minmax(0, 1fr);
+        column-gap: 28px;
+    }
+}
+
+.post-thumb img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top;
+    border-radius: 8px;
+    border: 1px solid var(--card-line);
+    background: var(--card);
+    transition: border-color 0.2s ease;
+}
+
+.post-grid:hover .post-thumb img {
+    border-color: var(--muted);
+}
+
+@media (max-width: 767px) {
+    .post-thumb:empty {
+        display: none;
+    }
+}
+
 .post-list .post-row {
     border-top: 0;
     border-bottom: 1px solid var(--line);
@@ -1188,4 +1226,8 @@
     justify-content: center;
     padding: 96px 0;
 }
+}
+
+.post-list .post-row > .post-grid {
+    align-items: start;
 }
