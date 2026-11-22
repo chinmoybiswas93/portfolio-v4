@@ -16,6 +16,12 @@
                     <p class="post-lead">{{ $post->excerpt }}</p>
                 @endif
 
+                @if ($cover = $post->getFirstMedia('cover'))
+                    <figure class="m-0 my-2">
+                        <x-site.media-image :media="$cover" conversion="hero" sizes="(min-width: 728px) 680px, 100vw" :width="680" :height="425" loading="eager" fetchpriority="high" class="cs-image" />
+                    </figure>
+                @endif
+
                 <div class="prose">{!! $post->body_html !!}</div>
 
                 @php($topics = $post->tags->filter(fn ($tag) => $tag->type === \App\Enums\TagType::Topic))

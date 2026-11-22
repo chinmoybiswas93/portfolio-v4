@@ -43,7 +43,7 @@ class ProjectForm
         return $schema->columns(3)->components([
             Group::make()->columnSpan(['default' => 3, 'lg' => 2])->schema([
                 Section::make('Basics')->columns(2)->schema([
-                    ...Fields::titleAndSlug(),
+                    ...Fields::titleAndSlug(urlPrefix: 'projects'),
                     Textarea::make('summary')->rows(2)->maxLength(500)->columnSpanFull()
                         ->helperText('Shown on the home page and in the project archive.'),
                     TextInput::make('client_name')->label('Client')->maxLength(255),

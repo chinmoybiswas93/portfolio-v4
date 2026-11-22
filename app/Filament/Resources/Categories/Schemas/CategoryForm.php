@@ -15,7 +15,7 @@ class CategoryForm
     {
         return $schema->components([
             Section::make()->columns(2)->columnSpanFull()->schema([
-                ...Fields::titleAndSlug('name'),
+                ...Fields::titleAndSlug('name', 'blog/category'),
                 Textarea::make('description')->rows(2)->maxLength(500)->columnSpanFull(),
             ]),
         ]);

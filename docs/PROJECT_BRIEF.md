@@ -79,6 +79,10 @@ Laravel web app: a public business portfolio for UK/EU clients and a private adm
 - **Syntax highlighting:** `tempest/highlight` (pure PHP at render time). Shiki is ruled out because posts are edited at runtime and there is no Node runtime.
 - **Media:** Spatie Laravel Media Library with Filament's Spatie plugin. See ADR-0005.
 
+## Invoice tax decision (owner, 2026-11-22, before slice 3.5)
+- **No per-line tax.** Lines have description, quantity and unit price only. Tax (VAT) is one optional rate applied to the **invoice total after discount**, so the "Tax" column is removed from the PDF and editor.
+- Clients get an optional **tax ID** (VAT number for UK/EU, EIN/tax ID for US). It is printed on the invoice following UK/EU/US conventions. The exact wording is confirmed at the start of 3.5.
+
 ## Design decisions (Phase 2, approved by the owner on 2026-11-22)
 Designs live in a private Claude design canvas (link in `.private/`). They are the reference for Phase 3 UI work.
 - **Direction:** an updated version of the current site, not a redesign. It is minimal, clean and Apple-like calm, with nothing distracting.
@@ -93,6 +97,17 @@ Designs live in a private Claude design canvas (link in `.private/`). They are t
 - **Inner pages:** a slim top bar (name + theme toggle) and a centred reading column (case study, blog post).
 - **Admin:** Filament 5 themed with the same navy surfaces and teal primary, using the system font.
 - **Invoice PDF:** A4, table-based for DomPDF, logo + teal hairline accent, "VAT not applicable" note.
+
+### Design changes after approval (owner review of slices 3.3–3.4, 2026-11-22)
+The canvas is updated to match; it remains the source of truth for UI.
+- **Inner pages:** one shared top bar on every inner page: hexagon logo mark + name on the left; PROJECTS / WRITING + theme toggle on the right.
+- **Home:** Selected projects use the same hover card as Experience (soft background and border, title turns teal). The contact address has an envelope icon before it. Removed earlier: availability line, Email me / Download CV buttons, reply-time line.
+- **Writing list:** full page width; each row is date | cover thumbnail (16:10) | title, excerpt and meta.
+- **Post page:** the cover image sits between the lead paragraph and the body.
+- **Admin project editor:** two columns as in the canvas (Basics, Case study tabs, Media | Publishing, Results metrics, Tech stack, Links, SEO). The header holds Preview / Save / Save and publish. Primary buttons are teal `#2DD4BF` with dark text.
+- **Slugs (projects, posts, categories):** filled from the title on create while empty. After saving they are read-only, with an **Edit** link at the bottom right of the field and a URL preview; unlocking shows a warning to add a redirect.
+- **Media:** every admin image upload is stored on the public disk (Filament's default was the private disk).
+- **Contact email:** the importer never imports the old personal email; the site falls back to `hello@chinmoybiswas.com` until one is set in Profile.
 
 ## Phases (each ends with a gate where the owner approves)
 1. **Architecture:** ADRs (stack, hosting layout, CI/CD, PDF, media), data model/ERD, routes, security model, test strategy. Prove deploy with a "hello" Laravel app on the staging subdomain.

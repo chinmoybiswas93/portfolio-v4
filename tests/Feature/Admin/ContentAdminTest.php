@@ -103,3 +103,23 @@ it('publishes a project with Save and publish', function (): void {
     expect($project->refresh()->status)->toBe(PublishStatus::Published)
         ->and($project->published_at)->not->toBeNull();
 });
+
+it('fills the slug from the title when creating', function (): void {
+    Livewire::test(CreateProject::class)
+        ->fillForm(['title' => 'My New Site'])
+        ->assertSchemaStateSet(['slug' => 'my-new-site']);
+});
+
+it('locks the slug after saving until Edit is used', function (): void {
+    $project = Project::factory()->create(['title' => 'Locked', 'slug' => 'locked']);
+
+    $page = Livewire::test(EditProject::class, ['record' => $project->getRouteKey()]);
+    $page->assertFormFieldIsReadOnly('slug');
+
+    $page->set('data.slug_unlocked', true)
+        ->fillForm(['slug' => 'unlocked'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($project->refresh()->slug)->toBe('unlocked');
+});

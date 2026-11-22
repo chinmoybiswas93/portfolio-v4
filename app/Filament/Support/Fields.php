@@ -6,10 +6,14 @@ namespace App\Filament\Support;
 
 use App\Enums\TagType;
 use App\Models\Tag;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
@@ -19,28 +23,47 @@ use Illuminate\Support\Str;
 final class Fields
 {
     /**
-     * Title that fills an empty slug, and a unique, URL-safe slug.
+     * Title plus slug. On create the slug fills itself from the title while it is empty; once the record is
+     * saved the slug is read-only, with an Edit link under it that unlocks it (changing it breaks old links).
      *
-     * @return list<TextInput>
+     * @param  string|null  $urlPrefix  Public path before the slug (e.g. "projects"), shown as a URL preview.
+     * @return list<TextInput|Hidden>
      */
-    public static function titleAndSlug(string $titleField = 'title'): array
+    public static function titleAndSlug(string $titleField = 'title', ?string $urlPrefix = null): array
     {
+        $host = (string) parse_url((string) config('app.url'), PHP_URL_HOST);
+
         return [
             TextInput::make($titleField)
                 ->required()
                 ->maxLength(255)
                 ->live(onBlur: true)
-                ->afterStateUpdated(function (Get $get, Set $set, ?string $state): void {
-                    if (blank($get('slug'))) {
+                ->afterStateUpdated(function (Get $get, Set $set, ?string $state, string $operation): void {
+                    if ($operation === 'create' && blank($get('slug'))) {
                         $set('slug', Str::slug((string) $state));
                     }
                 }),
+            Hidden::make('slug_unlocked')->default(false)->dehydrated(false),
             TextInput::make('slug')
                 ->required()
                 ->maxLength(255)
                 ->alphaDash()
                 ->unique(ignoreRecord: true)
-                ->helperText('Used in the page address. Changing it later breaks old links unless you add a redirect.'),
+                ->live(onBlur: true)
+                ->readOnly(fn (string $operation, Get $get): bool => $operation === 'edit' && ! $get('slug_unlocked'))
+                ->belowContent(fn (Get $get, string $operation): Schema => Schema::between([
+                    $urlPrefix !== null
+                        ? $host.'/'.$urlPrefix.'/'.($get('slug') ?: '…')
+                        : 'Used in links and page addresses.',
+                    $operation === 'edit' && $get('slug_unlocked')
+                        ? 'Changing it breaks old links. Add a redirect.'
+                        : Action::make('editSlug')
+                            ->label('Edit')
+                            ->link()
+                            ->icon(Heroicon::PencilSquare)
+                            ->visible($operation === 'edit')
+                            ->action(fn (Set $set) => $set('slug_unlocked', true)),
+                ])),
         ];
     }
 
