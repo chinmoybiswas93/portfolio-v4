@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Site;
 
 use App\Actions\Invoicing\GenerateInvoicePdf;
+use App\Enums\InvoiceStatus;
 use App\Models\InvoicePdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -28,6 +29,8 @@ final class InvoiceLinkController
         $disk = Storage::disk(GenerateInvoicePdf::DISK);
         abort_unless($disk->exists($pdf->path), 404);
         $pdf->loadMissing('invoice');
+        // A cancelled invoice's emailed link stops working at once.
+        abort_if($pdf->invoice?->status === InvoiceStatus::Cancelled, 410);
 
         return $disk->response($pdf->path, $pdf->invoice->number.'.pdf', [
             'Content-Type' => 'application/pdf',

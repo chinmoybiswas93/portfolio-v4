@@ -60,7 +60,7 @@ Companion to [ADR-0009](../adr/0009-mcp-server.md). Method: assets, actors and e
 | Tokens or secrets in logs | The audit stores the token **id**, never the token. Authorization headers are never logged. Summaries skip secret and encrypted fields. | — |
 | Draft or trashed content reaching the public site through MCP | Publishing is explicit (`status`); trashed items are excluded by the default scope everywhere public | Trashed item → 404, absent from sitemap and feed |
 | SSRF through image URLs | No URL fetching anywhere in MCP | — |
-| Private admin path exposed by metadata | OAuth metadata only lists `/oauth/*` endpoints; the login redirect happens server-side | — |
+| Private admin path exposed by metadata or the consent redirect | OAuth metadata only lists `/oauth/*` endpoints. A signed-out visitor at `/oauth/authorize` gets a neutral "sign in to the admin first" page (401) with no redirect or link (Phase 4 fix) | Guest consent → 401, no admin path in the response |
 
 ### Denial of service
 | Threat | Mitigation |

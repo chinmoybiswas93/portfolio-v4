@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Spatie\LaravelSettings\Events\SettingsSaved;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -39,6 +40,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Links and asset URLs always use APP_URL, never the request's Host: cached pages are shared by everyone.
+        if (! $this->app->environment('local', 'testing')) {
+            URL::forceRootUrl((string) config('app.url'));
+            URL::forceScheme('https');
+        }
+
         // Filament export/import downloads are not used (no exports tables): answer 404 instead of a 500.
         $this->app->make(Router::class)->middlewareGroup('filament.actions', [FeatureDisabled::class]);
 

@@ -26,6 +26,7 @@ function jsonLdGraph(string $html): array
 }
 
 it('sets canonical, Open Graph and Twitter tags on every page', function (): void {
+    Post::factory()->count(11)->create(); // page 2 must exist
     $html = $this->get('/blog?page=2&utm_source=x')->assertOk()->getContent();
 
     expect($html)

@@ -93,9 +93,10 @@ Do it on staging first, and keep the old entry until the new one has worked once
 
 ## Connecting an AI assistant over MCP (slice 3.9, ADR-0009)
 1. In Settings → MCP, check **MCP enabled** is on and **New app registration** is "Allowed". (`MCP_ENABLED=true` must also be set in the server `.env`.)
-2. Add the server in the assistant. Claude Code: `claude mcp add --transport http <name> https://<site>/mcp`, then `/mcp` → the server → **Authenticate**. Claude.ai: Settings → Connectors → Add custom connector, with the same URL.
-3. The browser opens the consent screen. Sign in to the admin with 2FA if asked, check the app name, the **New app** badge and the return address, untick any permission the app doesn't need, then **Allow selected**.
-4. Afterwards, set **New app registration** back to "Closed" if you won't connect another app soon.
+2. **Sign in to the admin in the same browser first.** The approval page never links to the admin (its path is private); signed out, it only says to sign in first.
+3. Add the server in the assistant. Claude Code: `claude mcp add --transport http <name> https://<site>/mcp`, then `/mcp` → the server → **Authenticate**. Claude.ai: Settings → Connectors → Add custom connector, with the same URL.
+4. The browser opens the consent screen. Check the app name, the **New app** badge and the return address, untick any permission the app doesn't need, then **Allow selected**.
+5. Afterwards, set **New app registration** back to "Closed" if you won't connect another app soon.
 
 **Revoking:** MCP → Connected apps → the app's **Revoke**. Its access and refresh tokens stop working at once; it must ask again and you approve it again.
 

@@ -145,7 +145,9 @@ it('sends guests, non-admins and admins without 2FA away from the consent screen
     $client = app(ClientRepository::class)->createAuthorizationCodeGrantClient('Claude', ['https://claude.ai/cb'], false);
     $url = '/oauth/authorize?'.http_build_query(['response_type' => 'code', 'client_id' => $client->getKey(), 'redirect_uri' => 'https://claude.ai/cb', 'code_challenge' => str_repeat('a', 43), 'code_challenge_method' => 'S256', 'state' => 'x']);
 
-    $this->get($url)->assertRedirect(adminPath('/login'));
+    // Guests see a neutral page: the private admin path never appears in a redirect or link.
+    $guest = $this->get($url)->assertUnauthorized()->assertSee('Sign in to the admin first');
+    expect($guest->headers->get('Location'))->toBeNull()->and((string) $guest->getContent())->not->toContain(adminPath());
     $this->actingAs(User::factory()->create(['is_admin' => false]))->get($url)->assertForbidden();
 
     $admin = User::factory()->create();

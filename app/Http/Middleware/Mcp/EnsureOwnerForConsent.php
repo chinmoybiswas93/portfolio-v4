@@ -28,7 +28,9 @@ final class EnsureOwnerForConsent
         $user = $panel->auth()->user();
 
         if (! $user instanceof User) {
-            return redirect()->guest($panel->getLoginUrl());
+            // Never redirect to the login: its URL is the private admin path. The owner signs in first, then retries.
+            return response()->view('mcp.sign-in-first', [], 401)
+                ->header('Cache-Control', 'no-store')->header('X-Robots-Tag', 'noindex, nofollow')->header('X-Frame-Options', 'DENY');
         }
         abort_unless($user->is_admin, 403);
         if (! MultiFactorChallenge::make()->hasEnabledProviders($user)) {

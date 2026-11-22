@@ -6,6 +6,7 @@ use App\Actions\Invoicing\EmailInvoice;
 use App\Actions\Invoicing\GenerateInvoicePdf;
 use App\Actions\Invoicing\IssueInvoice;
 use App\Enums\EmailStatus;
+use App\Enums\InvoiceStatus;
 use App\Filament\Resources\Invoices\Pages\EditInvoice;
 use App\Http\Controllers\Site\InvoiceLinkController;
 use App\Jobs\SendInvoiceEmail;
@@ -107,6 +108,15 @@ it('serves one PDF version through a signed link, and refuses expired, tampered 
 
     $this->travel(InvoiceLinkController::VALID_DAYS + 1)->days();
     $this->get($url)->assertForbidden();
+});
+
+it('stops serving the link once the invoice is cancelled', function (): void {
+    $invoice = issuedInvoice();
+    $url = InvoiceLinkController::signedUrl($invoice->pdfs()->firstOrFail());
+    $this->get($url)->assertOk();
+
+    $invoice->forceFill(['status' => InvoiceStatus::Cancelled])->save();
+    $this->get($url)->assertStatus(410);
 });
 
 it('previews PDF versions for admins only', function (): void {

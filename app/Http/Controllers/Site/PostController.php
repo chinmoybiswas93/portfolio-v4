@@ -58,8 +58,11 @@ final class PostController
      */
     private function list(Builder $query, ?string $heading = null, ?string $activeCategory = null): View
     {
+        $posts = $query->published()->with(['category', 'media'])->paginate(self::PER_PAGE);
+        abort_if($posts->currentPage() > max(1, $posts->lastPage()), 404); // no endless empty pages
+
         return view('site.posts.index', [
-            'posts' => $query->published()->with(['category', 'media'])->paginate(self::PER_PAGE),
+            'posts' => $posts,
             'categories' => Category::query()->whereHas('posts', fn (Builder $q) => $q->published())->orderBy('name')->get(),
             'heading' => $heading,
             'activeCategory' => $activeCategory,
