@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\Pages;
 
 use App\Enums\Currency;
+use App\Filament\Clusters\Settings;
+use App\Filament\Support\SettingsTab;
 use App\Settings\InvoiceSettings;
 use BackedEnum;
 use Filament\Forms\Components\FileUpload;
@@ -16,15 +18,20 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use UnitEnum;
 
 class ManageInvoicing extends SettingsPage
 {
+    use SettingsTab;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentCurrencyPound;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Site';
+    protected static ?int $navigationSort = 3;
 
-    protected static ?int $navigationSort = 12;
+    protected static ?string $cluster = Settings::class;
+
+    protected static ?string $slug = 'invoicing';
+
+    protected static ?string $navigationLabel = 'Invoicing';
 
     protected static ?string $title = 'Invoicing';
 

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Redirects;
 
-use App\Filament\Resources\Redirects\Pages\CreateRedirect;
-use App\Filament\Resources\Redirects\Pages\EditRedirect;
-use App\Filament\Resources\Redirects\Pages\ListRedirects;
+use App\Filament\Resources\Redirects\Pages\ManageRedirects;
 use App\Filament\Resources\Redirects\Schemas\RedirectForm;
 use App\Filament\Resources\Redirects\Tables\RedirectsTable;
 use App\Models\Redirect;
@@ -47,9 +45,7 @@ class RedirectResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListRedirects::route('/'),
-            'create' => CreateRedirect::route('/create'),
-            'edit' => EditRedirect::route('/{record}/edit'),
+            'index' => ManageRedirects::route('/'),
         ];
     }
 }

@@ -5,17 +5,12 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Services\Pages;
 
 use App\Filament\Resources\Services\ServiceResource;
-use Filament\Actions\DeleteAction;
+use App\Filament\Support\StandardEditLayout;
 use Filament\Resources\Pages\EditRecord;
 
 class EditService extends EditRecord
 {
-    protected static string $resource = ServiceResource::class;
+    use StandardEditLayout;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            DeleteAction::make(),
-        ];
-    }
+    protected static string $resource = ServiceResource::class;
 }

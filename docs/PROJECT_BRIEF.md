@@ -133,6 +133,11 @@ The canvas is updated to match; it remains the source of truth for UI.
 - Dashboard: greeting with New post / New invoice; widgets load immediately.
 - Invoice list: "Draft (no number yet)" in italics; amount and currency on one line.
 
+### Built in slice 3.8b Edit layout, modal resources, Settings tabs (2026-11-22)
+- Common edit layout on Projects, Posts, Services and Experience: Cancel, Preview (when public), Delete and Save in the page header; Create pages show Cancel and Create. "Save and publish" is removed: publishing is the Status field in the Publishing card.
+- Categories, Tags, Redirects and Clients are managed on one list page with create and edit in a modal (no separate create/edit URLs).
+- One Settings page (Filament cluster) with tabs Profile, SEO, Invoicing, Payment at `/admin/settings/*`; each tab keeps its own settings class, validation and encryption; "Save changes" sits in the header. The MCP tab arrives with 3.9c.
+
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 

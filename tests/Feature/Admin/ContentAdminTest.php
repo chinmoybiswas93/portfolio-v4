@@ -5,10 +5,13 @@ declare(strict_types=1);
 use App\Enums\PublishStatus;
 use App\Filament\Pages\ManagePayment;
 use App\Filament\Pages\ManageProfile;
+use App\Filament\Resources\Categories\Pages\ManageCategories;
 use App\Filament\Resources\Projects\Pages\CreateProject;
 use App\Filament\Resources\Projects\Pages\EditProject;
+use App\Filament\Resources\Projects\ProjectResource;
 use App\Filament\Resources\Services\Pages\CreateService;
 use App\Filament\Widgets\RecentPosts;
+use App\Models\Category;
 use App\Models\Post;
 use App\Models\Project;
 use App\Models\Service;
@@ -95,11 +98,12 @@ it('stores project images uploaded in admin on the public disk', function (): vo
         ->and($project->getFirstMedia('gallery')?->disk)->toBe('public');
 });
 
-it('publishes a project with Save and publish', function (): void {
+it('publishes a project by setting the status and saving', function (): void {
     $project = Project::factory()->draft()->create();
 
     Livewire::test(EditProject::class, ['record' => $project->getRouteKey()])
-        ->callAction('saveAndPublish')
+        ->fillForm(['status' => PublishStatus::Published->value])
+        ->call('save')
         ->assertHasNoFormErrors();
 
     expect($project->refresh()->status)->toBe(PublishStatus::Published)
@@ -135,4 +139,27 @@ it('shows the five most recently edited posts on the dashboard', function (): vo
 
     Livewire::test(RecentPosts::class)
         ->assertSee('Fresh draft')->assertSee('Draft · edited today')->assertDontSee('Oldest post');
+});
+
+it('edits small resources in a modal and keeps their slug rules', function (): void {
+    $category = Category::factory()->create(['name' => 'WordPress', 'slug' => 'wordpress']);
+
+    Livewire::test(ManageCategories::class)
+        ->callTableAction('edit', $category, data: ['name' => 'WordPress tips'])
+        ->assertHasNoTableActionErrors();
+
+    expect($category->refresh()->name)->toBe('WordPress tips');
+});
+
+it('puts Cancel, Preview, Delete and Save in the edit page header', function (): void {
+    $project = Project::factory()->caseStudy()->create();
+
+    Livewire::test(EditProject::class, ['record' => $project->getRouteKey()])
+        ->assertActionVisible('cancel')->assertActionVisible('preview')->assertActionVisible('delete')->assertActionVisible('save')
+        ->assertActionHasUrl('cancel', ProjectResource::getUrl('index'));
+});
+
+it('shows the settings groups as tabs of one Settings page', function (): void {
+    $this->get('/admin/settings')->assertRedirect('/admin/settings/profile');
+    $this->get('/admin/settings/profile')->assertOk()->assertSee('Profile')->assertSee('SEO')->assertSee('Invoicing')->assertSee('Payment')->assertSee('Save changes');
 });

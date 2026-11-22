@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Clients;
 
-use App\Filament\Resources\Clients\Pages\CreateClient;
-use App\Filament\Resources\Clients\Pages\EditClient;
-use App\Filament\Resources\Clients\Pages\ListClients;
+use App\Filament\Resources\Clients\Pages\ManageClients;
 use App\Filament\Resources\Clients\Schemas\ClientForm;
 use App\Filament\Resources\Clients\Tables\ClientsTable;
 use App\Models\Client;
@@ -51,9 +49,7 @@ class ClientResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListClients::route('/'),
-            'create' => CreateClient::route('/create'),
-            'edit' => EditClient::route('/{record}/edit'),
+            'index' => ManageClients::route('/'),
         ];
     }
 

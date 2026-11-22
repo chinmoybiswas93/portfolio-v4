@@ -49,7 +49,7 @@ function adminGetPaths(): array
 }
 
 it('finds the admin screens to check', function (): void {
-    expect(count(adminGetPaths()))->toBeGreaterThan(30);
+    expect(count(adminGetPaths()))->toBeGreaterThan(20);
 });
 
 it('redirects guests to the login page from every admin route', function (string $path): void {
