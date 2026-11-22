@@ -25,7 +25,7 @@ class PostForm
         return $schema->columns(3)->components([
             Group::make()->columnSpan(2)->schema([
                 Section::make()->schema([
-                    ...Fields::titleAndSlug(),
+                    ...Fields::titleAndSlug(urlPrefix: 'blog'),
                     Textarea::make('excerpt')->rows(2)->maxLength(500)
                         ->helperText('One sentence for the list page and RSS.'),
                     MarkdownEditor::make('body_md')->label('Body')->required()

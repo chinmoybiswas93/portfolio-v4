@@ -624,6 +624,9 @@
 }
 
 .topbar-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
     color: var(--text);
     font-size: 17px;
     font-weight: 700;

@@ -79,6 +79,10 @@ Laravel web app: a public business portfolio for UK/EU clients and a private adm
 - **Syntax highlighting:** `tempest/highlight` (pure PHP at render time). Shiki is ruled out because posts are edited at runtime and there is no Node runtime.
 - **Media:** Spatie Laravel Media Library with Filament's Spatie plugin. See ADR-0005.
 
+## Invoice tax decision (owner, 2026-11-22, before slice 3.5)
+- **No per-line tax.** Lines have description, quantity and unit price only. Tax (VAT) is one optional rate applied to the **invoice total after discount**, so the "Tax" column is removed from the PDF and editor.
+- Clients get an optional **tax ID** (VAT number for UK/EU, EIN/tax ID for US). It is printed on the invoice following UK/EU/US conventions. The exact wording is confirmed at the start of 3.5.
+
 ## Design decisions (Phase 2, approved by the owner on 2026-11-22)
 Designs live in a private Claude design canvas (link in `.private/`). They are the reference for Phase 3 UI work.
 - **Direction:** an updated version of the current site, not a redesign. It is minimal, clean and Apple-like calm, with nothing distracting.
