@@ -184,3 +184,9 @@ it('runs the full flow: register, owner approves some scopes, PKCE exchange, sco
 
     expect(McpAuditLog::query()->where('client_id', $clientId)->pluck('result')->all())->toBe(['ok', 'denied']);
 });
+
+it('answers unauthenticated MCP calls in JSON even without a JSON Accept header', function (): void {
+    $this->call('POST', '/mcp', [], [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'text/html'], json_encode(mcpCall('tools/list')))
+        ->assertUnauthorized()->assertHeader('Content-Type', 'application/json');
+    $this->get('/login')->assertNotFound();
+});

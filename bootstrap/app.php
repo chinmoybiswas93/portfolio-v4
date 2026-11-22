@@ -22,6 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // No public "login" route (the admin path is private): MCP/OAuth answer 401 JSON, anything else goes home.
+        $middleware->redirectGuestsTo(fn (Request $request): ?string => $request->is('mcp', 'oauth/*', '.well-known/*') ? null : '/');
         // Public site: no session, no cookies, no CSRF (it has no forms), so pages can be cached for everyone.
         $middleware->group('public', [
             SecurityHeaders::class.':public',
@@ -32,7 +34,8 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
+            // MCP and OAuth endpoints always answer in JSON (no redirect to a login page).
+            fn (Request $request) => $request->is('api/*', 'mcp', 'oauth/*', '.well-known/*') || $request->expectsJson(),
         );
         // A tampered Livewire snapshot is rejected; answer like an expired page (419), not a server error.
         $exceptions->render(fn (CorruptComponentPayloadException $e) => response()->json(['message' => 'Page expired. Reload and try again.'], 419));

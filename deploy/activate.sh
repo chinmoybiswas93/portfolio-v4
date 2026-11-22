@@ -44,6 +44,12 @@ if [ -f "$SHARED/.htpasswd" ]; then
     echo "AuthName \"Staging\""
     echo "AuthUserFile \"$SHARED/.htpasswd\""
     echo "Require valid-user"
+    echo "# MCP and OAuth endpoints carry their own Bearer/PKCE auth (ADR-0009); a second Authorization header is impossible."
+    echo "SetEnvIf Request_URI \"^/(mcp\$|oauth/|\\.well-known/oauth-)\" mcp_open"
+    echo "Order allow,deny"
+    echo "Allow from env=mcp_open"
+    echo "Allow from env=REDIRECT_mcp_open"
+    echo "Satisfy any"
     echo "Header always set X-Robots-Tag \"noindex, nofollow\""
     echo "# END staging basic auth"
     echo
