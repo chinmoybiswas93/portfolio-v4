@@ -165,6 +165,12 @@ The canvas is updated to match; it remains the source of truth for UI.
 - `robots.txt` no longer lists the admin path; admin, Livewire and `/up` responses send `X-Robots-Tag: noindex, nofollow`.
 - Authenticator label "CB Portfolio" for new 2FA set-ups; re-enrol steps are in `docs/MANUAL_STEPS.md`.
 
+### Built in slice 3.8h Admin density and fixed width (2026-11-23)
+- Admin content has a fixed, centred max width (Filament `6xl`, 72rem) instead of full width.
+- Every section uses Filament's compact size. Modal forms (Categories, Tags, Redirects, Clients) have no inner card. Case-study tabs are left-aligned underline tabs with no extra box.
+- Results/metrics and profile social links are compact table repeaters with a "+ Add …" text action.
+- Remaining: dropdowns are still a few pixels taller than text inputs; this is tracked for the next admin pass.
+
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 

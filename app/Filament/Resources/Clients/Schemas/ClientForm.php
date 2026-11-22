@@ -19,7 +19,7 @@ class ClientForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Company')->columns(2)->columnSpanFull()->schema([
+            Section::make('Company')->contained(false)->compact()->columns(2)->columnSpanFull()->schema([
                 TextInput::make('company_name')->required()->maxLength(255),
                 TextInput::make('contact_name')->maxLength(255),
                 TextInput::make('email')->label('Billing email')->email()->required()->maxLength(255),
@@ -27,7 +27,7 @@ class ClientForm
                 Select::make('default_currency')->options(collect(Currency::cases())->mapWithKeys(fn (Currency $c): array => [$c->value => $c->value.' ('.$c->symbol().')']))
                     ->default(Currency::GBP->value)->required()->native(false)->selectablePlaceholder(false),
             ]),
-            Section::make('Address and tax')->columns(2)->columnSpanFull()->schema([
+            Section::make('Address and tax')->contained(false)->compact()->columns(2)->columnSpanFull()->schema([
                 TextInput::make('address_line1')->label('Address line 1')->maxLength(255),
                 TextInput::make('address_line2')->label('Address line 2')->maxLength(255),
                 TextInput::make('city')->maxLength(255),

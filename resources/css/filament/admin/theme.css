@@ -393,3 +393,51 @@ html:not(.dark) .fi-page-sub-navigation-tabs {
 .fi-modal-footer-actions {
     justify-content: flex-end;
 }
+
+/* ---------- 3.8h density (canvas v18) ---------- */
+/* Dropdowns match the 32 px inputs. */
+.fi-select-input .fi-select-input-btn {
+    min-height: 2rem;
+    padding-block: 0.25rem;
+    font-size: 0.8125rem;
+}
+
+/* Uncontained form tabs (case study): left-aligned underline tabs, no pill box. */
+.fi-sc-tabs:not(.fi-contained) > .fi-tabs {
+    justify-content: flex-start;
+    margin-inline: 0;
+    padding: 0;
+    gap: 0.25rem;
+    border: 0;
+    border-bottom: 1px solid #1e293b;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.fi-sc-tabs:not(.fi-contained) > .fi-tabs .fi-tabs-item {
+    height: 2rem;
+    padding: 0 0.75rem;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    font-size: 0.8125rem;
+}
+
+.fi-sc-tabs:not(.fi-contained) > .fi-tabs .fi-tabs-item.fi-active {
+    border-bottom-color: #2dd4bf;
+    background: transparent;
+}
+
+html:not(.dark) .fi-sc-tabs:not(.fi-contained) > .fi-tabs {
+    border-bottom-color: #e2e8f0;
+}
+
+/* Repeater "+ Add …" text actions in the accent colour. */
+.fi-fo-repeater-add .fi-link {
+    color: #2dd4bf;
+}
+
+html:not(.dark) .fi-fo-repeater-add .fi-link {
+    color: #0f766e;
+}

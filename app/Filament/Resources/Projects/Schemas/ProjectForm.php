@@ -6,6 +6,7 @@ namespace App\Filament\Resources\Projects\Schemas;
 
 use App\Enums\PublishStatus;
 use App\Filament\Support\Fields;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
@@ -22,6 +23,7 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Alignment;
 
 /**
  * Project editor laid out as in the approved canvas: content on the left (basics, case study, media),
@@ -59,7 +61,7 @@ class ProjectForm
                     ->schema([
                         Toggle::make('has_case_study')->label('Has case study')->live()
                             ->helperText('Off: the project links to its live site instead of a case study page.'),
-                        Tabs::make('Case study sections')
+                        Tabs::make('Case study sections')->contained(false)
                             ->visible(fn (Get $get): bool => (bool) $get('has_case_study'))
                             ->tabs([
                                 Tab::make('Problem')->schema([
@@ -126,7 +128,9 @@ class ProjectForm
                         ->schema([
                             TextInput::make('label')->placeholder('e.g. Page load')->required()->maxLength(60),
                             TextInput::make('value')->placeholder('e.g. 1.2 s')->required()->maxLength(30),
-                        ])->reorderable(false)->maxItems(6)->defaultItems(0)->addActionLabel('Add metric')
+                        ])->reorderable(false)->maxItems(6)->defaultItems(0)->compact()
+                        ->addActionLabel('+ Add metric')->addActionAlignment(Alignment::Start)
+                        ->addAction(fn (Action $action) => $action->link()->size('sm'))
                         ->helperText('Only real, verifiable numbers.'),
                 ]),
 

@@ -10,6 +10,7 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\EmbeddedTable;
 use Filament\Schemas\Components\RenderHook;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Facades\FilamentView;
 use Filament\Support\Icons\Heroicon;
@@ -36,6 +37,9 @@ final class StandardTable
                 ->striped(false)
                 ->extraAttributes(['class' => 'cb-table']);
         });
+
+        // Compact cards everywhere (canvas v18): smaller section padding.
+        Section::configureUsing(fn (Section $section) => $section->compact());
 
         // Modal create/edit (canvas "Admin-Modal-Resource"): one Create button, footer on the right.
         CreateAction::configureUsing(fn (CreateAction $action) => $action->createAnother(false));
