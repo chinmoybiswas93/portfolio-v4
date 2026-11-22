@@ -11,6 +11,7 @@ use App\Mcp\Tools\ListClients;
 use App\Mcp\Tools\ListContent;
 use App\Mcp\Tools\ListInvoices;
 use App\Mcp\Tools\SaveContent;
+use App\Mcp\Tools\SaveInvoiceDraft;
 use App\Mcp\Tools\ScopedTool;
 use App\Mcp\Tools\TrashContent;
 use App\Mcp\Tools\UpdateProfile;
@@ -41,6 +42,7 @@ final class PortfolioServer extends Server
         UpdateSeo::class,
         UpdateProfile::class,
         UploadImage::class,
+        SaveInvoiceDraft::class,
     ];
 
     protected array $tools = self::TOOLS;

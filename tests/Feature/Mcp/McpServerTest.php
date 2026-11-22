@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Filament\Pages\Mcp\ConnectedApps;
 use App\Models\Invoice;
 use App\Models\McpAuditLog;
 use App\Models\Post;
@@ -183,6 +184,13 @@ it('runs the full flow: register, owner approves some scopes, PKCE exchange, sco
     $this->withToken($access)->postJson('/mcp', mcpCall('tools/call', ['name' => 'list-invoices', 'arguments' => []]))->assertForbidden();
 
     expect(McpAuditLog::query()->where('client_id', $clientId)->pluck('result')->all())->toBe(['ok', 'denied']);
+
+    // Revoke in Connected apps: the access token stops working and the refresh token can't mint a new one.
+    ConnectedApps::revoke(Client::query()->findOrFail($clientId));
+    auth()->forgetGuards();
+    $this->withToken($access)->postJson('/mcp', mcpCall('tools/call', ['name' => 'list-content', 'arguments' => ['type' => 'post']]))->assertUnauthorized();
+    $this->postJson('/oauth/token', ['grant_type' => 'refresh_token', 'client_id' => $clientId, 'refresh_token' => $tokens->json('refresh_token')])->assertStatus(400);
+    expect(Client::query()->findOrFail($clientId)->getAttribute('scopes'))->toBeNull();
 });
 
 it('answers unauthenticated MCP calls in JSON even without a JSON Accept header', function (): void {
