@@ -1,0 +1,24 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+/* System font stack, as on the public site (no web fonts are loaded). */
+:root {
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif !important;
+}
+
+/* Navy surfaces from the approved design: page #0F172A, panels #111C33, lines #1E293B. */
+.dark .fi-body,
+.dark .fi-layout {
+    background-color: #0f172a;
+}
+
+.dark .fi-sidebar,
+.dark .fi-topbar > nav,
+.dark .fi-section,
+.dark .fi-ta-ctn,
+.dark .fi-wi-stats-overview-stat,
+.dark .fi-simple-main {
+    background-color: #111c33;
+}

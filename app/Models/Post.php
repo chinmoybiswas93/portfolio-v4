@@ -38,6 +38,9 @@ class Post extends Model implements HasMedia
     protected static function booted(): void
     {
         static::saving(function (self $post): void {
+            if ($post->status === PostStatus::Published && $post->published_at === null) {
+                $post->published_at = now();
+            }
             if ($post->isDirty('body_md')) {
                 $post->reading_minutes = ReadingTime::minutes($post->body_md);
             }

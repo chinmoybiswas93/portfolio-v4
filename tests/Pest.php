@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Models\User;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -49,4 +51,21 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/*
+|--------------------------------------------------------------------------
+| Helpers
+|--------------------------------------------------------------------------
+*/
+
+/** An admin who has completed two-factor set-up, as required by the panel. */
+function adminWithMfa(): User
+{
+    $user = User::factory()->create(['email_verified_at' => now()]);
+    $user->is_admin = true;
+    $user->save();
+    $user->saveAppAuthenticationSecret(AppAuthentication::make()->generateSecret());
+
+    return $user->refresh();
 }

@@ -15,3 +15,5 @@ parameters:
         - config/settings.php
     level: 6
     checkModelProperties: true
+    # Read the casts() methods so enum, date and array casts are typed correctly
+    parseModelCastsMethod: true

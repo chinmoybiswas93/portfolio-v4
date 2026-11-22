@@ -54,6 +54,15 @@ return [
 
     'channels' => [
 
+        // Authentication events (failed and throttled admin logins). No passwords or emails are logged.
+        'security' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/security.log'),
+            'level' => 'info',
+            'days' => 90,
+            'replace_placeholders' => true,
+        ],
+
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', (string) env('LOG_STACK', 'single')),
