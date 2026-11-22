@@ -34,6 +34,8 @@ class ManagePayment extends SettingsPage
                 ->schema([
                     TextInput::make('business_name')->maxLength(120),
                     TextInput::make('business_email')->email()->maxLength(255),
+                    TextInput::make('business_tax_id')->label('Your tax ID (optional)')->maxLength(64)
+                        ->helperText('Printed under your business details on invoices. Stored encrypted.'),
                     Textarea::make('business_address')->rows(3)->maxLength(400)->columnSpanFull(),
                 ]),
             Section::make('How clients pay you')->columns(2)->columnSpanFull()

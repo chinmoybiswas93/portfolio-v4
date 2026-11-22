@@ -15,3 +15,5 @@ Schedule::command('queue:work database --stop-when-empty --max-time=50 --tries=3
 
 Schedule::command('queue:prune-failed --hours=168')->daily();
 Schedule::command('model:prune')->daily();
+
+Schedule::command('invoices:mark-overdue')->dailyAt('06:00')->timezone('Europe/London');

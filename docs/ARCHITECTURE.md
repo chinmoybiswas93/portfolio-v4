@@ -188,6 +188,7 @@ erDiagram
     json client_snapshot "frozen at issue"
     json seller_snapshot "business + payment details at issue"
     string discount_type "none|percent|fixed"
+    int tax_rate_bp "VAT on the total, 0 = none"
     int discount_value "bp or minor units"
     bigint subtotal_minor
     bigint discount_minor
@@ -210,12 +211,7 @@ erDiagram
     string description
     int quantity_milli
     bigint unit_price_minor
-    int discount_bp
-    int tax_rate_bp
-    bigint net_minor
-    bigint discount_minor
-    bigint tax_minor
-    bigint total_minor
+    bigint amount_minor
   }
   invoice_emails {
     bigint id PK
@@ -255,12 +251,13 @@ Framework tables (not shown): `sessions`, `cache`, `cache_locks`, `jobs`, `job_b
 - **Experience:** `ended_on = null` means current. There is no separate `current` flag (avoids contradictory states).
 - **Projects:** `has_case_study=false` projects appear in the archive but link to the live URL instead of a detail page.
 - **Invoice numbering (`INV-2026-0001`):** drafts have **no number**. On *Issue*, a transaction runs `SELECT MAX(sequence_no) … WHERE sequence_year=? FOR UPDATE`, then +1 and a unique index `(sequence_year, sequence_no)`. This gives gap-free, sequential numbers as UK/EU practice expects. Issued invoices are **locked**: items, amounts and snapshots are read-only, and corrections are made by cancel + reissue (or a credit note, out of scope).
-- **Invoice maths** (`App\Domain\Invoicing\InvoiceCalculator`, pure and unit-tested first):
-  1. `net = round_half_up(quantity_milli × unit_price_minor / 1000)`
-  2. `line_discount = round_half_up(net × discount_bp / 10000)`
-  3. The invoice-level discount (percent or fixed) is **allocated pro rata** across lines by taxable amount using the largest-remainder method, so allocations sum exactly to the discount and tax is computed on the discounted amount.
-  4. `line_tax = round_half_up(taxable × tax_rate_bp / 10000)`, rounded **per line**.
-  5. Totals are sums of line values. Every amount uses the invoice currency (2 decimal places for GBP/EUR/USD, via `brick/money` contexts).
+- **Invoice maths** (`App\Domain\Invoicing\InvoiceCalculator`, pure and unit-tested first; owner decision 2026-11-22: no per-line tax or discount):
+  1. Line amount: `amount = round_half_up(quantity_milli × unit_price_minor / 1000)`.
+  2. `subtotal = Σ amount`.
+  3. One optional invoice-level discount: `percent` (basis points) → `discount = round_half_up(subtotal × bp / 10000)`; `fixed` → minor units. It can never exceed the subtotal.
+  4. `taxable = subtotal − discount`; one optional VAT rate on the total: `tax = round_half_up(taxable × tax_rate_bp / 10000)`.
+  5. `total = taxable + tax`. Integers only (int64), half-up rounding, 2 decimal places for GBP/EUR/USD.
+- **Tax wording on the invoice:** the client's optional tax ID is labelled by country: UK "VAT reg. no.", EU "VAT ID", US "EIN / Tax ID", others "Tax ID". At 0% for a UK/EU client with a tax ID the invoice prints *"Reverse charge: the customer is liable to account for VAT."*; otherwise it prints the default tax note from settings ("VAT not applicable"). The owner's own optional tax ID (encrypted setting) prints under the business details.
 - **Statuses** (`InvoiceStatus`): `Draft → Issued(Sent) → Paid`, `Sent → Overdue` (daily job when `due_date < today`), `Overdue → Paid`, and any non-paid status → `Cancelled`. *Sent* is set by a successful email or a manual "mark as sent". A transition guard rejects illegal transitions.
 
 ## 4. Route map

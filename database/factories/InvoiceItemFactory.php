@@ -24,8 +24,6 @@ class InvoiceItemFactory extends Factory
             'description' => fake()->sentence(4),
             'quantity_milli' => 1000,
             'unit_price_minor' => fake()->numberBetween(1000, 100000),
-            'discount_bp' => 0,
-            'tax_rate_bp' => 0,
         ];
     }
 }

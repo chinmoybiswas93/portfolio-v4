@@ -18,6 +18,9 @@ final class PaymentSettings extends Settings
 
     public ?string $business_email;
 
+    /** Optional (e.g. Bangladesh TIN/BIN, or a VAT number later); printed under the business details. */
+    public ?string $business_tax_id;
+
     public ?string $bank_details;
 
     public ?string $wise_details;
@@ -34,6 +37,6 @@ final class PaymentSettings extends Settings
      */
     public static function encrypted(): array
     {
-        return ['business_name', 'business_address', 'business_email', 'bank_details', 'wise_details', 'paypal_email'];
+        return ['business_name', 'business_address', 'business_email', 'business_tax_id', 'bank_details', 'wise_details', 'paypal_email'];
     }
 }
