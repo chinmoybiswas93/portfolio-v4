@@ -25,7 +25,13 @@ class Tag extends Model
     /** One shared pool: "WordPress", "wordpress" and "Word Press" all resolve to the same tag. */
     public static function findOrCreateByName(string $name): self
     {
-        return self::query()->firstOrCreate(['slug' => Str::slug($name)], ['name' => trim($name)]);
+        // A trashed tag with the same slug is brought back rather than colliding with the unique slug.
+        $tag = self::withTrashed()->firstOrCreate(['slug' => Str::slug($name)], ['name' => trim($name)]);
+        if ($tag->trashed()) {
+            $tag->restore();
+        }
+
+        return $tag;
     }
 
     /**

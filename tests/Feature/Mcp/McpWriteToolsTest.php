@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Models\Category;
 use App\Models\McpAuditLog;
 use App\Models\Post;
 use App\Models\Project;
 use App\Models\Service;
+use App\Models\Tag;
 use App\Settings\ProfileSettings;
 use App\Settings\SeoSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -175,4 +177,15 @@ it('rejects other file types, oversize images and URLs', function (): void {
     ob_start();
     imagepng($big);
     expect(callTool('upload-image', ['target' => 'project', 'id' => $project->id, 'slot' => 'gallery', 'data_base64' => base64_encode((string) ob_get_clean()), 'alt' => 'x']))->toContain('6000');
+});
+
+it('brings back a trashed tag or category when its name is used again', function (): void {
+    asMcp(['content:write']);
+    Tag::factory()->create(['name' => 'Laravel', 'slug' => 'laravel'])->delete();
+    Category::factory()->create(['name' => 'Notes', 'slug' => 'notes'])->delete();
+
+    $saved = callTool('save-content', ['type' => 'post', 'fields' => ['title' => 'T', 'body_md' => 'x', 'tags' => ['Laravel'], 'category' => 'Notes']]);
+
+    $post = Post::query()->with(['tags', 'category'])->findOrFail($saved['id']);
+    expect($post->tags->pluck('slug')->all())->toBe(['laravel'])->and($post->category?->slug)->toBe('notes');
 });

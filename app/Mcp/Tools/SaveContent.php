@@ -76,10 +76,14 @@ final class SaveContent extends ScopedTool
         DB::transaction(function () use ($model, $data, $tags, $categoryName): void {
             $model->fill($data);
             if ($model instanceof Post && $categoryName !== false) {
-                $model->category_id = $categoryName === null ? null : Category::query()->firstOrCreate(
+                $category = $categoryName === null ? null : Category::withTrashed()->firstOrCreate(
                     ['slug' => Str::slug((string) $categoryName)],
                     ['name' => trim((string) $categoryName)],
-                )->getKey();
+                );
+                if ($category?->trashed()) {
+                    $category->restore(); // reuse a trashed category instead of colliding with its unique slug
+                }
+                $model->category_id = $category?->getKey();
             }
             $model->save();
             if (is_array($tags) && method_exists($model, 'syncTagNames')) {
