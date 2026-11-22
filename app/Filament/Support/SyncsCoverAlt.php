@@ -44,6 +44,8 @@ trait SyncsCoverAlt
             return;
         }
 
+        // Reload: the media relation may have been loaded (empty) before the upload was attached.
+        $record->load('media');
         $media = $record->getFirstMedia('cover');
         if ($media !== null && $media->getCustomProperty('alt') !== $alt) {
             $media->setCustomProperty('alt', $alt)->save();

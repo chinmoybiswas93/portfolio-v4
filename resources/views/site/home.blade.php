@@ -101,7 +101,7 @@
                         @foreach ($projects as $project)
                             @php($cover = $project->getFirstMedia('cover'))
                             <li>
-                                <a class="row-link proj cb-row" href="{{ $project->primaryUrl() ?? route('projects.index') }}" @if ($project->linksExternally()) rel="noopener" target="_blank" @endif>
+                                <a class="row-link proj card cb-row" href="{{ $project->primaryUrl() ?? route('projects.index') }}" @if ($project->linksExternally()) rel="noopener" target="_blank" @endif>
                                     @if ($cover)
                                         <x-site.media-image :media="$cover" conversion="card" sizes="(min-width: 640px) 150px, 100vw" />
                                     @else
@@ -111,7 +111,7 @@
                                         @if ($project->metaLine() !== '')
                                             <p class="meta">{{ $project->metaLine() }}</p>
                                         @endif
-                                        <h3 class="row-heading row-title">{{ $project->title }}</h3>
+                                        <h3 class="row-heading card-title">{{ $project->title }}</h3>
                                         <p class="body-sm">{{ $project->summary }}</p>
                                         <p class="cta">
                                             @if ($project->has_case_study)
@@ -152,7 +152,7 @@
             <section id="contact" class="section" aria-labelledby="contact-h">
                 <h2 id="contact-h" class="eyebrow">Contact</h2>
                 <p class="contact-statement mt-4">Have a WordPress or Laravel project in mind? Tell me about it.</p>
-                <p class="m-0 mt-4"><a class="contact-email" href="mailto:{{ $email }}">{{ $email }}</a></p>
+                <p class="m-0 mt-4"><a class="contact-email" href="mailto:{{ $email }}"><x-site.icon name="email" /><span>{{ $email }}</span></a></p>
             </section>
 
             <footer class="site-footer">

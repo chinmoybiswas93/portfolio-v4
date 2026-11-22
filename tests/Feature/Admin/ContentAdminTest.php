@@ -6,6 +6,7 @@ use App\Enums\PublishStatus;
 use App\Filament\Pages\ManagePayment;
 use App\Filament\Pages\ManageProfile;
 use App\Filament\Resources\Projects\Pages\CreateProject;
+use App\Filament\Resources\Projects\Pages\EditProject;
 use App\Filament\Resources\Services\Pages\CreateService;
 use App\Models\Project;
 use App\Models\Service;
@@ -70,4 +71,35 @@ it('rejects SVG uploads for public images', function (): void {
         ->fillForm(['avatar_path' => $svg])
         ->call('save')
         ->assertHasFormErrors(['avatar_path']);
+});
+
+it('stores project images uploaded in admin on the public disk', function (): void {
+    Storage::fake('public');
+    Storage::fake('local');
+
+    Livewire::test(CreateProject::class)
+        ->fillForm([
+            'title' => 'With images', 'slug' => 'with-images', 'status' => 'draft',
+            'cover' => [UploadedFile::fake()->image('cover.jpg', 800, 500)],
+            'cover_alt' => 'Home page',
+            'gallery' => [UploadedFile::fake()->image('shot.jpg', 800, 500)],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $project = Project::query()->where('slug', 'with-images')->firstOrFail();
+    expect($project->getFirstMedia('cover')?->disk)->toBe('public')
+        ->and($project->getFirstMedia('cover')?->getCustomProperty('alt'))->toBe('Home page')
+        ->and($project->getFirstMedia('gallery')?->disk)->toBe('public');
+});
+
+it('publishes a project with Save and publish', function (): void {
+    $project = Project::factory()->draft()->create();
+
+    Livewire::test(EditProject::class, ['record' => $project->getRouteKey()])
+        ->callAction('saveAndPublish')
+        ->assertHasNoFormErrors();
+
+    expect($project->refresh()->status)->toBe(PublishStatus::Published)
+        ->and($project->published_at)->not->toBeNull();
 });
