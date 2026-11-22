@@ -77,12 +77,12 @@ class InvoiceForm
                             TableColumn::make('Line total')->width('120px'),
                         ])
                         ->schema([
-                            Textarea::make('description')->rows(1)->autosize()->required()->maxLength(2000)
+                            Textarea::make('description')->extraInputAttributes(['aria-label' => 'Description'])->rows(1)->autosize()->required()->maxLength(2000)
                                 ->placeholder('Title, then an optional second line with details'),
-                            TextInput::make('quantity_milli')->required()->default('1')->rule(self::DECIMAL_3)->live(onBlur: true)
+                            TextInput::make('quantity_milli')->extraInputAttributes(['aria-label' => 'Quantity'])->required()->default('1')->rule(self::DECIMAL_3)->live(onBlur: true)
                                 ->formatStateUsing(fn (mixed $state): string => is_int($state) ? Money::toDecimalString($state, 3, trim: true) : (string) ($state ?? '1'))
                                 ->dehydrateStateUsing(fn (mixed $state): int => Money::parseDecimal($state, 3) ?? 0),
-                            TextInput::make('unit_price_minor')->required()->rule(self::DECIMAL_2)->live(onBlur: true)->placeholder('0.00')
+                            TextInput::make('unit_price_minor')->extraInputAttributes(['aria-label' => 'Unit price'])->required()->rule(self::DECIMAL_2)->live(onBlur: true)->placeholder('0.00')
                                 ->formatStateUsing(fn (mixed $state): string => is_int($state) ? Money::toDecimalString($state, 2) : (string) ($state ?? ''))
                                 ->dehydrateStateUsing(fn (mixed $state): int => Money::parseDecimal($state, 2) ?? 0),
                             Placeholder::make('line_total')->hiddenLabel()
