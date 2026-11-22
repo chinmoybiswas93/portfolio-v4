@@ -86,7 +86,7 @@ jobs:
         run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
 
       - name: Pest (MariaDB)
-        run: vendor/bin/pest --parallel --testsuite=Unit,Feature
+        run: vendor/bin/pest --parallel --testsuite=Unit,Feature --coverage --min=88
 
       - name: Mutation testing (invoice maths, min 90%)
         run: vendor/bin/pest tests/Unit/Invoicing --mutate --min=90

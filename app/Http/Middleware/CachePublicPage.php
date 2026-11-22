@@ -25,6 +25,9 @@ final class CachePublicPage
         }
 
         $key = $this->cache->key($request);
+        if ($key === null) {
+            return $next($request);
+        }
 
         /** @var array{content: string, type: string}|null $hit */
         $hit = $this->cache->store()->get($key);

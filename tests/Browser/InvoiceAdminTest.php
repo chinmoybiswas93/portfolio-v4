@@ -8,6 +8,7 @@ use App\Enums\DiscountType;
 use App\Models\Client;
 use App\Models\Invoice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
@@ -16,6 +17,7 @@ uses(RefreshDatabase::class);
  * tests/Browser/Screenshots (git-ignored) when SCREENSHOTS=1.
  */
 beforeEach(function (): void {
+    Storage::fake('local'); // issued PDFs must never touch the real disk
     $this->actingAs(adminWithMfa());
     $client = Client::factory()->create(['company_name' => 'Acme Ltd', 'country_code' => 'GB', 'vat_number' => 'GB123456789', 'default_currency' => 'GBP']);
     $this->draft = Invoice::factory()->for($client)->create(['discount_type' => DiscountType::Percent, 'discount_value' => 500, 'reference' => 'Website care plan — November 2026']);

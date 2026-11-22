@@ -6,6 +6,7 @@ namespace App\Filament\Resources\Projects\Tables;
 
 use App\Enums\PublishStatus;
 use App\Filament\Support\StandardTable;
+use App\Models\Project;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -20,6 +21,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class ProjectsTable
 {
@@ -27,7 +29,8 @@ class ProjectsTable
     {
         return $table
             ->columns([
-                SpatieMediaLibraryImageColumn::make('cover')->collection('cover')->conversion('thumb')->label('')->width(80),
+                SpatieMediaLibraryImageColumn::make('cover')->collection('cover')->conversion('thumb')->label(new HtmlString('<span class="sr-only">Cover image</span>'))->width(80)->disabledClick() // the title already links to the edit page
+                    ->extraImgAttributes(fn (Project $record): array => ['alt' => 'Edit '.$record->title]),
                 TextColumn::make('title')->searchable()->sortable()->weight('medium'),
                 TextColumn::make('year')->sortable(),
                 TextColumn::make('status')->badge(),

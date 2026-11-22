@@ -18,6 +18,7 @@ use Filament\Tables\Table;
 use Filament\Tables\View\TablesRenderHook;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\HtmlString;
 
 /**
  * One table design for every admin list (owner, 2026-11-22; canvas "Admin-Invoices"): tabs and filters in the
@@ -35,6 +36,8 @@ final class StandardTable
                 ->paginationPageOptions([self::PER_PAGE])
                 ->defaultPaginationPageOption(self::PER_PAGE)
                 ->striped(false)
+                // Screen readers announce the row-actions column; sighted users see the icons.
+                ->recordActionsColumnLabel(new HtmlString('<span class="sr-only">Actions</span>'))
                 ->extraAttributes(['class' => 'cb-table']);
         });
 

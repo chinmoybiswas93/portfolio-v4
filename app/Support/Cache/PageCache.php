@@ -25,8 +25,17 @@ final class PageCache
         return Cache::store('pages');
     }
 
-    public function key(Request $request): string
+    /** Highest ?page= that is cached; anything else (non-numeric, 0, huge) is served but never stored. */
+    public const MAX_PAGE = 200;
+
+    /** Null when the request must not be cached, so junk query values can't fill the disk. */
+    public function key(Request $request): ?string
     {
+        $page = $request->query('page');
+        if ($page !== null && (! is_string($page) || ! ctype_digit($page) || (int) $page < 1 || (int) $page > self::MAX_PAGE)) {
+            return null;
+        }
+
         $query = collect($request->query())->only(self::ALLOWED_QUERY)->sortKeys()->all();
 
         return 'page:'.hash('sha256', $request->getPathInfo().'?'.http_build_query($query));

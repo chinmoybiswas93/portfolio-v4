@@ -60,8 +60,8 @@ class ManageProfile extends SettingsPage
                     ->addActionLabel('+ Add link')->addActionAlignment(Alignment::Start)
                     ->addAction(fn (Action $action) => $action->link()->size('sm'))
                     ->schema([
-                        Select::make('network')->required()->options(['github' => 'GitHub', 'linkedin' => 'LinkedIn', 'x' => 'X (Twitter)', 'email' => 'Email']),
-                        TextInput::make('url')->required()->maxLength(255)->rule('regex:#^(https://|mailto:)#')
+                        Select::make('network')->extraInputAttributes(['aria-label' => 'Network'])->required()->options(['github' => 'GitHub', 'linkedin' => 'LinkedIn', 'x' => 'X (Twitter)', 'email' => 'Email']),
+                        TextInput::make('url')->extraInputAttributes(['aria-label' => 'Link'])->required()->maxLength(255)->rule('regex:#^(https://|mailto:)#')
                             ->helperText('https://… or mailto:…'),
                     ]),
             ]),
