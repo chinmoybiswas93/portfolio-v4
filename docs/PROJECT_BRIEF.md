@@ -177,6 +177,10 @@ The canvas is updated to match; it remains the source of truth for UI.
 - **Admin transitions:** Filament SPA mode (Livewire navigate) with a teal progress bar and a short content fade.
 - **Share buttons:** LinkedIn, X and Facebook logos (inline SVG) and a link icon.
 
+### Built in slice 3.8k BDT currency (2026-11-23)
+- Bangladeshi taka (BDT, 2 decimals) alongside GBP, EUR and USD, in client defaults, invoices, filters and dashboard totals. No migration: currency columns are ISO codes.
+- Neither Inter nor DejaVu Sans has the ৳ glyph, so PDFs print the code ("BDT 1,234.50"); the admin and site show "৳". Amounts in the PDF no longer wrap, and the totals column is a little wider.
+
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 
