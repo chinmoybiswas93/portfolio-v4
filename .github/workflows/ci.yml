@@ -85,7 +85,13 @@ jobs:
         run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
 
       - name: Pest (MariaDB)
-        run: vendor/bin/pest --parallel
+        run: vendor/bin/pest --parallel --testsuite=Unit,Feature
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser smoke and accessibility tests
+        run: vendor/bin/pest --testsuite=Browser
 
       - name: Dependency audit
         run: |

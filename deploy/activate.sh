@@ -64,6 +64,9 @@ cd "$APP"
 ln -sfn "releases/$RELEASE" current.new
 mv -Tf current.new current
 
+# Cached pages reference the previous release's hashed assets: clear them as soon as the new release is live.
+(cd "$APP/current" && php artisan cache:clear pages --no-interaction >/dev/null) || log "Could not clear the page cache"
+
 rollback() {
   if [ -n "$PREVIOUS" ]; then
     log "Health check failed, rolling back to $PREVIOUS"

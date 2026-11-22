@@ -31,6 +31,9 @@ Use three Hostinger-native and in-app layers. They need no DNS change and no thi
 - No third-party scripts except the deferred **Cloudflare Web Analytics beacon** (a JS snippet only, with no DNS or proxy involvement).
 - Origin: OPcache, `artisan optimize`, `filament:optimize`, eager loading, and Markdown pre-rendered on save.
 
+## Implementation note (slice 3.4, 2026-11-22)
+`spatie/laravel-responsecache` cannot be used: 8.x requires PHP 8.4 (the server runs 8.3) and 7.x supports only Laravel ≤ 12. Layer 1 is a small in-house middleware instead (`App\Http\Middleware\CachePublicPage` + `App\Support\Cache\PageCache`). It caches 200 `text/html` GET responses on the public route group only, for 24 h, in the dedicated `pages` file store. It is flushed by a model observer (content and media), by the `SettingsSaved` event, and by `deploy/activate.sh` after every release switch. Public routes use a `public` middleware group without session, cookies or CSRF, so a cached page is identical for every visitor.
+
 ## Options considered
 | Option | Effort | DNS change | Verdict |
 |---|---|---|---|
