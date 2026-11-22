@@ -156,6 +156,10 @@ The canvas is updated to match; it remains the source of truth for UI.
 - **Post page:** breadcrumb; "On this page" contents from h2/h3 (sticky on desktop, collapsible on mobile, shown with two or more headings); share links for LinkedIn, X and Facebook (plain URLs, no scripts) and Copy link; related posts by shared tags, then same category; back to writing.
 - **Case study:** the live-site and source links sit at the end of the tags row; gallery images open in a native `<dialog>` lightbox with arrows, ← → and Esc, a counter and the alt text as caption.
 
+### Built in slice 3.8f Deploy preflight (2026-11-22)
+- The Deploy workflow starts with an SSH preflight job (before CI and the build) and checks again just before upload. With SSH off, it fails within seconds: "SSH is off — enable SSH Access in hPanel and re-run". A rejected key and a host-key mismatch get their own messages. Rollback uses the same shared setup action (`.github/actions/ssh-setup`).
+- Manual re-run: Actions → Deploy → Run workflow on `development` (staging). On `main` it stops with "enabled in Phase 5". Steps are in `docs/MANUAL_STEPS.md`.
+
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 

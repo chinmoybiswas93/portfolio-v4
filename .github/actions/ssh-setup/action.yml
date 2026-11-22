@@ -1,0 +1,59 @@
+name: SSH setup and preflight
+description: Writes the deploy key and SSH config for host alias "target", then checks the connection and fails fast with a clear message when SSH is switched off.
+
+inputs:
+  private-key:
+    required: true
+  known-hosts:
+    required: true
+  host:
+    required: true
+  port:
+    required: true
+  user:
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Configure SSH
+      shell: bash
+      env:
+        SSH_PRIVATE_KEY: ${{ inputs.private-key }}
+        SSH_KNOWN_HOSTS: ${{ inputs.known-hosts }}
+        SSH_HOST: ${{ inputs.host }}
+        SSH_PORT: ${{ inputs.port }}
+        SSH_USER: ${{ inputs.user }}
+      run: |
+        install -m 700 -d ~/.ssh
+        printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+        printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
+        {
+          echo "Host target"
+          echo "  HostName $SSH_HOST"
+          echo "  Port $SSH_PORT"
+          echo "  User $SSH_USER"
+          echo "  IdentityFile ~/.ssh/deploy_key"
+          echo "  IdentitiesOnly yes"
+          echo "  StrictHostKeyChecking yes"
+          echo "  ServerAliveInterval 30"
+          echo "  ConnectTimeout 15"
+        } > ~/.ssh/config
+
+    - name: SSH preflight
+      shell: bash
+      run: |
+        # The owner keeps SSH Access switched off in hPanel except while deploying.
+        if out=$(ssh -o BatchMode=yes target 'echo ok' 2>&1) && [ "$out" = "ok" ]; then
+          echo "SSH is on."
+          exit 0
+        fi
+        case "$out" in
+          *"Permission denied"*)
+            echo "::error title=SSH key rejected::The server refused the deploy key. Check the SSH_PRIVATE_KEY secret and the authorised keys in hPanel." ;;
+          *"Host key verification failed"*|*"REMOTE HOST IDENTIFICATION HAS CHANGED"*)
+            echo "::error title=Host key mismatch::The server's host key does not match SSH_KNOWN_HOSTS. Do not continue until this is understood." ;;
+          *)
+            echo "::error title=SSH is off::SSH is off — enable SSH Access in hPanel and re-run (Actions → this run → Re-run all jobs, or Deploy → Run workflow)." ;;
+        esac
+        exit 1
