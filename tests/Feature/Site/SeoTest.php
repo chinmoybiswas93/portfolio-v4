@@ -134,7 +134,9 @@ it('allows indexing in production and points crawlers to the sitemap', function 
 });
 
 it('caches the sitemap like a page and keeps admin out of the LiteSpeed cache', function (): void {
-    config(['cache.pages_enabled' => true]);
+    // Own in-memory store: parallel test processes share the file store and flush it on every model save.
+    config(['cache.pages_enabled' => true, 'cache.stores.pages' => ['driver' => 'array']]);
+    app('cache')->forgetDriver('pages');
     $this->get('/sitemap.xml')->assertHeader('X-Page-Cache', 'MISS');
     $this->get('/sitemap.xml')->assertHeader('X-Page-Cache', 'HIT');
     $this->get('/admin/login')->assertHeader('X-LiteSpeed-Cache-Control', 'no-cache');
