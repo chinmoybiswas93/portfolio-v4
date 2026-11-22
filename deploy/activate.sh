@@ -27,7 +27,7 @@ log() { printf '[activate] %s\n' "$*"; }
 # Shared storage layout
 mkdir -p "$SHARED/storage/app/public" "$SHARED/storage/app/private" \
   "$SHARED/storage/framework/cache/data" "$SHARED/storage/framework/sessions" \
-  "$SHARED/storage/framework/views" "$SHARED/storage/logs"
+  "$SHARED/storage/framework/views" "$SHARED/storage/framework/cache/pages" "$SHARED/storage/logs"
 
 cd "$REL"
 log "Linking shared files"

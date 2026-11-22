@@ -63,3 +63,11 @@ it('blocks sign-in after too many attempts in an hour', function (): void {
 it('sends the admin path from configuration', function (): void {
     expect(config('admin.path'))->toBe('admin');
 });
+
+it('sends security headers on admin pages too', function (): void {
+    $response = $this->get('/admin/login');
+
+    expect($response->headers->get('X-Frame-Options'))->toBe('DENY')
+        ->and($response->headers->get('X-Content-Type-Options'))->toBe('nosniff')
+        ->and($response->headers->has('Content-Security-Policy'))->toBeFalse();
+});
