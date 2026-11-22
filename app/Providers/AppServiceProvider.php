@@ -36,7 +36,9 @@ class AppServiceProvider extends ServiceProvider
             'user' => User::class,
         ]);
 
-        // Catch N+1 queries, silently discarded attributes and missing attributes outside production.
-        Model::shouldBeStrict(! $this->app->isProduction());
+        // Catch N+1 queries and silently discarded attributes outside production. (Not "missing attributes":
+        // freshly created models legitimately lack database-defaulted columns until refreshed.)
+        Model::preventLazyLoading(! $this->app->isProduction());
+        Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
     }
 }

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum PublishStatus: string
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
+
+enum PublishStatus: string implements HasColor, HasLabel
 {
     case Draft = 'draft';
     case Published = 'published';
@@ -12,5 +15,18 @@ enum PublishStatus: string
     public function label(): string
     {
         return ucfirst($this->value);
+    }
+
+    public function getLabel(): string
+    {
+        return ucfirst($this->value);
+    }
+
+    public function getColor(): string
+    {
+        return match ($this) {
+            self::Draft => 'gray',
+            self::Published => 'success',
+        };
     }
 }

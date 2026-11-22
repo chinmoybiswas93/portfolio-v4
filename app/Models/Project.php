@@ -35,6 +35,15 @@ class Project extends Model implements HasMedia
         'sort_order', 'seo_title', 'seo_description',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (self $project): void {
+            if ($project->status === PublishStatus::Published && $project->published_at === null) {
+                $project->published_at = now();
+            }
+        });
+    }
+
     protected function casts(): array
     {
         return [
