@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers\Filament;
 
 use App\Filament\Auth\Login;
+use App\Http\Middleware\SecurityHeaders;
 use App\Support\Filament\SystemFontProvider;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Enums\ThemeMode;
@@ -86,6 +87,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                SecurityHeaders::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
