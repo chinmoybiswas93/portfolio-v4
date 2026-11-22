@@ -6,7 +6,7 @@ namespace App\Actions\Invoicing;
 
 use App\Domain\Invoicing\InvalidInvoice;
 use App\Enums\EmailStatus;
-use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceAction;
 use App\Mail\InvoiceMail;
 use App\Models\Invoice;
 use App\Models\InvoiceEmail;
@@ -29,7 +29,7 @@ final class EmailInvoice
      */
     public function __invoke(Invoice $invoice, string $to, array $cc, string $subject, string $body, ?User $sender = null): InvoiceEmail
     {
-        if (in_array($invoice->status, [InvoiceStatus::Draft, InvoiceStatus::Cancelled], true)) {
+        if (! $invoice->status->allows(InvoiceAction::Email)) {
             throw new InvalidInvoice('Only issued invoices can be emailed.');
         }
 

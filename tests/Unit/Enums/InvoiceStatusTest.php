@@ -9,7 +9,7 @@ it('allows only valid status transitions', function (InvoiceStatus $from, Invoic
     expect($from->canTransitionTo($to))->toBe($allowed);
 })->with(function (): array {
     $allowed = [
-        'draft' => ['sent', 'cancelled'],
+        'draft' => ['sent'], // a draft has no number: it is deleted, never cancelled
         'sent' => ['overdue', 'paid', 'cancelled'],
         'overdue' => ['paid', 'cancelled'],
         'paid' => [],

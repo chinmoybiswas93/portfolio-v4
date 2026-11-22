@@ -143,6 +143,14 @@ The canvas is updated to match; it remains the source of truth for UI.
 - `/blog/tag/{slug}` shows any tag that has published posts (404 otherwise); the sitemap follows the same rule. The Tags list shows how many posts, projects and experience entries use each tag.
 - **Slugs** on posts, projects, services, categories and tags: optional in the form (made from the title or name when empty, with -2, -3… when taken), normalised to lowercase-with-hyphens on blur, and checked inline for format and uniqueness. The lock-and-Edit behaviour is unchanged.
 
+### Built in slice 3.8d Invoice actions and compact PDF (2026-11-22)
+- **One action matrix** (`InvoiceStatus::availableActions()`), checked by the editor buttons and by every server-side action:
+  - Draft: save, issue, duplicate, delete (a draft has no number, so it is deleted, not cancelled).
+  - Sent / Overdue: regenerate PDF, download, email, mark as paid, cancel, duplicate.
+  - Paid: regenerate PDF, download, email, duplicate.
+  - Cancelled: download, duplicate.
+- **Invoice PDF** in Inter (Regular, Medium, SemiBold; SIL OFL, files in `resources/fonts/inter`, loaded locally by DomPDF, no remote fonts) with the compact canvas v17 layout. DomPDF writes font metrics to `storage/fonts`, created on first use.
+
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 
