@@ -17,7 +17,6 @@ class Service extends Model
     use HasFactory;
 
     use HasSlug;
-
     use RendersMarkdown;
 
     protected $fillable = ['title', 'slug', 'summary', 'body_md', 'icon', 'sort_order', 'is_published'];

@@ -24,7 +24,6 @@ class Project extends Model implements HasMedia
     use HasFactory;
 
     use HasResponsiveImages;
-
     use HasSlug;
     use HasTags;
     use InteractsWithMedia;
