@@ -6,10 +6,14 @@ namespace App\Filament\Resources\Services\Tables;
 
 use App\Filament\Support\StandardTable;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
 class ServicesTable
@@ -24,7 +28,8 @@ class ServicesTable
             ])
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
-            ->recordActions(StandardTable::rowActions([EditAction::make()]))
+            ->filters([TrashedFilter::make()])
+            ->recordActions(StandardTable::rowActions([EditAction::make(), DeleteAction::make(), RestoreAction::make(), ForceDeleteAction::make()]))
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
     }
 }

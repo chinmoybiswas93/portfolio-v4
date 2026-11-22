@@ -7,9 +7,12 @@ namespace App\Filament\Resources\Projects\Tables;
 use App\Enums\PublishStatus;
 use App\Filament\Support\StandardTable;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
@@ -39,8 +42,7 @@ class ProjectsTable
                 TrashedFilter::make(),
             ])
             ->recordActions(StandardTable::rowActions([
-                EditAction::make(),
-            ]))
+                EditAction::make(), DeleteAction::make(), RestoreAction::make(), ForceDeleteAction::make()]))
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
