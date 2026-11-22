@@ -128,3 +128,24 @@ it('keeps the totals consistent for random invoices', function (): void {
             ->and($t->total)->toBe($t->taxable + $t->tax);
     }
 });
+
+it('accepts the exact boundaries', function (): void {
+    expect(InvoiceCalculator::BASIS_POINTS)->toBe(10_000);
+
+    $fullTax = $this->calc->calculate([line(1000, 1000)], taxRateBp: 10_000);
+    expect($fullTax->tax)->toBe(1000)->and($fullTax->total)->toBe(2000);
+
+    $fullDiscount = $this->calc->calculate([line(1000, 1000)], DiscountType::Percent, 10_000);
+    expect($fullDiscount->discount)->toBe(1000)->and($fullDiscount->total)->toBe(0);
+
+    expect($this->calc->calculate([line(1000, 1000)], DiscountType::Fixed)->discount)->toBe(0)
+        ->and($this->calc->calculate([line(1000, 1000)], DiscountType::Percent)->discount)->toBe(0);
+});
+
+it('allows zero quantities and prices', function (): void {
+    expect($this->calc->calculate([line(0, 500), line(1000, 0)])->lineAmounts)->toBe([0, 0]);
+});
+
+it('rejects a quantity or price of minus one', function (int $qty, int $price): void {
+    new InvoiceLine('Work', $qty, $price);
+})->with([[-1, 0], [0, -1]])->throws(InvalidInvoice::class);
