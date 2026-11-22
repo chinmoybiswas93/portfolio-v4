@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Mcp\ApproveMcpAuthorizationController;
+use App\Http\Middleware\Mcp\EnsureMcpEnabled;
 use App\Http\Middleware\Mcp\EnsureOwnerForConsent;
 use Illuminate\Support\Facades\Route;
 use Laravel\Passport\Http\Controllers\AccessTokenController;
@@ -14,7 +15,8 @@ use Laravel\Passport\Http\Controllers\DenyAuthorizationController;
  * Names match Passport's so laravel/mcp's discovery metadata points here. Only the authorization-code flow.
  */
 Route::prefix('oauth')->name('passport.')->group(function (): void {
-    Route::post('/token', [AccessTokenController::class, 'issueToken'])->middleware('throttle:30,1')->name('token');
+    // Token exchange and refresh also stop while MCP is switched off.
+    Route::post('/token', [AccessTokenController::class, 'issueToken'])->middleware([EnsureMcpEnabled::class, 'throttle:30,1'])->name('token');
 
     Route::middleware(['web', EnsureOwnerForConsent::class])->group(function (): void {
         Route::get('/authorize', [AuthorizationController::class, 'authorize'])->name('authorizations.authorize');

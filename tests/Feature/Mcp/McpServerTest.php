@@ -68,6 +68,8 @@ it('answers 503 when MCP is switched off, by env or in Settings', function (): v
     config(['mcp-server.enabled' => false]);
     $this->postJson('/mcp', mcpCall('tools/list'))->assertStatus(503);
 
+    $this->postJson('/oauth/token', ['grant_type' => 'refresh_token', 'refresh_token' => 'x'])->assertStatus(503);
+
     config(['mcp-server.enabled' => true]);
     $settings = app(McpSettings::class);
     $settings->enabled = false;
