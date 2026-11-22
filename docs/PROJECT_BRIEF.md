@@ -169,7 +169,7 @@ The canvas is updated to match; it remains the source of truth for UI.
 - Admin content has a fixed, centred max width (Filament `6xl`, 72rem) instead of full width.
 - Every section uses Filament's compact size. Modal forms (Categories, Tags, Redirects, Clients) have no inner card. Case-study tabs are left-aligned underline tabs with no extra box.
 - Results/metrics and profile social links are compact table repeaters with a "+ Add …" text action.
-- Remaining: dropdowns are still a few pixels taller than text inputs; this is tracked for the next admin pass.
+- Follow-up (3.8i): metrics and social links stay as inline rows in narrow columns (no stacked boxes); dropdowns are 32 px like text inputs; "+ Add" links in teal; post SEO section always open.
 
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.

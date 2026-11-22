@@ -161,10 +161,19 @@
     border-radius: 0.5rem;
 }
 
-.fi-input-wrp .fi-input,
-.fi-select-input {
+.fi-input-wrp .fi-input {
     padding-block: 0.3125rem;
     font-size: 0.8125rem;
+}
+
+/* Custom select: same height as a text input (no extra padding, 32 px inner minimum). */
+.fi-select-input {
+    padding-block: 0;
+    font-size: 0.8125rem;
+}
+
+.fi-select-input > div {
+    min-height: 2rem;
 }
 
 .fi-fo-field-wrp-helper-text,
@@ -434,10 +443,61 @@ html:not(.dark) .fi-sc-tabs:not(.fi-contained) > .fi-tabs {
 }
 
 /* Repeater "+ Add …" text actions in the accent colour. */
-.fi-fo-repeater-add .fi-link {
+:is(.fi-fo-repeater-add, .fi-fo-table-repeater-add) .fi-link {
     color: #2dd4bf;
 }
 
-html:not(.dark) .fi-fo-repeater-add .fi-link {
+html:not(.dark) :is(.fi-fo-repeater-add, .fi-fo-table-repeater-add) .fi-link {
     color: #0f766e;
+}
+
+/* Inline table repeater: keeps rows as rows in narrow columns (metrics, social links), no stacked boxes. */
+.cb-inline-repeater.fi-fo-table-repeater > table {
+    display: table;
+    width: 100%;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater > table > thead {
+    display: table-header-group;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater > table > tbody {
+    display: table-row-group;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater > table > tbody > tr {
+    display: table-row;
+    padding: 0;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater > table > tbody > tr > td {
+    display: table-cell;
+    padding: 0.25rem 0.375rem;
+    vertical-align: middle;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater > table > thead th {
+    padding: 0.25rem 0.375rem;
+    font-size: 0.75rem;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater .fi-fo-field-label-content {
+    display: none;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater .fi-fo-field {
+    row-gap: 0;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater .fi-fo-table-repeater-actions {
+    padding: 0 0.25rem;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater .fi-input-wrp {
+    min-height: 1.75rem;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater .fi-input {
+    padding-block: 0.1875rem;
+    font-size: 0.78125rem;
 }

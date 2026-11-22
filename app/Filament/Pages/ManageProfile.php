@@ -55,7 +55,7 @@ class ManageProfile extends SettingsPage
                 TextInput::make('email')->email()->maxLength(255)->helperText('Public contact address.'),
                 TextInput::make('location_public')->label('Location')->maxLength(120)
                     ->helperText('City and country only, e.g. "Remote · UK & EU hours". Never a street address.'),
-                Repeater::make('socials')->columnSpanFull()->reorderable()->maxItems(6)->defaultItems(0)->compact()
+                Repeater::make('socials')->columnSpanFull()->reorderable()->maxItems(6)->defaultItems(0)->compact()->extraAttributes(['class' => 'cb-inline-repeater'])
                     ->table([TableColumn::make('Network')->width('30%'), TableColumn::make('Link')])
                     ->addActionLabel('+ Add link')->addActionAlignment(Alignment::Start)
                     ->addAction(fn (Action $action) => $action->link()->size('sm'))
