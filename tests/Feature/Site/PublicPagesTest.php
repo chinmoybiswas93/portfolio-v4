@@ -132,3 +132,11 @@ it('does not cache admin or error pages', function (): void {
     $this->get('/does-not-exist')->assertNotFound()->assertHeaderMissing('X-Page-Cache');
     $this->get('/admin/login')->assertHeaderMissing('X-Page-Cache');
 });
+
+it('never caches the empty body of a HEAD request', function (): void {
+    config(['cache.pages_enabled' => true, 'cache.stores.pages' => ['driver' => 'array']]);
+    Service::factory()->create(['title' => 'Visible service']);
+
+    $this->call('HEAD', '/')->assertOk();
+    $this->get('/')->assertHeader('X-Page-Cache', 'MISS')->assertSee('Visible service');
+});

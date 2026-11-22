@@ -19,7 +19,8 @@ final class CachePublicPage
 
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->isMethodCacheable() || ! config('cache.pages_enabled', true)) {
+        // GET only: a HEAD response has no body and must never be stored as the page.
+        if (! $request->isMethod('GET') || ! config('cache.pages_enabled', true)) {
             return $next($request);
         }
 
