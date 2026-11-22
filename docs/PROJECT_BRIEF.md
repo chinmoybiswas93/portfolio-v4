@@ -119,6 +119,7 @@ The canvas is updated to match; it remains the source of truth for UI.
 - **Email:** sent synchronously; each attempt is logged with an immutable copy of the attached PDF (`invoices/{year}/sent/`).
 - **Deleting:** only drafts can be deleted; issued invoices are cancelled instead, so numbering stays gap-free.
 - **Dashboard:** "Outstanding by currency" and "Overdue invoices" built; "Recent posts" follows in 3.6.
+- **Admin hardening:** a route-walk test checks every admin/filament screen (guest → login, non-admin → 403, admin without 2FA → set-up); a route inventory allows only the Livewire update/upload, signed storage upload and admin logout as write routes; tampered Livewire snapshots answer 419; unused Filament export/import downloads answer 404.
 ## Phases (each ends with a gate where the owner approves)
 1. **Architecture:** ADRs (stack, hosting layout, CI/CD, PDF, media), data model/ERD, routes, security model, test strategy. Prove deploy with a "hello" Laravel app on the staging subdomain.
 2. **UI design:** design every screen in a canvas (Claude design artifact) first: home, project archive, case study, blog list/post, 404, invoice PDF template, and key admin screens. The owner approves before any UI code is written.
