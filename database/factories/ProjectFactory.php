@@ -26,7 +26,7 @@ class ProjectFactory extends Factory
             'slug' => Str::slug($title),
             'summary' => fake()->sentence(12),
             'made_at' => 'Personal',
-            'year' => (int) fake()->year(),
+            'year' => fake()->numberBetween(2018, 2026),
             'live_url' => fake()->url(),
             'is_featured' => false,
             'has_case_study' => false,

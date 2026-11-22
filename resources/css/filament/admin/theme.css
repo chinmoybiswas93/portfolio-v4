@@ -22,3 +22,15 @@
 .dark .fi-simple-main {
     background-color: #111c33;
 }
+
+/* Primary buttons as in the approved canvas: teal #2DD4BF with dark text (dark mode), deep teal in light mode. */
+.fi-btn.fi-color.fi-color-primary {
+    --bg: #0f766e !important;
+    --text: #ffffff !important;
+    --hover-bg: #115e59 !important;
+    --hover-text: #ffffff !important;
+    --dark-bg: #2dd4bf !important;
+    --dark-text: #0b1220 !important;
+    --dark-hover-bg: #5eead4 !important;
+    --dark-hover-text: #0b1220 !important;
+}

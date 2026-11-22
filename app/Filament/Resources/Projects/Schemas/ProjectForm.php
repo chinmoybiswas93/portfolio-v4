@@ -8,21 +8,26 @@ use App\Enums\PublishStatus;
 use App\Enums\TagType;
 use App\Filament\Support\Fields;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
+/**
+ * Project editor laid out as in the approved canvas: content on the left (basics, case study, media),
+ * publishing and metadata in a right-hand column.
+ */
 class ProjectForm
 {
     private const MARKDOWN_TOOLBAR = [
@@ -31,84 +36,116 @@ class ProjectForm
         ['undo', 'redo'],
     ];
 
+    private const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+
     public static function configure(Schema $schema): Schema
     {
-        return $schema->components([
-            Tabs::make('Project')->columnSpanFull()->persistTabInQueryString()->tabs([
-                Tab::make('Basics')->schema([
-                    Grid::make(2)->schema([
-                        ...Fields::titleAndSlug(),
-                        Textarea::make('summary')->rows(3)->maxLength(500)->columnSpanFull()
-                            ->helperText('One or two sentences, shown on the home page and in the archive.'),
-                        TextInput::make('client_name')->maxLength(255),
-                        TextInput::make('sector')->maxLength(255),
-                        TextInput::make('role')->maxLength(255),
-                        TextInput::make('made_at')->label('Made at')->maxLength(255)->placeholder('Personal'),
-                        TextInput::make('year')->numeric()->minValue(2000)->maxValue(2100),
-                        Grid::make(2)->schema([
-                            DatePicker::make('started_on')->native(false)->displayFormat('M Y'),
-                            DatePicker::make('ended_on')->native(false)->displayFormat('M Y')->afterOrEqual('started_on'),
-                        ]),
+        return $schema->columns(3)->components([
+            Group::make()->columnSpan(['default' => 3, 'lg' => 2])->schema([
+                Section::make('Basics')->columns(2)->schema([
+                    ...Fields::titleAndSlug(),
+                    Textarea::make('summary')->rows(2)->maxLength(500)->columnSpanFull()
+                        ->helperText('Shown on the home page and in the project archive.'),
+                    TextInput::make('client_name')->label('Client')->maxLength(255),
+                    TextInput::make('sector')->maxLength(255),
+                    TextInput::make('role')->label('My role')->maxLength(255)->placeholder('e.g. Developer and maintainer'),
+                    TextInput::make('year')->numeric()->minValue(2000)->maxValue(2100),
+                    DatePicker::make('started_on')->label('Started')->native(false)->displayFormat('M Y'),
+                    DatePicker::make('ended_on')->label('Finished')->native(false)->displayFormat('M Y')
+                        ->afterOrEqual('started_on')->placeholder('Ongoing'),
+                ]),
+
+                Section::make('Case study')
+                    ->headerActions([])
+                    ->schema([
+                        Toggle::make('has_case_study')->label('Has case study')->live()
+                            ->helperText('Off: the project links to its live site instead of a case study page.'),
+                        Tabs::make('Case study sections')
+                            ->visible(fn (Get $get): bool => (bool) $get('has_case_study'))
+                            ->tabs([
+                                Tab::make('Problem')->schema([
+                                    MarkdownEditor::make('problem_md')->hiddenLabel()->toolbarButtons(self::MARKDOWN_TOOLBAR)
+                                        ->placeholder('What was the client’s situation before? What needed to change, and why did it matter to the business?'),
+                                ]),
+                                Tab::make('Approach')->schema([
+                                    MarkdownEditor::make('approach_md')->hiddenLabel()->toolbarButtons(self::MARKDOWN_TOOLBAR)
+                                        ->placeholder('How did you solve it? Structure, decisions, integrations, and how the team updates content.'),
+                                ]),
+                                Tab::make('Results')->schema([
+                                    MarkdownEditor::make('results_md')->hiddenLabel()->toolbarButtons(self::MARKDOWN_TOOLBAR)
+                                        ->placeholder('What changed afterwards? A short outcome or client quote.'),
+                                ]),
+                            ]),
                     ]),
-                ]),
-                Tab::make('Case study')->schema([
-                    Toggle::make('has_case_study')->label('Has a case study page')->live()
-                        ->helperText('Off: the project links to its live site instead of a case study page.'),
-                    MarkdownEditor::make('problem_md')->label('Problem')->toolbarButtons(self::MARKDOWN_TOOLBAR)
-                        ->visible(fn (Get $get): bool => (bool) $get('has_case_study')),
-                    MarkdownEditor::make('approach_md')->label('Approach')->toolbarButtons(self::MARKDOWN_TOOLBAR)
-                        ->visible(fn (Get $get): bool => (bool) $get('has_case_study')),
-                    MarkdownEditor::make('results_md')->label('Results')->toolbarButtons(self::MARKDOWN_TOOLBAR)
-                        ->visible(fn (Get $get): bool => (bool) $get('has_case_study')),
-                    Repeater::make('metrics')->schema([
-                        TextInput::make('label')->required()->maxLength(60),
-                        TextInput::make('value')->required()->maxLength(30),
-                    ])->columns(2)->reorderable()->maxItems(6)->defaultItems(0)
-                        ->visible(fn (Get $get): bool => (bool) $get('has_case_study'))
-                        ->helperText('Only real, verifiable numbers.'),
-                ]),
-                Tab::make('Media')->schema([
-                    SpatieMediaLibraryFileUpload::make('cover')
-                        ->collection('cover')
-                        ->image()
-                        ->imageEditor()
-                        ->maxSize(8192)
-                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/avif']),
-                    TextInput::make('cover_alt')
-                        ->label('Cover alt text')
-                        ->maxLength(200)
-                        ->dehydrated(false)
-                        ->requiredWith('cover')
-                        ->helperText('Describe the image for screen readers, e.g. "TuFlamenco home page".'),
+
+                Section::make('Media')->schema([
+                    Grid::make(2)->schema([
+                        SpatieMediaLibraryFileUpload::make('cover')
+                            ->label('Cover image')
+                            ->collection('cover')
+                            ->disk('public')
+                            ->image()
+                            ->imageEditor()
+                            ->maxSize(8192)
+                            ->acceptedFileTypes(self::IMAGE_TYPES),
+                        TextInput::make('cover_alt')
+                            ->label('Alt text')
+                            ->maxLength(200)
+                            ->dehydrated(false)
+                            ->requiredWith('cover')
+                            ->helperText('Describe the image for screen readers.'),
+                    ]),
                     SpatieMediaLibraryFileUpload::make('gallery')
                         ->collection('gallery')
+                        ->disk('public')
                         ->multiple()
                         ->reorderable()
+                        ->panelLayout('grid')
                         ->image()
                         ->maxFiles(12)
                         ->maxSize(8192)
-                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/avif'])
-                        ->customProperties(fn (Get $get): array => ['alt' => trim($get('title').' screenshot')]),
+                        ->acceptedFileTypes(self::IMAGE_TYPES)
+                        ->customProperties(fn (Get $get): array => ['alt' => trim($get('title').' screenshot')])
+                        ->helperText('Drag to reorder. JPG, PNG, WebP or AVIF, up to 8 MB. Converted to WebP with responsive sizes.'),
                 ]),
-                Tab::make('Stack & links')->schema([
-                    Fields::tags(TagType::Tech, 'Tech stack'),
-                    Grid::make(2)->schema([
-                        TextInput::make('live_url')->label('Live site')->url()->maxLength(512),
-                        TextInput::make('repo_url')->label('Repository')->url()->maxLength(512),
-                    ]),
+            ]),
+
+            Group::make()->columnSpan(['default' => 3, 'lg' => 1])->schema([
+                Section::make('Publishing')->schema([
+                    Select::make('status')->options(PublishStatus::class)->default(PublishStatus::Draft)->required()->native(false)->selectablePlaceholder(false),
+                    Toggle::make('is_featured')->label('Featured on home page'),
+                    TextInput::make('sort_order')->label('Sort order')->numeric()->default(0)->minValue(0)
+                        ->helperText('Lower numbers appear first.'),
                 ]),
-                Tab::make('SEO')->schema([
-                    Fields::seoTitle(),
-                    Fields::seoDescription(),
+
+                Section::make('Results metrics')->schema([
+                    Repeater::make('metrics')->hiddenLabel()
+                        ->table([
+                            TableColumn::make('Metric'),
+                            TableColumn::make('Value')->width('35%'),
+                        ])
+                        ->schema([
+                            TextInput::make('label')->placeholder('e.g. Page load')->required()->maxLength(60),
+                            TextInput::make('value')->placeholder('e.g. 1.2 s')->required()->maxLength(30),
+                        ])->reorderable(false)->maxItems(6)->defaultItems(0)->addActionLabel('Add metric')
+                        ->helperText('Only real, verifiable numbers.'),
                 ]),
-                Tab::make('Publishing')->schema([
-                    Section::make()->columns(2)->schema([
-                        Select::make('status')->options(PublishStatus::class)->default(PublishStatus::Draft)->required(),
-                        DateTimePicker::make('published_at')->native(false)
-                            ->helperText('Set automatically when first published.'),
-                        Toggle::make('is_featured')->label('Featured on the home page'),
-                        TextInput::make('sort_order')->numeric()->default(0)->minValue(0),
-                    ]),
+
+                Section::make('Tech stack')->schema([
+                    Fields::tags(TagType::Tech, 'Technologies')->hiddenLabel()->placeholder('Add…'),
+                ]),
+
+                Section::make('Links')->schema([
+                    TextInput::make('live_url')->label('Live site')->url()->maxLength(512),
+                    TextInput::make('repo_url')->label('Repository')->url()->maxLength(512)->placeholder('https://github.com/…'),
+                ]),
+
+                Section::make('SEO')->schema([
+                    TextInput::make('seo_title')->label('Meta title')->maxLength(60)->live(debounce: 500)
+                        ->hint(fn (?string $state): string => mb_strlen((string) $state).' / 60'),
+                    Textarea::make('seo_description')->label('Meta description')->rows(3)->maxLength(160)->live(debounce: 500)
+                        ->placeholder('Leave empty to use the summary.')
+                        ->hint(fn (?string $state): string => mb_strlen((string) $state).' / 160'),
                 ]),
             ]),
         ]);

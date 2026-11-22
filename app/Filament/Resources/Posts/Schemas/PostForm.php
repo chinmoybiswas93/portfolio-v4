@@ -48,7 +48,7 @@ class PostForm
                     Fields::tags(TagType::Topic),
                 ]),
                 Section::make('Cover image')->schema([
-                    SpatieMediaLibraryFileUpload::make('cover')->collection('cover')->image()->imageEditor()
+                    SpatieMediaLibraryFileUpload::make('cover')->collection('cover')->disk('public')->image()->imageEditor()
                         ->maxSize(8192)->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/avif']),
                     TextInput::make('cover_alt')->label('Alt text')->maxLength(200)->dehydrated(false)->requiredWith('cover'),
                 ]),
