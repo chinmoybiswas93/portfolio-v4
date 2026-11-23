@@ -4,6 +4,10 @@
 **Date:** 2026-11-22
 **Deciders:** Owner
 
+> **Account security amendment (owner, 2026-11-24, ADR-0010).** The profile page (`App\Filament\Pages\Auth\EditProfile`) edits the name inline. Email and password each change in their own dialog, and both need the current password **and** an authenticator code; they are hidden until 2FA is set up. Both are limited to 5 attempts a minute per user, and wrong passwords and codes count.
+> - **Email:** the change waits for a signed link sent to the new address (Filament email change verification). The old address gets a notice with a link to block the change.
+> - **Password:** at least 12 characters and not in known breach lists (Have I Been Pwned range check with a 5 s timeout; it passes if the service is down). Other sessions are signed out through `AuthenticateSession`, and the account email gets a "password changed" notice.
+
 ## Context
 - There is a single admin (the owner). The admin holds client PII and financial records.
 - The public site has no forms and no user accounts.
