@@ -14,6 +14,9 @@ final class SeoSettings extends Settings
 
     public ?string $default_og_image_path;
 
+    /** Cloudflare Web Analytics beacon token; the beacon loads only in production when it is set. */
+    public ?string $analytics_token = null;
+
     public static function group(): string
     {
         return 'seo';

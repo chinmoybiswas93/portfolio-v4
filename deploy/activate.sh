@@ -35,6 +35,23 @@ ln -sfn ../../shared/.env .env
 rm -rf storage && ln -sfn ../../shared/storage storage
 ln -sfn ../../../shared/storage/app/public public/storage
 
+# Files that must survive deploys at the web root (ADR-0010), e.g. a Search Console verification file
+# (google…html). Kept in shared/public, never in git; copied without overwriting the release's own files.
+mkdir -p "$SHARED/public"
+for f in "$SHARED/public"/*; do
+  [ -f "$f" ] || continue
+  name="$(basename "$f")"
+  case "$name" in
+    *[!A-Za-z0-9._-]* | .*) log "Skipping shared/public/$name (unexpected name)"; continue ;;
+  esac
+  if [ -e "public/$name" ]; then
+    log "Skipping shared/public/$name (the release already has it)"
+  else
+    cp -p "$f" "public/$name"
+    log "Copied shared/public/$name"
+  fi
+done
+
 log "Migrating"
 php artisan migrate --force --no-interaction
 
