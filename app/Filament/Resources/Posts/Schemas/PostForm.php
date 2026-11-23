@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Posts\Schemas;
 
 use App\Enums\PostStatus;
+use App\Filament\Forms\MarkdownField;
 use App\Filament\Support\Fields;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
@@ -27,7 +27,7 @@ class PostForm
                     ...Fields::titleAndSlug(urlPrefix: 'blog'),
                     Textarea::make('excerpt')->rows(2)->maxLength(500)
                         ->helperText('One sentence for the list page and RSS.'),
-                    MarkdownEditor::make('body_md')->label('Body')->required()
+                    MarkdownField::make('body_md')->label('Body')->required()->defaultHeight(480)
                         ->helperText('Markdown. Code blocks with a language (```php) are highlighted.'),
                 ]),
                 Section::make('SEO')->schema([

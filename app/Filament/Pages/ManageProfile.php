@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Filament\Pages;
 
 use App\Filament\Clusters\Settings;
+use App\Filament\Forms\MarkdownField;
 use App\Filament\Support\SettingsTab;
 use App\Settings\ProfileSettings;
 use App\Support\Markdown\MarkdownRenderer;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
@@ -48,7 +48,7 @@ class ManageProfile extends SettingsPage
                 TextInput::make('name')->required()->maxLength(80),
                 TextInput::make('title')->required()->maxLength(120)->helperText('Shown under your name, e.g. "WordPress & Laravel developer".'),
                 Textarea::make('tagline')->required()->rows(2)->maxLength(220)->columnSpanFull(),
-                MarkdownEditor::make('about_md')->label('About')->columnSpanFull()
+                MarkdownField::make('about_md')->label('About')->columnSpanFull()
                     ->toolbarButtons([['bold', 'italic', 'link'], ['bulletList'], ['undo', 'redo']]),
             ]),
             Section::make('Contact')->columns(2)->columnSpanFull()->schema([
