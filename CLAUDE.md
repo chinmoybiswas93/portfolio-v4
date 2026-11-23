@@ -15,6 +15,13 @@ The GitHub repo is **public**. Only project and deployment files go to git. Acco
 - Use the installed skills where they fit: `engineering:architecture` (ADRs), `engineering:system-design`, `engineering:testing-strategy`, `engineering:code-review`, `security-review`, `engineering:deploy-checklist`, `frontend-design`, `playwright-cli`, and the `hostinger:*` plugin for hosting.
 - **UI:** no UI code before its design is approved in the canvas (Claude design artifact).
 
+## Local development (Herd)
+- The app runs in **Laravel Herd** at `https://portfolio-v4.test` (TLS on), isolated to **PHP 8.3**. No Docker and no `php artisan serve`.
+- Run PHP commands through Herd's 8.3: `herd php artisan …`, `herd php vendor/bin/pest`, `herd composer …` (the plain `php` CLI is Herd's global 8.4).
+- Local database: SQLite. Mail: `MAIL_MAILER=log`. CI covers MariaDB.
+- Local admin is at `/admin` (`ADMIN_PATH` defaults to `admin`); production uses its own private path.
+- Optional local 2FA: `ADMIN_MFA_REQUIRED=false` in `.env` turns admin two-factor off **only** when `APP_ENV=local`. Every other environment, tests and CI always require it.
+
 ## Git rules
 - Branches: `main` is production (every merge deploys), `development` is local development plus CI only (no staging), and `feat/*`, `fix/*` and `chore/*` branch off `development`. Release = a PR from `development` into `main`.
 - **No AI attribution:** never add `Co-Authored-By` trailers, "Generated with Claude Code" lines or any other AI/tool attribution to commits, PR titles/bodies, issues or code comments. The owner is the sole author.

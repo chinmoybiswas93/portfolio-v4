@@ -9,6 +9,7 @@ use App\Filament\Pages\Dashboard;
 use App\Filament\Support\StandardTable;
 use App\Http\Controllers\Admin\InvoicePdfController;
 use App\Http\Middleware\SecurityHeaders;
+use App\Support\Auth\AdminMfa;
 use App\Support\Filament\SystemFontProvider;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Http\Middleware\EnsureMultiFactorAuthenticationIsEnabled;
@@ -49,7 +50,7 @@ class AdminPanelProvider extends PanelProvider
                 AppAuthentication::make()
                     ->recoverable()
                     ->brandName('CB Portfolio'),
-            ], isRequired: true)
+            ], isRequired: fn (): bool => AdminMfa::required())
             ->brandName('Chinmoy Biswas')
             ->brandLogo(asset('brand/logo-mark-dark.svg'))
             ->darkModeBrandLogo(asset('brand/logo-mark-light.svg'))
@@ -77,7 +78,7 @@ class AdminPanelProvider extends PanelProvider
                 Route::get('/invoices/{invoice}/pdfs/{pdf}', InvoicePdfController::class)
                     ->whereNumber(['invoice', 'pdf'])
                     // Filament adds the required-2FA check to its own page routes only; custom routes must add it.
-                    ->middleware(EnsureMultiFactorAuthenticationIsEnabled::class)
+                    ->middleware(AdminMfa::required() ? [EnsureMultiFactorAuthenticationIsEnabled::class] : [])
                     ->name('invoices.pdf');
             })
             ->spa() // no full reloads between admin screens (Livewire navigate, progress bar in config/livewire.php)
