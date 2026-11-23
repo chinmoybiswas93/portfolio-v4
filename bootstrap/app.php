@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\HealthController;
 use App\Http\Middleware\CachePublicPage;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
@@ -19,6 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
         then: function (): void {
             Route::middleware('public')->group(base_path('routes/public.php'));
             Route::group([], base_path('routes/oauth.php'));
+            // Health check: no session or cookies (it is hit by monitors), throttled per IP.
+            Route::middleware([SecurityHeaders::class, 'throttle:30,1'])
+                ->get('/up', HealthController::class)->name('health');
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {

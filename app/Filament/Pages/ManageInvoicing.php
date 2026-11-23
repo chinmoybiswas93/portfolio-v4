@@ -9,7 +9,6 @@ use App\Filament\Clusters\Settings;
 use App\Filament\Support\SettingsTab;
 use App\Settings\InvoiceSettings;
 use BackedEnum;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -51,8 +50,6 @@ class ManageInvoicing extends SettingsPage
                     ->helperText('0% while not VAT-registered.'),
                 TextInput::make('tax_note')->maxLength(120)->columnSpanFull()->placeholder('VAT not applicable'),
                 Textarea::make('footer')->rows(2)->maxLength(500)->columnSpanFull()->helperText('Printed at the bottom of every invoice.'),
-                FileUpload::make('logo_path')->label('Invoice logo')->disk('local')->directory('invoicing')->visibility('private')
-                    ->image()->maxSize(2048)->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/avif'])->helperText('Optional. Your logo mark is used when empty.'),
             ]),
         ]);
     }
