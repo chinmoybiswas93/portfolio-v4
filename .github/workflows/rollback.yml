@@ -12,15 +12,15 @@ permissions:
   contents: read
 
 concurrency:
-  group: deploy-refs/heads/development
+  group: deploy-refs/heads/main
   cancel-in-progress: false
 
 jobs:
   rollback:
-    if: github.ref == 'refs/heads/development'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    environment: staging
+    environment: production
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

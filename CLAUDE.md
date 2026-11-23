@@ -16,7 +16,7 @@ The GitHub repo is **public**. Only project and deployment files go to git. Acco
 - **UI:** no UI code before its design is approved in the canvas (Claude design artifact).
 
 ## Git rules
-- Branches: `main` is production, `development` is staging, and `feat/*`, `fix/*` and `chore/*` branch off `development`.
+- Branches: `main` is production (every merge deploys), `development` is local development plus CI only (no staging), and `feat/*`, `fix/*` and `chore/*` branch off `development`. Release = a PR from `development` into `main`.
 - **No AI attribution:** never add `Co-Authored-By` trailers, "Generated with Claude Code" lines or any other AI/tool attribution to commits, PR titles/bodies, issues or code comments. The owner is the sole author.
 - Use Conventional Commits. Keep commits small. Commit or push only when the owner asks, or as a phase plan they have approved says.
 - Never commit `.env`, credentials, DB dumps or the `storage/` contents.
@@ -43,7 +43,7 @@ Tests are green, Pint, Larastan and the build pass, behaviour is checked in a br
 
 ## Server safety (shared SSH account: all three sites share one user)
 - SSH alias, account and server details are in `.private/SERVER.md` (git-ignored). Never ask for or store the password.
-- Work only inside `~/domains/chinmoybiswas.com/` and the staging subdomain folder. Never `cd` into, list-modify, or touch the other domains' folders or databases.
+- Work only inside `~/domains/chinmoybiswas.com/` (and the staging subdomain folder until it is removed). Never `cd` into, list-modify, or touch the other domains' folders or databases.
 - Read-only first (`ls`, `cat`, `php -v`). Before any change, state the exact commands and take a backup (`tar` of the folder, `mysqldump` of the DB) into `~/backups/`.
 - No `rm -rf` outside the app's own release folders, no `chmod -R`/`chown` above the app folder, no edits to `~/.ssh`, `~/.bashrc`, or the PHP config of other sites.
 - Never run heavy work on the server (no `npm`, no large `composer` builds, no long loops). The shared server is already under load; builds happen in CI.

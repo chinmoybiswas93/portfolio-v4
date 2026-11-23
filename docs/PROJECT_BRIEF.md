@@ -207,6 +207,12 @@ The canvas is updated to match; it remains the source of truth for UI.
 - Settings → MCP: the on/off switch, server URL with Copy, rate limit, token lifetime, registration Allowed/Closed, and the scope list.
 - MCP → Connected apps (All / Active / Revoked, Revoke) and MCP → Audit log (All / Changes / Denied, App and Period filters, details, CSV export with formula-injection protection).
 
+### Go-live decisions (owner, 2026-11-23)
+- **No staging.** `development` = local development + CI; `main` = production. Deploy runs only on pushes to `main` (GitHub environment `production`); staging is removed after the live site is confirmed.
+- Live database = the cleaned staging database (factory posts, test billing data and the test MCP app removed). First live invoice: INV-2026-0001.
+- Production shares staging's `APP_KEY` (encrypted 2FA secret and tax ID). MCP is on at launch with new-app registration closed.
+- Phase 4 QA report: `docs/QA_REPORT.md`.
+
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 

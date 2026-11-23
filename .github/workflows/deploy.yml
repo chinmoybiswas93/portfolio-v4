@@ -1,9 +1,10 @@
 name: Deploy
 
 on:
+  # Production only: every push to main (a merged PR) deploys. development runs CI only (ci.yml).
   push:
-    branches: [development]
-  # Manual run: "Run workflow" and choose the branch (development deploys to staging; main is enabled in Phase 5).
+    branches: [main]
+  # Manual run: "Run workflow" on main.
   workflow_dispatch:
 
 permissions:
@@ -18,18 +19,12 @@ jobs:
   preflight:
     runs-on: ubuntu-latest
     timeout-minutes: 3
-    environment: staging
+    environment: production
     steps:
-      - name: Production is not enabled yet
-        if: github.ref == 'refs/heads/main'
+      - name: Only main deploys
+        if: github.ref != 'refs/heads/main'
         run: |
-          echo "::error title=Production deploy disabled::Deploying main is enabled in Phase 5 (production cutover)."
-          exit 1
-
-      - name: Only development deploys
-        if: github.ref != 'refs/heads/development' && github.ref != 'refs/heads/main'
-        run: |
-          echo "::error title=Unsupported branch::Run Deploy from development (staging) or main (Phase 5)."
+          echo "::error title=Unsupported branch::Only main deploys (to production)."
           exit 1
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -104,10 +99,10 @@ jobs:
   # Only this job can read the environment secrets. It runs no package code.
   deploy:
     needs: build
-    if: github.ref == 'refs/heads/development' # production (main) is enabled in Phase 5
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: staging
+    environment: production
     env:
       RELEASE: ${{ needs.build.outputs.release }}
     steps:

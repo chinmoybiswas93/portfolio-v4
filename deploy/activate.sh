@@ -35,28 +35,6 @@ ln -sfn ../../shared/.env .env
 rm -rf storage && ln -sfn ../../shared/storage storage
 ln -sfn ../../../shared/storage/app/public public/storage
 
-# Staging: HTTP basic auth when a password file exists (the path is resolved on the server, never stored in git)
-if [ -f "$SHARED/.htpasswd" ]; then
-  log "Enabling basic auth"
-  {
-    echo "# BEGIN staging basic auth (added by deploy/activate.sh)"
-    echo "AuthType Basic"
-    echo "AuthName \"Staging\""
-    echo "AuthUserFile \"$SHARED/.htpasswd\""
-    echo "Require valid-user"
-    echo "# MCP and OAuth endpoints carry their own Bearer/PKCE auth (ADR-0009); a second Authorization header is impossible."
-    echo "SetEnvIf Request_URI \"^/(mcp\$|oauth/|\\.well-known/oauth-)\" mcp_open"
-    echo "Order allow,deny"
-    echo "Allow from env=mcp_open"
-    echo "Allow from env=REDIRECT_mcp_open"
-    echo "Satisfy any"
-    echo "Header always set X-Robots-Tag \"noindex, nofollow\""
-    echo "# END staging basic auth"
-    echo
-    cat public/.htaccess
-  } > public/.htaccess.new && mv public/.htaccess.new public/.htaccess
-fi
-
 log "Migrating"
 php artisan migrate --force --no-interaction
 
@@ -82,15 +60,9 @@ rollback() {
 }
 
 log "Health check"
-# Credentials go to curl through a config on stdin, never on the command line (visible in `ps`).
-curl_config() {
-  if [ -f "$SHARED/.healthcheck" ]; then
-    printf 'user = "%s"\n' "$(cat "$SHARED/.healthcheck")"
-  fi
-}
 ok=0
 for _ in 1 2 3 4 5; do
-  if curl_config | curl -fsS --max-time 15 --config - "$APP_URL/up" | grep -q "\"release\":\"$RELEASE\""; then
+  if curl -fsS --max-time 15 "$APP_URL/up" | grep -q "\"release\":\"$RELEASE\""; then
     ok=1
     break
   fi
