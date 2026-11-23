@@ -43,6 +43,14 @@ class ManageSeo extends SettingsPage
                     ->disk('public')->directory('seo')->image()->maxSize(4096)->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/avif'])
                     ->helperText('1200 × 630 px. Used when a page has no generated image.'),
             ]),
+            Section::make('Analytics')->columnSpanFull()
+                ->description('Cloudflare Web Analytics: cookieless, so no cookie banner is needed. It loads on the live site only.')
+                ->schema([
+                    TextInput::make('analytics_token')->label('Cloudflare Web Analytics token')
+                        ->regex('/^\s*[a-f0-9]{32}\s*$/i')->validationMessages(['regex' => 'The token is 32 characters, 0–9 and a–f.'])
+                        ->helperText('Cloudflare → Web Analytics → your site → Manage site: the "token" value in the JS snippet. Leave empty to turn analytics off.')
+                        ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? strtolower(trim($state)) : null),
+                ]),
         ]);
     }
 }

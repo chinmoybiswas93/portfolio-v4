@@ -10,8 +10,9 @@ use App\Filament\Resources\Invoices\InvoiceResource;
 use App\Filament\Resources\Invoices\Pages\CreateInvoice;
 use App\Filament\Resources\Invoices\Pages\EditInvoice;
 use App\Filament\Resources\Invoices\Pages\ListInvoices;
-use App\Filament\Widgets\OutstandingByCurrency;
 use App\Filament\Widgets\OverdueInvoices;
+use App\Filament\Widgets\PaidByCurrency;
+use App\Filament\Widgets\ToBePaidByCurrency;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\User;
@@ -127,13 +128,20 @@ it('keeps invoices away from non-admins', function (): void {
     $this->get(InvoiceResource::getUrl('index'))->assertForbidden();
 });
 
-it('shows outstanding totals per currency and overdue invoices on the dashboard', function (): void {
+it('shows paid and to-be-paid totals per currency and overdue invoices on the dashboard', function (): void {
     Invoice::factory()->create(['status' => InvoiceStatus::Sent, 'currency' => 'GBP', 'total_minor' => 100000]);
     Invoice::factory()->create(['status' => InvoiceStatus::Overdue, 'currency' => 'GBP', 'total_minor' => 85000, 'number' => 'INV-2026-0012', 'due_date' => now()->subDays(3)]);
-    Invoice::factory()->create(['status' => InvoiceStatus::Paid, 'currency' => 'GBP', 'total_minor' => 99999]);
+    Invoice::factory()->create(['status' => InvoiceStatus::Paid, 'currency' => 'GBP', 'total_minor' => 99999, 'paid_at' => now()]);
+    Invoice::factory()->create(['status' => InvoiceStatus::Paid, 'currency' => 'EUR', 'total_minor' => 5000, 'paid_at' => now()->subYear()]);
 
-    Livewire::test(OutstandingByCurrency::class)
-        ->assertSee('£1,850.00')->assertSee('2 invoices · 1 overdue')->assertSee('Nothing outstanding');
+    Livewire::test(ToBePaidByCurrency::class)
+        ->assertSee('£1,850.00')->assertSee('2 open · £850.00 overdue')->assertSee('Nothing open');
+    Livewire::test(PaidByCurrency::class)
+        ->assertSee('£999.99')->assertSee('1 invoice paid')->assertSee('None this year')
+        ->assertSeeHtml('aria-label="Paid period"')
+        ->set('period', 'last_year')->assertSee('€50.00')->assertSee('None last year')
+        ->set('period', 'all_time')->assertSee('£999.99')->assertSee('€50.00')
+        ->set('period', 'not-a-period')->assertSee('£999.99')->assertSee('None this year');
     Livewire::test(OverdueInvoices::class)
         ->assertSee('INV-2026-0012')->assertSee('3 days overdue')->assertSee('£850.00');
 });

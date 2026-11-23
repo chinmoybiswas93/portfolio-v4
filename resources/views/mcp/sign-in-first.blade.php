@@ -8,7 +8,7 @@
     <title>Sign in first · {{ config('brand.admin_name') }}</title>
     <style>
         :root { color-scheme: dark; }
-        body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0F172A; color: #94A3B8; font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0F172A; color: #B4C0D1; font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         main { width: 100%; max-width: 480px; padding: 24px 16px; box-sizing: border-box; }
         .card { background: #111C33; border: 1px solid #1E293B; border-radius: 10px; padding: 18px 20px; }
         h1 { margin: 0 0 8px; color: #E2E8F0; font-size: 18px; font-weight: 600; }

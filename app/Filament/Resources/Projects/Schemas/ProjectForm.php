@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Projects\Schemas;
 
 use App\Enums\PublishStatus;
+use App\Filament\Forms\MarkdownField;
 use App\Filament\Support\Fields;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
@@ -31,12 +31,6 @@ use Filament\Support\Enums\Alignment;
  */
 class ProjectForm
 {
-    private const MARKDOWN_TOOLBAR = [
-        ['bold', 'italic', 'link'],
-        ['heading', 'blockquote', 'codeBlock', 'bulletList', 'orderedList'],
-        ['undo', 'redo'],
-    ];
-
     private const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
 
     public static function configure(Schema $schema): Schema
@@ -65,15 +59,15 @@ class ProjectForm
                             ->visible(fn (Get $get): bool => (bool) $get('has_case_study'))
                             ->tabs([
                                 Tab::make('Problem')->schema([
-                                    MarkdownEditor::make('problem_md')->hiddenLabel()->toolbarButtons(self::MARKDOWN_TOOLBAR)
+                                    MarkdownField::make('problem_md')->hiddenLabel()
                                         ->placeholder('What was the client’s situation before? What needed to change, and why did it matter to the business?'),
                                 ]),
                                 Tab::make('Approach')->schema([
-                                    MarkdownEditor::make('approach_md')->hiddenLabel()->toolbarButtons(self::MARKDOWN_TOOLBAR)
+                                    MarkdownField::make('approach_md')->hiddenLabel()
                                         ->placeholder('How did you solve it? Structure, decisions, integrations, and how the team updates content.'),
                                 ]),
                                 Tab::make('Results')->schema([
-                                    MarkdownEditor::make('results_md')->hiddenLabel()->toolbarButtons(self::MARKDOWN_TOOLBAR)
+                                    MarkdownField::make('results_md')->hiddenLabel()
                                         ->placeholder('What changed afterwards? A short outcome or client quote.'),
                                 ]),
                             ]),

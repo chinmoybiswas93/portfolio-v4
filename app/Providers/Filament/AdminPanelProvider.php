@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers\Filament;
 
 use App\Filament\Auth\Login;
+use App\Filament\Pages\Auth\EditProfile;
 use App\Filament\Pages\Dashboard;
 use App\Filament\Support\StandardTable;
 use App\Http\Controllers\Admin\InvoicePdfController;
@@ -46,7 +47,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path(config('admin.path'))
             ->login(Login::class)
-            ->profile(isSimple: false)
+            ->profile(EditProfile::class, isSimple: false)
+            ->emailChangeVerification()
             ->multiFactorAuthentication([
                 AppAuthentication::make()
                     ->recoverable()

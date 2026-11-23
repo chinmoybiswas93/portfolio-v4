@@ -49,12 +49,11 @@ jobs:
           npm run build
           echo "${{ steps.meta.outputs.release }}" > RELEASE
 
+      # Include list: only what runs on the server ships (scripts/package-release.sh).
       - name: Package
         run: |
-          tar -czf /tmp/release.tgz \
-            --exclude=./.git --exclude=./.github --exclude=./node_modules --exclude=./tests \
-            --exclude=./docs --exclude=./storage --exclude=./.env --exclude=./database/database.sqlite \
-            .
+          bash scripts/package-release.sh --check
+          bash scripts/package-release.sh /tmp/release.tgz
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:

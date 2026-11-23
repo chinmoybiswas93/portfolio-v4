@@ -52,6 +52,10 @@
     <link rel="apple-touch-icon" href="{{ \App\Support\BrandAssets::appleTouchUrl() }}">
     <script src="{{ asset('theme-init.js') }}"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @if (app()->environment('production') && filled($seo->analytics_token))
+        {{-- Cloudflare Web Analytics (ADR-0010): cookieless beacon, allowed by the public CSP. --}}
+        <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{{ json_encode(['token' => $seo->analytics_token]) }}"></script>
+    @endif
 </head>
 <body>
     <a class="skip-link" href="#content">Skip to content</a>
