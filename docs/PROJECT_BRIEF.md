@@ -213,6 +213,14 @@ The canvas is updated to match; it remains the source of truth for UI.
 - Production shares staging's `APP_KEY` (encrypted 2FA secret and tax ID). MCP is on at launch with new-app registration closed.
 - Phase 4 QA report: `docs/QA_REPORT.md`.
 
+### Local development (Herd) (owner, 2026-11-23)
+- The app runs in **Laravel Herd** at `https://portfolio-v4.test` (TLS on), isolated to **PHP 8.3**. No Docker and no `php artisan serve`.
+- Run PHP commands through Herd's 8.3: `herd php artisan …`, `herd php vendor/bin/pest`, `herd composer …` (the plain `php` CLI is Herd's global 8.4).
+- Local database: SQLite. Mail: `MAIL_MAILER=log`. CI covers MariaDB.
+- Local admin is at `/admin` (`ADMIN_PATH` defaults to `admin`); production uses its own private path.
+- Optional local 2FA: `ADMIN_MFA_REQUIRED=false` in `.env` turns admin two-factor off **only** when `APP_ENV=local`. Every other environment, tests and CI always require it.
+- **www:** `www.chinmoybiswas.com` redirects (301) to `https://chinmoybiswas.com` (`public/.htaccess`).
+
 ## Scope added before Phase 4 (owner, 2026-11-22)
 Order: 3.7 → 3.8 → 3.9, with a stop for owner review at each gate.
 

@@ -2,6 +2,14 @@
 
 Claude never handles passwords or private keys. Do these steps yourself. Hostinger writes that Claude performs over SSH or the API are listed separately and each one needs your approval.
 
+
+> **Status (2026-11-23): live on production, staging removed.** Sections below that mention staging (`dev.`) are historical.
+> - **Release:** PR `development → main`, merge, then approve the `production` deployment twice in GitHub Actions (preflight, deploy). The deploy migrates, caches, switches `current`, health-checks `/up` and rolls back on failure.
+> - **Rollback:** Actions → **Rollback** → Run workflow on `main` (optionally a release id), then approve.
+> - **Cron:** one Hostinger cron, `schedule:run` every minute, for production only.
+> - **After a deploy that changed public pages:** hPanel → the website → **Clear cache** if the CDN still serves an old response.
+> - **Server folder permissions:** `app`, `app/releases`, `app/shared` and `app/shared/storage` must stay 755; `shared/.env` stays 600.
+
 ## A. Before the Phase 1 deploy proof (staging only)
 1. **hPanel → Websites → dev.chinmoybiswas.com → Advanced:** check whether a "custom document root" option exists and note the result (ADR-0002 Option C).
 2. **hPanel → Files → Inodes / Disk usage:** note the inode limit (ADR-0002, release retention).
