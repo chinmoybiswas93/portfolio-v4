@@ -681,3 +681,90 @@ html:not(.dark) :is(.fi-fo-repeater-add, .fi-fo-table-repeater-add) .fi-link {
     border-top: 0;
     padding-top: 0;
 }
+
+/*
+ * Markdown fields (ADR-0010): Write / Preview tabs in the label row, a drag handle under the editor, and a
+ * sandboxed preview frame that loads the public stylesheet.
+ */
+/* Tabs at the right end of the toolbar row (also over the preview's matching top strip). */
+.cb-md {
+    position: relative;
+}
+
+.cb-md-tabs {
+    position: absolute;
+    top: 0.375rem;
+    right: 0.5rem;
+    z-index: 3;
+}
+
+.cb-md-tabs .cb-tab {
+    padding: 0.125rem 0.625rem;
+}
+
+.cb-md .editor-toolbar {
+    padding-right: 9rem !important;
+}
+
+.cb-md-preview-bar {
+    height: 2.75rem;
+    border-bottom: 1px solid #1e293b;
+}
+
+html:not(.dark) .cb-md-preview-bar {
+    border-bottom-color: #e2e8f0;
+}
+
+.cb-md-sized .CodeMirror-scroll {
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+}
+
+/* A textarea-style grip over the bottom-right corner of whichever box shows: the editor or the preview. */
+.cb-md-resize {
+    position: absolute;
+    right: 0.25rem;
+    bottom: 0.25rem;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 0.25rem;
+    color: var(--cb-dim, #8291a8);
+    cursor: ns-resize;
+    touch-action: none;
+}
+
+.cb-md-resize:hover {
+    color: #2dd4bf;
+}
+
+.cb-md-resize:focus-visible {
+    outline: 2px solid #2dd4bf;
+    outline-offset: 1px;
+}
+
+.cb-md-preview {
+    overflow: hidden;
+    border-radius: 0.5rem;
+    border: 1px solid #1e293b;
+}
+
+html:not(.dark) .cb-md-preview {
+    border-color: #e2e8f0;
+}
+
+.cb-md-preview iframe {
+    display: block;
+    width: 100%;
+    height: calc(100% - 2.75rem);
+    border: 0;
+}
+
+.cb-md-loading {
+    padding: 1rem;
+    font-size: 0.8125rem;
+}
