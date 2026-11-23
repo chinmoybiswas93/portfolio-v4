@@ -8,7 +8,7 @@ Private server/account details (git-ignored, local only): @.private/SERVER.md
 The GitHub repo is **public**. Only project and deployment files go to git. Account names, server hostnames, SSH users/ports, other sites on the account, client data, invoices, contact details and secrets belong in `.private/` (git-ignored) or server `.env`. Before every commit, grep the staged diff for them.
 
 ## How to work
-- Work **phase by phase** (see the brief). Each phase ends with a summary and a **stop for owner approval**. Never start the next phase unasked.
+- **The site is live** (since 2026-11-23); Phases 1–5 are complete. New work is a feature or fix slice: plan it, build it with tests, and **stop for owner approval** before anything reaches production. Never start the next slice unasked.
 - **Ask before assuming.** If a requirement is unclear, ask with short multiple-choice questions. Record answers in `docs/PROJECT_BRIEF.md` or a `docs/adr/` entry.
 - **Token discipline:** read only the files you need, prefer targeted greps over full reads, do not re-read files you just edited, and keep replies short. Use subagents only for wide searches or independent reviews.
 - **Look up library docs with context7** (Laravel, Filament, Tailwind v4, DomPDF, Pest) before writing code against them. Do not rely on memory for APIs.
@@ -28,6 +28,13 @@ The GitHub repo is **public**. Only project and deployment files go to git. Acco
 - Use Conventional Commits. Keep commits small. Commit or push only when the owner asks, or as a phase plan they have approved says.
 - Never commit `.env`, credentials, DB dumps or the `storage/` contents.
 - Never push to or deploy `main` without the owner's explicit go-ahead.
+
+## Releasing to production
+- Flow: PR into `development` (CI must pass) → owner merges → PR `development → main` → **the owner merges it** → the `Deploy` workflow runs CI, builds, and pauses **twice** for the owner's approval in GitHub Actions (SSH preflight, then deploy). Keep both approvals (owner decision, 2026-11-23).
+- The deploy migrates, caches, switches `app/current`, health-checks `/up` and rolls back automatically if the check fails.
+- Rollback: Actions → **Rollback** → Run workflow on `main` (previous release, or a release id), then approve.
+- After a release, smoke-test `https://chinmoybiswas.com` (`/up` shows the new release id). If the Hostinger CDN still serves an old response, clear the cache (Hostinger API `hosting_cache_clear`, with approval).
+- Migrations must be backward-compatible with the previous release (rollback does not undo them). Take a `mysqldump` before any destructive migration.
 
 ## Code rules
 - PHP 8.3, strict types, Pint (Laravel preset) and Larastan level 6 or higher must pass.
@@ -50,8 +57,9 @@ Tests are green, Pint, Larastan and the build pass, behaviour is checked in a br
 
 ## Server safety (shared SSH account: all three sites share one user)
 - SSH alias, account and server details are in `.private/SERVER.md` (git-ignored). Never ask for or store the password.
-- Work only inside `~/domains/chinmoybiswas.com/` (and the staging subdomain folder until it is removed). Never `cd` into, list-modify, or touch the other domains' folders or databases.
+- Work only inside `~/domains/chinmoybiswas.com/` and `~/backups/`. There is no staging site any more. Never `cd` into, list-modify, or touch the other domains' folders or databases.
 - Read-only first (`ls`, `cat`, `php -v`). Before any change, state the exact commands and take a backup (`tar` of the folder, `mysqldump` of the DB) into `~/backups/`.
+- Keep `app`, `app/releases`, `app/shared` and `app/shared/storage` at **755** and `shared/.env` at 600: with 700 the web server cannot reach the site.
 - No `rm -rf` outside the app's own release folders, no `chmod -R`/`chown` above the app folder, no edits to `~/.ssh`, `~/.bashrc`, or the PHP config of other sites.
 - Never run heavy work on the server (no `npm`, no large `composer` builds, no long loops). The shared server is already under load; builds happen in CI.
 - Every ssh/scp/rsync and Hostinger API call requires the owner's approval (enforced in `.claude/settings.json`).
