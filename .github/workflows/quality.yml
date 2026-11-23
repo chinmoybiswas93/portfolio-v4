@@ -1,0 +1,112 @@
+name: Quality
+
+# Slow checks, off the critical path: weekly, on demand, and on pull requests only when the touched code needs them.
+on:
+  schedule:
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      invoicing: ${{ steps.diff.outputs.invoicing }}
+      frontend: ${{ steps.diff.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - id: diff
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "invoicing=true" >> "$GITHUB_OUTPUT"; echo "frontend=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          files=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD")
+          echo "invoicing=$(echo "$files" | grep -qE '^(app/Domain/Invoicing|app/Actions/Invoicing|tests/Unit/Invoicing)/' && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "frontend=$(echo "$files" | grep -qE '^(resources|public)/' && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+  # Weekly and on demand only: coverage is slow and does not change per pull request.
+  coverage:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      mariadb:
+        image: mariadb:11.8
+        env:
+          MARIADB_DATABASE: testing
+          MARIADB_USER: testing
+          MARIADB_PASSWORD: testing
+          MARIADB_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      DB_CONNECTION: mariadb
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: testing
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/app-setup
+        with:
+          coverage: pcov
+      - name: Pest with coverage (min 88%)
+        run: vendor/bin/pest --parallel --testsuite=Unit,Feature --coverage --min=88
+
+  mutation:
+    needs: changes
+    if: needs.changes.outputs.invoicing == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/app-setup
+        with:
+          coverage: pcov
+          build-assets: 'false'
+      - name: Mutation testing (invoice maths, min 90%)
+        run: vendor/bin/pest tests/Unit/Invoicing --mutate --min=90
+
+  lighthouse:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/app-setup
+      - name: Lighthouse CI (mobile, 3 runs)
+        run: scripts/lighthouse.sh
+      - name: Keep Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/reports
+          retention-days: 14
+          if-no-files-found: ignore
