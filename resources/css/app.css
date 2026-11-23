@@ -10,8 +10,8 @@
     color-scheme: dark;
     --bg: #0f172a;
     --text: #e2e8f0;
-    --muted: #94a3b8;
-    --dim: #8291a8;
+    --muted: #b4c0d1;
+    --dim: #a3b1c6;
     --line: #1e293b;
     --chip-line: #334155;
     --card: rgb(30 41 59 / 0.5);
@@ -21,7 +21,7 @@
     --code: #0b1220;
     --c-key: #2dd4bf;
     --c-str: #f5c27a;
-    --c-comment: #8291a8;
+    --c-comment: #a3b1c6;
     --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
     --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
@@ -1510,7 +1510,7 @@
         justify-content: space-between;
         align-items: center;
         font-size: 13px;
-        color: #94a3b8;
+        color: #b4c0d1;
     }
 
     .lightbox-figure {
