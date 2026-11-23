@@ -13,14 +13,14 @@
     <title>Allow {{ $client->name }}? · {{ config('brand.admin_name') }}</title>
     <style>
         :root { color-scheme: dark; }
-        body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0F172A; color: #94A3B8; font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0F172A; color: #B4C0D1; font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         main { width: 100%; max-width: 480px; padding: 24px 16px; box-sizing: border-box; }
         .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; color: #E2E8F0; font-weight: 600; }
         .card { background: #111C33; border: 1px solid #1E293B; border-radius: 10px; padding: 18px 20px; }
         h1 { margin: 0; color: #E2E8F0; font-size: 18px; font-weight: 600; }
         .muted { font-size: 12.5px; }
         dl { display: grid; grid-template-columns: 110px 1fr; gap: 4px 12px; margin: 14px 0; font-size: 12.5px; }
-        dt { color: #8291A8; } dd { margin: 0; color: #CBD5E1; overflow-wrap: anywhere; }
+        dt { color: #A3B1C6; } dd { margin: 0; color: #CBD5E1; overflow-wrap: anywhere; }
         code { color: #E2E8F0; }
         .badge { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: rgba(251, 191, 36, .14); color: #FCD34D; font-size: 11.5px; font-weight: 500; }
         ul { list-style: none; margin: 0; padding: 0; }
