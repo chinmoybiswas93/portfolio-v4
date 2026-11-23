@@ -30,6 +30,9 @@ final class InvoicePdfController
         return $disk->response($pdf->path, $invoice->number.'-'.$pdf->label().'.pdf', [
             'Content-Type' => 'application/pdf',
             'Cache-Control' => 'private, no-store, max-age=0',
+            // Shown in the admin's own preview iframe; other sites still can't frame it.
+            'X-Frame-Options' => 'SAMEORIGIN',
+            'Content-Security-Policy' => "frame-ancestors 'self'",
         ], request()->boolean('download') ? 'attachment' : 'inline');
     }
 }

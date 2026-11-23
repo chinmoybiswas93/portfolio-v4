@@ -27,7 +27,10 @@ final class SecurityHeaders
         $headers->set('X-Content-Type-Options', 'nosniff');
         $headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
-        $headers->set('X-Frame-Options', 'DENY');
+        // DENY unless the response opted into same-origin framing (the admin PDF preview iframe).
+        if (! $headers->has('X-Frame-Options')) {
+            $headers->set('X-Frame-Options', 'DENY');
+        }
 
         // HSTS for this host only: never includeSubDomains, other sites live on subdomains of this domain.
         if ($request->isSecure()) {
