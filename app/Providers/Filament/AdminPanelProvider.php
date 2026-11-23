@@ -53,8 +53,8 @@ class AdminPanelProvider extends PanelProvider
                     ->brandName((string) config('app.name')),
             ], isRequired: fn (): bool => AdminMfa::required())
             ->brandName((string) config('brand.admin_name'))
-            ->brandLogo(fn (): string => BrandAssets::logoUrl('brand/logo-mark-dark.svg'))
-            ->darkModeBrandLogo(fn (): string => BrandAssets::logoUrl('brand/logo-mark-light.svg'))
+            ->brandLogo(fn (): string => BrandAssets::adminLogoUrl())
+            ->darkModeBrandLogo(fn (): string => BrandAssets::adminLogoDarkUrl())
             ->brandLogoHeight('1.75rem')
             ->favicon(fn (): string => BrandAssets::faviconUrl() ?? asset('favicon.svg'))
             ->font('system-ui', provider: SystemFontProvider::class, preload: [])
