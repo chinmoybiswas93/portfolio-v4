@@ -1,0 +1,615 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+/* System font stack, as on the public site (no web fonts are loaded). */
+/* Muted text in dark mode uses the canvas grey (#8291A8): Slate 500 is only 3.7:1 on the panel background (WCAG AA needs 4.5:1). */
+.dark {
+    --gray-500: #8291a8;
+}
+
+:root {
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif !important;
+}
+
+/* Navy surfaces from the approved design: page #0F172A, panels #111C33, lines #1E293B. */
+.dark .fi-body,
+.dark .fi-layout {
+    background-color: #0f172a;
+}
+
+.dark .fi-sidebar,
+.dark .fi-topbar > nav,
+.dark .fi-section,
+.dark .fi-ta-ctn,
+.dark .fi-wi-stats-overview-stat,
+.dark .fi-simple-main {
+    background-color: #111c33;
+}
+
+/* Primary buttons as in the approved canvas: teal #2DD4BF with dark text (dark mode), deep teal in light mode. */
+.fi-btn.fi-color.fi-color-primary {
+    --bg: #0f766e !important;
+    --text: #ffffff !important;
+    --hover-bg: #115e59 !important;
+    --hover-text: #ffffff !important;
+    --dark-bg: #2dd4bf !important;
+    --dark-text: #0b1220 !important;
+    --dark-hover-bg: #5eead4 !important;
+    --dark-hover-text: #0b1220 !important;
+}
+
+/* ---------------------------------------------------------------------------------------------------------
+ * Compact admin (slice 3.8a, canvas v17): 32 px controls and rows, 13–13.5 px text, tighter cards.
+ * ------------------------------------------------------------------------------------------------------- */
+:root {
+    --topbar-height: 3.25rem;
+}
+
+.fi-body {
+    font-size: 0.84375rem; /* 13.5px */
+}
+
+/* Sidebar: uppercase group labels, 32 px items. */
+.fi-sidebar-nav {
+    padding: 1rem 0.75rem;
+    row-gap: 1.25rem;
+}
+
+.fi-sidebar-group-btn {
+    padding: 0 0.75rem 0.25rem;
+}
+
+.fi-sidebar-group-label {
+    font-size: 0.71875rem; /* 11.5px */
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8291a8;
+}
+
+.fi-sidebar-group-items,
+.fi-sidebar-group {
+    row-gap: 0.125rem;
+}
+
+.fi-sidebar-item-btn {
+    min-height: 2rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.84375rem;
+}
+
+.fi-sidebar-item-btn > .fi-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
+.dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background-color: rgb(45 212 191 / 0.1);
+}
+
+/* Top bar: "View site" link next to the account menu. */
+.cb-view-site {
+    margin-inline-end: 0.75rem;
+    font-size: 0.84375rem;
+    color: #94a3b8;
+}
+
+.cb-view-site:hover {
+    color: #e2e8f0;
+}
+
+/* Page header: 22 px title, small breadcrumbs. */
+.fi-header-heading {
+    font-size: 1.375rem !important;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.fi-header-subheading {
+    margin-top: 0.25rem;
+    font-size: 0.8125rem;
+}
+
+.fi-breadcrumbs {
+    font-size: 0.78125rem;
+}
+
+.fi-page > .fi-page-header-main-ctn,
+.fi-page-main {
+    row-gap: 1rem;
+}
+
+.fi-main {
+    padding-inline: 1.5rem;
+}
+
+.fi-page-header-main-ctn {
+    padding-block: 1.25rem 1rem;
+    row-gap: 1rem;
+}
+
+/* Cards: radius 10, 14/18 padding, 14 px titles, no header band. */
+.fi-section {
+    border-radius: 0.625rem;
+}
+
+.fi-section-header {
+    padding: 0.875rem 1.125rem 0;
+}
+
+.fi-section-header-heading {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.fi-section-content-ctn {
+    border-top: 0 !important;
+}
+
+.fi-section-content {
+    padding: 0.75rem 1.125rem 1rem;
+}
+
+.fi-sc-component,
+.fi-fo-field {
+    row-gap: 0.375rem;
+}
+
+.fi-fo-field-label-content {
+    font-size: 0.78125rem;
+}
+
+.fi-input-wrp {
+    min-height: 2rem;
+    border-radius: 0.5rem;
+}
+
+.fi-input-wrp .fi-input {
+    padding-block: 0.3125rem;
+    font-size: 0.8125rem;
+}
+
+/* Custom select: same height as a text input (no extra padding, 32 px inner minimum). */
+.fi-select-input {
+    padding-block: 0;
+    font-size: 0.8125rem;
+}
+
+.fi-select-input > div {
+    min-height: 2rem;
+}
+
+.fi-fo-field-wrp-helper-text,
+.fi-sc-text {
+    font-size: 0.78125rem;
+}
+
+.fi-btn {
+    min-height: 2rem;
+    padding-block: 0.3125rem;
+    font-size: 0.8125rem;
+    border-radius: 0.5rem;
+}
+
+/* Tables: one design everywhere (canvas "Admin-Invoices"). */
+.fi-ta-ctn {
+    border-radius: 0.625rem;
+}
+
+.fi-ta-header-toolbar {
+    padding: 0.625rem 0.875rem;
+    gap: 0.625rem;
+}
+
+.fi-ta-header-cell {
+    padding: 0.4375rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #8291a8;
+}
+
+.dark .fi-ta-header-cell,
+.dark .fi-ta-table > thead > tr {
+    background-color: #0f172a;
+}
+
+.fi-ta-cell {
+    font-size: 0.8125rem;
+}
+
+/* ≈40 px rows: Filament pads each column type with py-4. */
+.cb-table .fi-ta-cell :is(.fi-ta-text, .fi-ta-icon, .fi-ta-color, .fi-ta-checkbox, .fi-ta-image, .fi-ta-toggle, .fi-ta-select, .fi-ta-text-input) {
+    padding-block: 0.5rem;
+}
+
+.cb-table .fi-ta-cell:has(.fi-ta-actions),
+.cb-table .fi-ta-cell:has(.fi-ta-record-checkbox) {
+    padding-block: 0.25rem;
+}
+
+.fi-ta-header-cell:first-child,
+.fi-ta-cell:first-child {
+    padding-inline-start: 0.875rem;
+}
+
+.fi-pagination {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.78125rem;
+}
+
+/* Filters are drawn inline in the toolbar, so the funnel button is not needed. */
+.cb-table .fi-ta-filters-dropdown,
+.cb-table .fi-ta-filters-trigger-action-ctn {
+    display: none;
+}
+
+.cb-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.625rem;
+    margin-inline-end: auto;
+}
+
+.cb-tabs {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.1875rem;
+    border: 1px solid #1e293b;
+    border-radius: 0.5rem;
+    background: #0f172a;
+}
+
+.cb-tab {
+    height: 1.625rem;
+    padding: 0 0.625rem;
+    border-radius: 0.375rem;
+    font-size: 0.78125rem;
+    color: #94a3b8;
+}
+
+.cb-tab:hover {
+    color: #e2e8f0;
+}
+
+.cb-tab-active {
+    background: #1e293b;
+    color: #e2e8f0;
+    font-weight: 500;
+}
+
+.cb-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.78125rem;
+    color: #94a3b8;
+}
+
+.cb-filter select {
+    appearance: none;
+    height: 1.875rem;
+    padding: 0 1.75rem 0 0.625rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2394A3B8'%3E%3Cpath d='M5.2 7.6a.75.75 0 0 1 1.06-.04L10 11.1l3.74-3.54a.75.75 0 1 1 1.02 1.1l-4.25 4a.75.75 0 0 1-1.02 0l-4.25-4a.75.75 0 0 1-.04-1.06z'/%3E%3C/svg%3E");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1rem;
+    border: 1px solid #334155;
+    border-radius: 0.5rem;
+    background-color: #0f172a;
+    color: #e2e8f0;
+    font-size: 0.78125rem;
+}
+
+:is(.cb-tab, .cb-filter select):focus-visible {
+    outline: 2px solid #2dd4bf;
+    outline-offset: 2px;
+}
+
+/* Light mode equivalents for the custom toolbar. */
+html:not(.dark) .cb-tabs {
+    border-color: #e2e8f0;
+    background: #f8fafc;
+}
+
+html:not(.dark) .cb-tab-active {
+    background: #ffffff;
+    color: #0f172a;
+}
+
+html:not(.dark) .cb-filter select {
+    border-color: #cbd5e1;
+    background-color: #ffffff;
+    color: #0f172a;
+}
+
+.cb-currency {
+    margin-inline-start: 0.25rem;
+    font-size: 0.75rem;
+    color: #8291a8;
+}
+
+.fi-ta-cell .fi-ta-placeholder {
+    font-style: italic;
+}
+
+.cb-view-site {
+    white-space: nowrap;
+}
+
+@media (max-width: 639px) {
+    .cb-view-site {
+        display: none;
+    }
+
+    .cb-toolbar {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .cb-tabs {
+        max-width: 100%;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .cb-tab {
+        flex: none;
+    }
+
+    .cb-filter {
+        flex: 1 1 8rem;
+    }
+
+    .cb-filter select {
+        width: 100%;
+    }
+}
+
+/* Settings tabs (canvas "Admin-Settings"): left-aligned, underlined, no pill container. */
+.fi-page-sub-navigation-tabs {
+    justify-content: flex-start;
+    margin-inline: 0;
+    padding: 0;
+    gap: 0.25rem;
+    border: 0;
+    border-bottom: 1px solid #1e293b;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item {
+    height: 2.25rem;
+    padding: 0 0.875rem;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    font-size: 0.8125rem;
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item.fi-active {
+    border-bottom-color: #2dd4bf;
+    background: transparent;
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item .fi-icon {
+    display: none;
+}
+
+html:not(.dark) .fi-page-sub-navigation-tabs {
+    border-bottom-color: #e2e8f0;
+}
+
+/* Modal footers: actions on the right, as in the canvas. */
+.fi-modal-footer-actions {
+    justify-content: flex-end;
+}
+
+/* ---------- 3.8h density (canvas v18) ---------- */
+/* Dropdowns match the 32 px inputs. */
+.fi-select-input .fi-select-input-btn {
+    min-height: 2rem;
+    padding-block: 0.25rem;
+    font-size: 0.8125rem;
+}
+
+/* Uncontained form tabs (case study): left-aligned underline tabs, no pill box. */
+.fi-sc-tabs:not(.fi-contained) > .fi-tabs {
+    justify-content: flex-start;
+    margin-inline: 0;
+    padding: 0;
+    gap: 0.25rem;
+    border: 0;
+    border-bottom: 1px solid #1e293b;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.fi-sc-tabs:not(.fi-contained) > .fi-tabs .fi-tabs-item {
+    height: 2rem;
+    padding: 0 0.75rem;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    font-size: 0.8125rem;
+}
+
+.fi-sc-tabs:not(.fi-contained) > .fi-tabs .fi-tabs-item.fi-active {
+    border-bottom-color: #2dd4bf;
+    background: transparent;
+}
+
+html:not(.dark) .fi-sc-tabs:not(.fi-contained) > .fi-tabs {
+    border-bottom-color: #e2e8f0;
+}
+
+/* Repeater "+ Add …" text actions in the accent colour. */
+:is(.fi-fo-repeater-add, .fi-fo-table-repeater-add) .fi-link {
+    color: #2dd4bf;
+}
+
+html:not(.dark) :is(.fi-fo-repeater-add, .fi-fo-table-repeater-add) .fi-link {
+    color: #0f766e;
+}
+
+/* Inline table repeater: keeps rows as rows in narrow columns (metrics, social links), no stacked boxes. */
+.cb-inline-repeater.fi-fo-table-repeater > table {
+    display: table;
+    width: 100%;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater > table > thead {
+    display: table-header-group;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater > table > tbody {
+    display: table-row-group;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater > table > tbody > tr {
+    display: table-row;
+    padding: 0;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater > table > tbody > tr > td {
+    display: table-cell;
+    padding: 0.25rem 0.375rem;
+    vertical-align: middle;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater > table > thead th {
+    padding: 0.25rem 0.375rem;
+    font-size: 0.75rem;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater .fi-fo-field-label-content {
+    display: none;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater .fi-fo-field {
+    row-gap: 0;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater .fi-fo-table-repeater-actions {
+    padding: 0 0.25rem;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater .fi-input-wrp {
+    min-height: 1.75rem;
+}
+
+.cb-inline-repeater.fi-fo-table-repeater .fi-input {
+    padding-block: 0.1875rem;
+    font-size: 0.78125rem;
+}
+
+/* SPA navigation: content fades in after each screen change (Livewire draws the teal progress bar). */
+.fi-main {
+    animation: cb-fade-in 160ms ease-out;
+}
+
+@keyframes cb-fade-in {
+    from {
+        opacity: 0.4;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fi-main {
+        animation: none;
+    }
+}
+
+/* Invoice PDF preview modal and email log (canvas v18). */
+.cb-pdf-preview {
+    display: grid;
+    grid-template-columns: 13rem 1fr;
+    gap: 1rem;
+    min-height: 70vh;
+}
+
+.cb-pdf-versions ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.cb-pdf-versions-title {
+    margin-bottom: 0.25rem;
+    font-size: 0.71875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8291a8;
+}
+
+.cb-pdf-version {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    width: 100%;
+    padding: 0.5rem 0.625rem;
+    border-radius: 0.5rem;
+    text-align: left;
+    font-size: 0.78125rem;
+    color: #94a3b8;
+}
+
+.cb-pdf-version[aria-pressed='true'] {
+    background: rgb(45 212 191 / 0.1);
+}
+
+.cb-pdf-version-head {
+    display: flex;
+    justify-content: space-between;
+    color: #e2e8f0;
+    font-weight: 500;
+}
+
+.cb-pdf-download {
+    display: inline-block;
+    margin: 0 0 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    color: #2dd4bf;
+}
+
+.cb-pdf-note {
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+    color: #8291a8;
+}
+
+.cb-pdf-frame {
+    width: 100%;
+    min-height: 70vh;
+    border: 0;
+    border-radius: 0.5rem;
+    background: #334155;
+}
+
+.cb-email-log {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8125rem;
+}
+
+.cb-email-log-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.625rem 0;
+    border-top: 1px solid #1e293b;
+}
+
+.cb-email-log-item:first-child {
+    border-top: 0;
+    padding-top: 0;
+}
