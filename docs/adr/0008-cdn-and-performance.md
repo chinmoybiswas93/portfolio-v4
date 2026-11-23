@@ -5,7 +5,7 @@
 **Deciders:** Owner
 
 ## Context
-- The owner's constraints: the domain stays registered at **Namecheap**, DNS stays on **Hostinger nameservers, managed in hPanel**, and nothing sits in front of Hostinger. The server location is accepted as is.
+- The owner's constraints: the domain stays registered at **the registrar**, DNS stays on **Hostinger nameservers, managed in hPanel**, and nothing sits in front of Hostinger. The server location is accepted as is.
 - Hostinger provides per website (hPanel and the API: `hosting_websites_get-settings` / `update-settings` / `hosting_cache_clear`):
   - **Server cache:** the LiteSpeed page cache, on/off plus a "cacheless" dev mode.
   - **Hostinger CDN:** on/off, currently on for staging (`server: hcdn`).

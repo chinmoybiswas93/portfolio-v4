@@ -116,7 +116,7 @@ it('edits SEO fields and site defaults with seo:write', function (): void {
     $post = Post::factory()->create();
 
     callTool('update-seo', ['target' => 'post', 'id' => $post->id, 'seo_title' => 'Faster WordPress', 'seo_description' => 'How to measure.']);
-    callTool('update-seo', ['target' => 'site', 'site_title' => 'Chinmoy Biswas', 'default_description' => 'WordPress and Laravel.']);
+    callTool('update-seo', ['target' => 'site', 'site_title' => 'Jane Doe', 'default_description' => 'WordPress and Laravel.']);
 
     expect($post->refresh()->seo_title)->toBe('Faster WordPress')->and(app(SeoSettings::class)->default_description)->toBe('WordPress and Laravel.');
 });

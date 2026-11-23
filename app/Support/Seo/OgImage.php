@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support\Seo;
 
+use App\Support\Brand;
 use GdImage;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
@@ -59,7 +60,7 @@ final class OgImage
         if ($logo instanceof GdImage) {
             imagecopy($image, $logo, 80, 64, 0, 0, imagesx($logo), imagesy($logo));
         }
-        imagettftext($image, 26, 0, 172, 116, $ink, $bold, 'Chinmoy Biswas');
+        imagettftext($image, 26, 0, 172, 116, $ink, $bold, Brand::name());
 
         imagettftext($image, 22, 0, 80, 262, $teal, $bold, mb_strtoupper($label));
 
@@ -76,7 +77,7 @@ final class OgImage
             $y += (int) round($size * 1.35);
         }
 
-        imagettftext($image, 22, 0, 80, self::HEIGHT - 56, $muted, $regular, 'chinmoybiswas.com');
+        imagettftext($image, 22, 0, 80, self::HEIGHT - 56, $muted, $regular, Brand::domain());
 
         ob_start();
         imagepng($image, null, 9);

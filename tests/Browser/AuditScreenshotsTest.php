@@ -24,7 +24,7 @@ uses(RefreshDatabase::class);
  */
 it('captures every admin screen for the design audit', function (): void {
     $this->actingAs(adminWithMfa());
-    $project = Project::factory()->caseStudy()->create(['title' => 'TuFlamenco']);
+    $project = Project::factory()->caseStudy()->create(['title' => 'Sample Shop']);
     $post = Post::factory()->for(Category::factory())->create();
     $client = Client::factory()->create(['company_name' => 'Acme Ltd', 'country_code' => 'GB']);
     $invoice = Invoice::factory()->for($client)->create();
@@ -62,7 +62,7 @@ it('captures the public post and case study screens', function (): void {
     foreach (['Caching on Hostinger', 'Fonts without layout shift'] as $title) {
         Post::factory()->create(['title' => $title])->tags()->attach($tag);
     }
-    $project = Project::factory()->caseStudy()->create(['slug' => 'shop', 'title' => 'TuFlamenco', 'live_url' => 'https://tuflamenco.com']);
+    $project = Project::factory()->caseStudy()->create(['slug' => 'shop', 'title' => 'Sample Shop', 'live_url' => 'https://sample-shop.example']);
     foreach ([1, 2, 3] as $n) {
         $project->addMedia(UploadedFile::fake()->image("g{$n}.jpg", 1200, 750))->withCustomProperties(['alt' => "Screen {$n}"])->toMediaCollection('gallery');
     }

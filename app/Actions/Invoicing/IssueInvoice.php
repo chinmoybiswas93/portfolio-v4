@@ -77,7 +77,7 @@ final class IssueInvoice
                     'title' => $this->profile->title,
                     'business_name' => $this->payment->business_name,
                     'address' => $this->payment->business_address,
-                    'email' => $this->payment->business_email ?: ($this->profile->email ?: 'hello@chinmoybiswas.com'),
+                    'email' => $this->payment->business_email ?: ($this->profile->email ?: config('brand.contact_email')),
                     'tax_id' => $this->payment->business_tax_id,
                     'bank_details' => $this->payment->bank_details,
                     'wise_details' => $this->payment->wise_details,

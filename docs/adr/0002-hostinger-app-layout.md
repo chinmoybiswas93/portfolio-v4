@@ -6,17 +6,17 @@
 
 ## Context
 Server facts, checked read-only on 2026-11-22:
-- Each website has `~/domains/<domain>/` containing `public_html/` (the docroot, a real directory) and an empty marker file `DO_NOT_UPLOAD_HERE`. On `dev.chinmoybiswas.com`, `public_html/` holds only Hostinger's `default.php`.
+- Each website has `~/domains/<domain>/` containing `public_html/` (the docroot, a real directory) and an empty marker file `DO_NOT_UPLOAD_HERE`. On `dev.<domain>`, `public_html/` holds only Hostinger's `default.php`.
 - The web server is **LiteSpeed**. Staging currently responds via `server: hcdn` (the Hostinger CDN is on).
 - **Shell `ln -s` works** (tested in a temp dir under `/tmp`, then removed). PHP `symlink()`/`link()` are disabled, so `php artisan storage:link` **will fail** and links must be created from the shell.
 - `rsync`, `tar`, `git`, `mysqldump` and `composer` exist on the server. CLI `memory_limit=1536M`.
-- The account is shared with other websites. CLAUDE.md limits our work to `~/domains/chinmoybiswas.com/` and `~/domains/dev.chinmoybiswas.com/`.
+- The account is shared with other websites. CLAUDE.md limits our work to `~/domains/<domain>/` and `~/domains/dev.<domain>/`.
 
 **About `DO_NOT_UPLOAD_HERE`:** Hostinger has no public documentation for this file (searched 2026-11-22). Its docs only say that website files belong in `public_html` and that everything there is public. The marker is a **user-facing warning** that files uploaded to the domain root will not be served on the web. It is not a technical restriction: the folder is ours and writable. Not being web-served is exactly what we want for app code, `.env` and storage. Placing the app beside `public_html` keeps everything inside the per-site folder we are allowed to touch.
 Residual risk: a Hostinger tool (for example "reset website" or a backup restore of `public_html` only) might ignore or remove `app/`. Mitigations: never use hPanel "reset/delete website" on these sites, and keep our own `tar` + `mysqldump` backups. Optionally ask Hostinger support to confirm (owner).
 
 ## Decision
-Use the same layout per environment (`<d>` = `dev.chinmoybiswas.com` or `chinmoybiswas.com`):
+Use the same layout per environment (`<d>` = `dev.<domain>` or `<domain>`):
 
 ```
 ~/domains/<d>/

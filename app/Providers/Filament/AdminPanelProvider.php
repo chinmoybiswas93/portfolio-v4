@@ -49,9 +49,9 @@ class AdminPanelProvider extends PanelProvider
             ->multiFactorAuthentication([
                 AppAuthentication::make()
                     ->recoverable()
-                    ->brandName('CB Portfolio'),
+                    ->brandName((string) config('app.name')),
             ], isRequired: fn (): bool => AdminMfa::required())
-            ->brandName('Chinmoy Biswas')
+            ->brandName((string) config('brand.admin_name'))
             ->brandLogo(asset('brand/logo-mark-dark.svg'))
             ->darkModeBrandLogo(asset('brand/logo-mark-light.svg'))
             ->brandLogoHeight('1.75rem')
