@@ -41,6 +41,20 @@ trait StandardEditLayout
         return new HtmlString("<span title=\"{$title}\">{$title}</span>");
     }
 
+    /**
+     * Each breadcrumb is capped in CSS (ADR-0010); its full text shows on hover.
+     *
+     * @return array<int|string, string|Htmlable>
+     */
+    public function getBreadcrumbs(): array
+    {
+        return array_map(function (string $label): Htmlable {
+            $text = e($label);
+
+            return new HtmlString("<span title=\"{$text}\">{$text}</span>");
+        }, parent::getBreadcrumbs());
+    }
+
     protected function getFormActions(): array
     {
         return [];

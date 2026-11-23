@@ -53,3 +53,14 @@ it('gives a long edit-page title its full text as a tooltip', function (): void 
     Livewire::test(EditPost::class, ['record' => $post->getRouteKey()])
         ->assertSeeHtml('<span title="Edit '.e($title).'">Edit '.e($title).'</span>');
 });
+
+// ADR-0010: each breadcrumb is capped in CSS and keeps its full text as a tooltip.
+it('gives every breadcrumb its full text as a tooltip', function (): void {
+    $title = 'WordPress White Screen After a Plugin Update: How I Fixed It in 2 Hours';
+    $post = Post::factory()->for(Category::factory())->create(['title' => $title]);
+
+    Livewire::test(EditPost::class, ['record' => $post->getRouteKey()])
+        ->assertSeeHtml('<span title="'.e($title).'">'.e($title).'</span>')
+        ->assertSeeHtml('<span title="Posts">Posts</span>')
+        ->assertSeeHtml('<span title="Edit">Edit</span>');
+});

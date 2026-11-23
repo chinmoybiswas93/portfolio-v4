@@ -118,7 +118,8 @@
 
 /*
  * Long titles (ADR-0010): from the sm breakpoint the header never wraps. The actions keep their place on the
- * right and the title (and a long breadcrumb) is cut to one line with an ellipsis; the full title is its tooltip.
+ * right and the title is cut to one line with an ellipsis. Each breadcrumb is capped at 16rem the same way. Both show
+ * their full text on hover.
  */
 .fi-header-heading {
     overflow: hidden;
@@ -127,7 +128,8 @@
 }
 
 .fi-breadcrumbs-item-label {
-    max-width: 28rem;
+    display: inline-block;
+    max-width: 16rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
