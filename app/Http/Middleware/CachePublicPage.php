@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Support\Cache\PageCache;
+use App\Support\Vite\DevServer;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +21,8 @@ final class CachePublicPage
     public function handle(Request $request, Closure $next): Response
     {
         // GET only: a HEAD response has no body and must never be stored as the page.
-        if (! $request->isMethod('GET') || ! config('cache.pages_enabled', true)) {
+        // Locally, while the Vite dev server runs, pages carry its URLs: never store them.
+        if (! $request->isMethod('GET') || ! config('cache.pages_enabled', true) || DevServer::origin() !== null) {
             return $next($request);
         }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Support\Seo\Seo;
+use App\Support\Vite\DevServer;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,6 +19,23 @@ final class SecurityHeaders
     public const PUBLIC_CSP = "default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; "
         ."style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; "
         ."frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'";
+
+    /** The public CSP. Locally, with the Vite dev server running, its origin and websocket are also allowed. */
+    public static function publicCsp(): string
+    {
+        $origin = DevServer::origin();
+        if ($origin === null) {
+            return self::PUBLIC_CSP;
+        }
+
+        $socket = preg_replace('~^http~', 'ws', $origin);
+
+        return str_replace(
+            ["script-src 'self'", "style-src 'self'", "connect-src 'self'"],
+            ["script-src 'self' {$origin}", "style-src 'self' {$origin}", "connect-src 'self' {$origin} {$socket}"],
+            self::PUBLIC_CSP,
+        );
+    }
 
     public function handle(Request $request, Closure $next, string $profile = 'default'): Response
     {
@@ -46,7 +64,7 @@ final class SecurityHeaders
         }
 
         if ($profile === 'public') {
-            $headers->set('Content-Security-Policy', self::PUBLIC_CSP);
+            $headers->set('Content-Security-Policy', self::publicCsp());
             $headers->set('Cache-Control', 'public, max-age=0, must-revalidate');
             if (! Seo::indexable()) {
                 $headers->set('X-Robots-Tag', 'noindex, nofollow');
