@@ -1,7 +1,7 @@
 name: Deploy
 
 on:
-  # Production only: every push to main (a merged PR) deploys. development runs CI only (ci.yml).
+  # Production only: every push to main (a merged PR) deploys. CI already ran on the pull request.
   push:
     branches: [main]
   # Manual run: "Run workflow" on main.
@@ -15,42 +15,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Fails within seconds when SSH Access is switched off, before spending minutes on CI and the build.
-  preflight:
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    environment: production
-    steps:
-      - name: Only main deploys
-        if: github.ref != 'refs/heads/main'
-        run: |
-          echo "::error title=Unsupported branch::Only main deploys (to production)."
-          exit 1
-
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-          sparse-checkout: .github/actions
-
-      - uses: ./.github/actions/ssh-setup
-        with:
-          private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          user: ${{ secrets.SSH_USER }}
-
-      - name: Clean up key
-        if: always()
-        run: rm -f ~/.ssh/deploy_key
-
-  ci:
-    needs: preflight
-    uses: ./.github/workflows/ci.yml
-
   # Builds the release with no secrets available: third-party package scripts never see the deploy key.
   build:
-    needs: ci
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
@@ -96,7 +62,8 @@ jobs:
           path: /tmp/release.tgz
           retention-days: 7
 
-  # Only this job can read the environment secrets. It runs no package code.
+  # The single approval (environment production). Only this job can read the environment secrets, and it runs no
+  # package code. The SSH preflight is its first step, so "SSH is off" fails fast with a clear message.
   deploy:
     needs: build
     if: github.ref == 'refs/heads/main'
@@ -119,7 +86,7 @@ jobs:
           persist-credentials: false
           sparse-checkout: .github/actions
 
-      # Checked again here: SSH may have been switched off while CI and the build ran.
+      # SSH preflight: fails with a clear message when SSH Access is switched off.
       - uses: ./.github/actions/ssh-setup
         with:
           private-key: ${{ secrets.SSH_PRIVATE_KEY }}

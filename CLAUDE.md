@@ -8,6 +8,8 @@ Owner-specific notes (domain, hosting account, private paths) live in a git-igno
 The GitHub repo is **public** and generic. Only project and deployment files go to git. Account names, server hostnames, SSH users and ports, other sites on the account, client data, invoices, contact details, personal names and domains, and secrets belong in `.private/` (git-ignored), the database or the server `.env`. Before every commit, grep the staged diff for them. A test fails if personal terms appear in tracked files.
 
 ## How to work
+- **Local loop:** work on a short-lived branch. After each change run only the affected checks (`pest --dirty` or `--filter`, `pint --dirty`, Larastan on changed files), `npm run build` if CSS, JS or views changed, and commit locally without pushing. Confirm the change on the local site, then give the owner 3 to 5 lines: what changed, which URL to open, what to click, what they should see. **Stop and wait for their OK**, and iterate until they say to ship.
+- **Ship:** run the full local suite once (`pest --parallel`, Pint, Larastan, `npm run build`), push, and open **one PR into `main`** with a short description. When CI is green, tell the owner to merge. Merging to `main` deploys, and CI does not run again inside Deploy.
 - New work is a feature or fix slice: plan it, build it with tests, and **stop for owner approval** before anything reaches production. Never start the next slice unasked.
 - **Ask before assuming.** If a requirement is unclear, ask with short multiple-choice questions. Record answers in a `docs/adr/` entry.
 - **Token discipline:** read only the files you need, prefer targeted greps over full reads, do not re-read files you just edited, and keep replies short. Use subagents only for wide searches or independent reviews.
@@ -22,8 +24,8 @@ The GitHub repo is **public** and generic. Only project and deployment files go 
 - Branding comes from Settings (database) and `config/brand.php` (`BRAND_*` env keys). Never hard-code a name, domain or email in `app/` or `resources/`.
 
 ## Git rules
-- Branches: `main` is production, `development` is integration plus CI, and `feat/*`, `fix/*` and `chore/*` branch off `development`. Release = a PR from `development` into `main`.
-- Use Conventional Commits. Keep commits small. Commit or push only when the owner asks, or as an approved plan says.
+- Branches: `main` is production. Short-lived `feat/*`, `fix/*` and `chore/*` branches come off `main`. There is no `development` branch: one PR into `main` is the release.
+- Use Conventional Commits. Keep commits small. Commit locally after each change; push only when the owner says to ship.
 - Never commit `.env`, credentials, DB dumps or the `storage/` contents.
 - Never push to or deploy `main` without the owner's explicit go-ahead.
 
