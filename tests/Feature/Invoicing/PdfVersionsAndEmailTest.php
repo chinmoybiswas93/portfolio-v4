@@ -127,7 +127,9 @@ it('previews PDF versions for admins only', function (): void {
     $this->get($path)->assertRedirect(adminPath('/login'));
     $this->actingAs(User::factory()->create(['is_admin' => false]))->get($path)->assertForbidden();
 
-    $this->actingAs(adminWithMfa())->get($path)->assertOk()->assertHeader('Content-Type', 'application/pdf');
+    $this->actingAs(adminWithMfa())->get($path)->assertOk()->assertHeader('Content-Type', 'application/pdf')
+        ->assertHeader('X-Frame-Options', 'SAMEORIGIN'); // framed by the preview modal
+    $this->get(adminPath())->assertHeader('X-Frame-Options', 'DENY'); // everything else stays unframeable
     $otherPdf = issuedInvoice()->pdfs()->firstOrFail();
     $this->get(adminPath("/invoices/{$invoice->id}/pdfs/{$otherPdf->id}"))->assertNotFound();
 
