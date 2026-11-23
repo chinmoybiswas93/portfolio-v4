@@ -288,9 +288,9 @@ Changes and additions to 3.7/3.8. Items already built in 3.8a–3.8f stay unless
 - **Tests:** guest 401, missing scope 403, switch off blocks calls, trashed items are not public, draft-only invoices enforced; `/mcp` and OAuth routes added to the route inventory on purpose.
 - **Slices:** 3.9a OAuth + server + read tools; 3.9b content/SEO write, trash, media upload; 3.9c invoice drafts, audit log UI, switch, connected apps. Security review on every slice. After 3.9a: exact steps to connect Claude Code to `dev.chinmoybiswas.com/mcp` and verify the browser approval flow. An ADR with a threat model is written and approved before any 3.9 code.
 
-## Phases (each ends with a gate where the owner approves)
+## Phases (each ends with a gate where the owner approves). **Status: all five done; live since 2026-11-23.**
 1. **Architecture:** ADRs (stack, hosting layout, CI/CD, PDF, media), data model/ERD, routes, security model, test strategy. Prove deploy with a "hello" Laravel app on the staging subdomain.
 2. **UI design:** design every screen in a canvas (Claude design artifact) first: home, project archive, case study, blog list/post, 404, invoice PDF template, and key admin screens. The owner approves before any UI code is written.
 3. **Build:** backend and data, then admin, then public frontend, then invoices, then SEO/perf. Each slice ships with tests.
-4. **QA:** tests, Lighthouse, accessibility, security review, cross-browser checks on staging.
-5. **Launch:** deploy checklist, WP backup, DNS/docroot switch, redirects, smoke test, rollback plan.
+4. **QA:** tests, Lighthouse, accessibility, security review, cross-browser checks on staging. *Done: `docs/QA_REPORT.md`.*
+5. **Launch:** deploy checklist, WP backup, DNS/docroot switch, redirects, smoke test, rollback plan. *Done 2026-11-23: cleaned staging data imported, staging removed, `www` → bare domain. Release flow in `CLAUDE.md`.*
