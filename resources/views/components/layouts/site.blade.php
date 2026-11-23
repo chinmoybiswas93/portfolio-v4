@@ -43,9 +43,13 @@
         <script type="application/ld+json">{!! \App\Support\Seo\JsonLd::encode($jsonLd) !!}</script>
     @endif
     <meta name="theme-color" content="#0F172A">
-    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
-    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="48x48">
-    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
+    @if ($uploadedFavicon = \App\Support\BrandAssets::faviconUrl())
+        <link rel="icon" href="{{ $uploadedFavicon }}">
+    @else
+        <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+        <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="48x48">
+    @endif
+    <link rel="apple-touch-icon" href="{{ \App\Support\BrandAssets::appleTouchUrl() }}">
     <script src="{{ asset('theme-init.js') }}"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>

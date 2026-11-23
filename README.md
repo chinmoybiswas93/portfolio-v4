@@ -82,7 +82,7 @@ Copy `.env.example` to `.env` and adjust it. The settings that matter most:
 | `BRAND_MCP_NAME` | Name the MCP server reports (default: site name + " portfolio") |
 | `MCP_ENABLED` | Hard switch for the MCP server, off by default |
 
-Settings entered in the admin override the `BRAND_*` defaults. Business details, bank details, invoice prefix, SEO defaults, logo and favicon are entered under **Settings**, never in the repository.
+Settings entered in the admin override the `BRAND_*` defaults. Business details, bank details, invoice prefix and SEO defaults are entered under **Settings**. Upload your logo, favicon, touch icon and share-image logo under **Settings → Branding**; the bundled files are used until you do. None of this goes in the repository.
 
 ## Using the admin
 
@@ -148,4 +148,4 @@ Bug reports are welcome as GitHub issues. Please do not include private data in 
 
 ## Licence
 
-A licence has not been chosen yet. Until a `LICENSE` file is added, all rights are reserved.
+Released under the [MIT licence](LICENSE).

@@ -39,7 +39,7 @@
 <body>
 <main>
     <div class="brand">
-        <img src="{{ asset('brand/logo-mark-light.svg') }}" width="24" height="27" alt="">
+        <img src="{{ \App\Support\BrandAssets::logoUrl('brand/logo-mark-light.svg') }}" width="24" height="27" alt="">
         <span>{{ config('brand.admin_name') }} · Admin</span>
     </div>
     <section class="card" aria-labelledby="consent-title">

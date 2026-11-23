@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Support\Seo;
 
 use App\Support\Brand;
+use App\Support\BrandAssets;
 use GdImage;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
@@ -56,9 +57,13 @@ final class OgImage
         imagefilledrectangle($image, 0, 0, self::WIDTH, self::HEIGHT, $navy);
         imagefilledrectangle($image, 0, 0, 12, self::HEIGHT, $teal);
 
-        $logo = imagecreatefrompng(resource_path('og/logo.png'));
+        $logo = @imagecreatefrompng(BrandAssets::ogLogoPath());
         if ($logo instanceof GdImage) {
-            imagecopy($image, $logo, 80, 64, 0, 0, imagesx($logo), imagesy($logo));
+            // Fit the logo into an 80 px tall box so any upload size keeps the layout.
+            $height = 80;
+            $width = max(1, (int) round(imagesx($logo) * $height / max(1, imagesy($logo))));
+            imagealphablending($image, true);
+            imagecopyresampled($image, $logo, 80, 64, 0, 0, $width, $height, imagesx($logo), imagesy($logo));
         }
         imagettftext($image, 26, 0, 172, 116, $ink, $bold, Brand::name());
 
