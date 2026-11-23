@@ -18,6 +18,18 @@ final class BrandAssets
         return self::url(app(BrandingSettings::class)->logo_path) ?? asset($fallback);
     }
 
+    /** Admin header logo for the light theme (dark artwork). */
+    public static function adminLogoUrl(): string
+    {
+        return self::url(app(BrandingSettings::class)->admin_logo_path) ?? asset('brand/logo-mark-dark.svg');
+    }
+
+    /** Admin header logo for the dark theme and the dark consent screens (light artwork). */
+    public static function adminLogoDarkUrl(): string
+    {
+        return self::url(app(BrandingSettings::class)->admin_logo_dark_path) ?? asset('brand/logo-mark-light.svg');
+    }
+
     /** The favicon link tags, or null to use the bundled set. */
     public static function faviconUrl(): ?string
     {
