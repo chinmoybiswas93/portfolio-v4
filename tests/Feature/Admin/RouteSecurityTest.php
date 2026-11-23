@@ -23,6 +23,12 @@ const PUBLIC_ADMIN_ROUTES = ['filament.admin.auth.login'];
 /** Routes that exist but are switched off (export/import is not used). */
 const DISABLED_ROUTES = ['filament.exports.download', 'filament.imports.failed-rows.download'];
 
+/** Signed GET links (email change verification and block, ADR-0010): the signature is checked before 2FA set-up. */
+const SIGNED_ADMIN_ROUTES = [
+    'filament.admin.auth.email-change-verification.verify',
+    'filament.admin.auth.email-change-verification.block-verification',
+];
+
 /** The only routes allowed to change state. */
 const WRITE_ROUTES = [
     'default-livewire.update', 'livewire.upload-file', 'storage.local.upload', 'filament.admin.auth.logout',
@@ -74,7 +80,15 @@ it('makes admins without two-factor authentication set it up first on every admi
     $admin->save();
 
     $this->actingAs($admin)->get($path)->assertRedirectContains(adminPath('/multi-factor-authentication/set-up'));
-})->with(fn (): array => collect(adminGetPaths())->except(['filament.admin.auth.multi-factor-authentication.set-up-required'])->all());
+})->with(fn (): array => collect(adminGetPaths())->except(['filament.admin.auth.multi-factor-authentication.set-up-required', ...SIGNED_ADMIN_ROUTES])->all());
+
+// Email change links (ADR-0010) check their signature first: an unsigned or tampered link is refused for everyone.
+it('refuses email change links without a valid signature', function (string $path): void {
+    $admin = adminWithMfa();
+
+    $this->actingAs($admin)->get($path)->assertForbidden();
+    $this->actingAs($admin)->get($path.'?expires=9999999999&signature=tampered')->assertForbidden();
+})->with(fn (): array => collect(adminGetPaths())->only(SIGNED_ADMIN_ROUTES)->all());
 
 it('answers 404 for the unused export and import downloads', function (string $path): void {
     $this->get($path)->assertNotFound();
