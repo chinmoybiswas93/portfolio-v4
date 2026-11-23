@@ -18,7 +18,7 @@ beforeEach(function (): void {
     $this->post = Post::factory()->for(Category::factory())->create();
 });
 
-it('draws the tabs, the resize handle and the preview frame under the editor, above the helper text', function (): void {
+it('draws the tabs, the corner grip and the preview frame with the editor, above the helper text', function (): void {
     $html = Livewire::test(EditPost::class, ['record' => $this->post->getRouteKey()])->html();
 
     expect($html)->toContain('aria-label="Editor mode"')
@@ -51,6 +51,8 @@ it('uses the field on every Markdown input', function (): void {
         ->map(fn (string $f): string => (string) file_get_contents(app_path("Filament/Resources/{$f}.php")))
         ->push((string) file_get_contents(app_path('Filament/Pages/ManageProfile.php')));
 
+    // Same component and same toolbar everywhere: no form overrides the toolbar.
     expect($editors->filter(fn (string $src): bool => str_contains($src, 'MarkdownEditor::make')))->toBeEmpty()
-        ->and($editors->filter(fn (string $src): bool => str_contains($src, 'MarkdownField::make')))->toHaveCount(5);
+        ->and($editors->filter(fn (string $src): bool => str_contains($src, 'MarkdownField::make')))->toHaveCount(5)
+        ->and($editors->filter(fn (string $src): bool => str_contains($src, 'toolbarButtons(')))->toBeEmpty();
 });

@@ -25,8 +25,7 @@ class ExperienceForm
                 DatePicker::make('started_on')->required()->native(false)->displayFormat('M Y'),
                 DatePicker::make('ended_on')->native(false)->displayFormat('M Y')->afterOrEqual('started_on')
                     ->helperText('Leave empty for your current role.'),
-                MarkdownField::make('description_md')->label('Description')->columnSpanFull()
-                    ->toolbarButtons([['bold', 'italic', 'link', 'bulletList'], ['undo', 'redo']]),
+                MarkdownField::make('description_md')->label('Description')->columnSpanFull(),
                 Fields::tags('Skills')->columnSpanFull(),
                 TextInput::make('sort_order')->numeric()->default(0)->minValue(0),
                 Toggle::make('is_published')->label('Published')->default(true),

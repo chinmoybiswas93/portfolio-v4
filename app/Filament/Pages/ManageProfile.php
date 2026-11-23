@@ -48,8 +48,7 @@ class ManageProfile extends SettingsPage
                 TextInput::make('name')->required()->maxLength(80),
                 TextInput::make('title')->required()->maxLength(120)->helperText('Shown under your name, e.g. "WordPress & Laravel developer".'),
                 Textarea::make('tagline')->required()->rows(2)->maxLength(220)->columnSpanFull(),
-                MarkdownField::make('about_md')->label('About')->columnSpanFull()
-                    ->toolbarButtons([['bold', 'italic', 'link'], ['bulletList'], ['undo', 'redo']]),
+                MarkdownField::make('about_md')->label('About')->columnSpanFull(),
             ]),
             Section::make('Contact')->columns(2)->columnSpanFull()->schema([
                 TextInput::make('email')->email()->maxLength(255)->helperText('Public contact address.'),

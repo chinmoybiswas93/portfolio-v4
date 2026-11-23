@@ -8,7 +8,6 @@ use App\Support\Markdown\MarkdownRenderer;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Support\Components\Attributes\Exposed;
 use Illuminate\Support\Facades\Vite;
-use Illuminate\Support\HtmlString;
 use Illuminate\Support\Js;
 use Illuminate\View\ComponentAttributeBag;
 use Livewire\Attributes\Renderless;
@@ -18,7 +17,9 @@ use Livewire\Attributes\Renderless;
  *
  * - Preview renders on the server with the site's own MarkdownRenderer and stylesheet, inside a sandboxed frame
  *   (no scripts, forms or navigation), in the admin's light or dark theme.
- * - The drag handle under the editor sets its height; the height is remembered per field in this browser.
+ * - The grip in the bottom-right corner (of the editor, or of the preview) sets the height of both (drag, or arrow keys
+ *   when focused); the height is remembered per field in this browser. Height bindings use Alpine's object syntax: a string would replace the whole
+ *   style attribute and drop x-show's display:none.
  */
 class MarkdownField extends MarkdownEditor
 {
@@ -42,18 +43,34 @@ class MarkdownField extends MarkdownEditor
             'x-show' => "tab === 'write'",
             'x-on:cb-md-tab.window' => 'if ($event.detail.path === '.Js::from($this->getStatePath()).') tab = $event.detail.tab',
         ]);
-        $this->afterLabel(fn (): HtmlString => new HtmlString($this->tabsHtml()));
     }
 
     /**
-     * The drag handle and preview sit right under the editor box, above any helper text (which uses the
-     * belowContent slot). wrapInputHtml() is internal in Filament: MarkdownFieldTest fails if this stops rendering.
+     * One toolbar for every Markdown field (ADR-0010), so they all look and behave the same.
+     *
+     * @return array<array<string>>
+     */
+    public function getDefaultToolbarButtons(): array
+    {
+        return [
+            ['bold', 'italic', 'strike', 'link'],
+            ['heading'],
+            ['blockquote', 'codeBlock', 'bulletList', 'orderedList'],
+            ['table', 'attachFiles'],
+            ['undo', 'redo'],
+        ];
+    }
+
+    /**
+     * The Write / Preview tabs sit at the right end of the toolbar row (so they show even when the label is hidden),
+     * and the grip and preview sit right under the editor box, above any helper text (belowContent slot).
+     * wrapInputHtml() is internal in Filament: MarkdownFieldTest fails if this stops rendering.
      */
     protected function wrapInputHtml(string $html, ?string $alpineDisabled = null, ?string $alpineValid = null, ?ComponentAttributeBag $attributes = null): string
     {
         $wrapped = parent::wrapInputHtml($html, $alpineDisabled, $alpineValid, $attributes);
 
-        return $this->isDisabled() ? $wrapped : $wrapped.$this->belowEditorHtml();
+        return $this->isDisabled() ? $wrapped : '<div class="cb-md">'.$this->tabsHtml().$wrapped.$this->belowEditorHtml().'</div>';
     }
 
     /** Called from the Preview tab. Returns a whole HTML document for the sandboxed frame. */
@@ -124,12 +141,13 @@ class MarkdownField extends MarkdownEditor
                         } finally { this.loading = false; }
                     },
                 }" x-on:cb-md-tab.window="if (\$event.detail.path === {$path}) show(\$event.detail.tab)">
-                <div x-show="tab === 'write'" class="cb-md-resize" role="separator" aria-orientation="horizontal" aria-label="Resize the editor (arrow keys)" tabindex="0"
+                <div class="cb-md-resize" role="separator" aria-orientation="horizontal" aria-label="Resize the editor (arrow keys)" tabindex="0"
                     aria-valuemin="120" aria-valuemax="2000" aria-valuenow="{$height}" :aria-valuenow="height" :aria-valuetext="height + ' pixels'"
                     x-on:pointerdown.prevent="startResize(\$event)" x-on:keydown.up.prevent="nudge(-40)" x-on:keydown.down.prevent="nudge(40)">
-                    <span aria-hidden="true"></span>
+                    <svg aria-hidden="true" viewBox="0 0 12 12" width="12" height="12"><path d="M11 4 4 11M11 8 8 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                 </div>
-                <div x-show="tab === 'preview'" x-cloak class="cb-md-preview" :style="'height:' + (height + 48) + 'px'">
+                <div x-show="tab === 'preview'" x-cloak class="cb-md-preview" :style="{ height: (height + 48) + 'px' }">
+                    <div class="cb-md-preview-bar" aria-hidden="true"></div>
                     <p x-show="loading" class="cb-md-loading">Rendering preview…</p>
                     <iframe x-show="! loading" title="Preview" sandbox="" :srcdoc="doc" loading="lazy"></iframe>
                 </div>

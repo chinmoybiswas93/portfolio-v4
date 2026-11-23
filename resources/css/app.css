@@ -1097,6 +1097,31 @@
     gap: 6px;
 }
 
+/*
+ * Tailwind's preflight removes list markers. Every block of rendered Markdown gets them back: posts (.prose), case
+ * studies (.cs-section), experience (.body-sm) and About (.prose-about).
+ */
+:is(.prose, .cs-section, .body-sm, .prose-about) ul {
+    list-style: disc;
+}
+
+:is(.prose, .cs-section, .body-sm, .prose-about) ol {
+    list-style: decimal;
+}
+
+:is(.prose, .cs-section, .body-sm, .prose-about) ul ul {
+    list-style: circle;
+}
+
+:is(.cs-section, .body-sm, .prose-about) :is(ul, ol) {
+    margin: 0;
+    padding-left: 22px;
+}
+
+:is(.prose, .cs-section, .body-sm, .prose-about) li::marker {
+    color: var(--muted);
+}
+
 .prose blockquote {
     padding: 4px 0 4px 20px;
     border-left: 2px solid var(--accent);
