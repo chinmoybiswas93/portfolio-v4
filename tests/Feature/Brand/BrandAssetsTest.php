@@ -12,6 +12,8 @@ uses(RefreshDatabase::class);
 
 it('uses the bundled files when nothing is uploaded', function (): void {
     expect(BrandAssets::logoUrl())->toEndWith('brand/logo-mark.svg')
+        ->and(BrandAssets::adminLogoUrl())->toEndWith('brand/logo-mark-dark.svg')
+        ->and(BrandAssets::adminLogoDarkUrl())->toEndWith('brand/logo-mark-light.svg')
         ->and(BrandAssets::faviconUrl())->toBeNull()
         ->and(BrandAssets::appleTouchUrl())->toEndWith('apple-touch-icon.png')
         ->and(BrandAssets::ogLogoPath())->toBe(resource_path('og/logo.png'))
@@ -22,11 +24,15 @@ it('uses the uploads from Settings when they exist', function (): void {
     Storage::disk('public')->putFileAs('brand', UploadedFile::fake()->image('l.png', 40, 40), 'l.png');
     $settings = app(BrandingSettings::class);
     $settings->logo_path = 'brand/l.png';
+    $settings->admin_logo_path = 'brand/l.png';
+    $settings->admin_logo_dark_path = 'brand/l.png';
     $settings->favicon_path = 'brand/l.png';
     $settings->og_logo_path = 'brand/l.png';
     $settings->save();
 
     expect(BrandAssets::logoUrl())->toContain('brand/l.png')
+        ->and(BrandAssets::adminLogoUrl())->toContain('brand/l.png')
+        ->and(BrandAssets::adminLogoDarkUrl())->toContain('brand/l.png')
         ->and(BrandAssets::faviconUrl())->toContain('brand/l.png')
         ->and(BrandAssets::ogLogoPath())->toEndWith('brand/l.png')
         ->and(BrandAssets::logoDataUri())->toStartWith('data:image/png;base64,');

@@ -39,7 +39,9 @@ class ManageBranding extends SettingsPage
 
         return $schema->components([
             Section::make('Logo and icons')->columnSpanFull()->description('Leave a field empty to use the bundled file.')->schema([
-                $image(FileUpload::make('logo_path')->label('Logo mark')->helperText('SVG or PNG. Shown in the admin, on consent screens and on invoice PDFs.'), ['image/svg+xml', 'image/png']),
+                $image(FileUpload::make('logo_path')->label('Logo mark')->helperText('SVG or PNG with dark artwork. Used on invoice PDFs (white paper).'), ['image/svg+xml', 'image/png']),
+                $image(FileUpload::make('admin_logo_path')->label('Admin logo, light theme')->helperText('SVG or PNG with dark artwork, for the light admin header.'), ['image/svg+xml', 'image/png']),
+                $image(FileUpload::make('admin_logo_dark_path')->label('Admin logo, dark theme')->helperText('SVG or PNG with light artwork, for the dark admin header and the sign-in approval screens.'), ['image/svg+xml', 'image/png']),
                 $image(FileUpload::make('favicon_path')->label('Favicon')->helperText('SVG, PNG or ICO.'), ['image/svg+xml', 'image/png', 'image/x-icon', 'image/vnd.microsoft.icon']),
                 $image(FileUpload::make('apple_touch_path')->label('Touch icon')->helperText('180 × 180 px PNG.'), ['image/png']),
                 $image(FileUpload::make('og_logo_path')->label('Share-image logo')->helperText('PNG with a transparent background, about 70 px wide. Drawn on generated share images.'), ['image/png']),
