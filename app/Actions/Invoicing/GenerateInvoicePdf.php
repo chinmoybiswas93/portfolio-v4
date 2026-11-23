@@ -10,6 +10,7 @@ use App\Enums\InvoiceAction;
 use App\Enums\InvoiceStatus;
 use App\Models\Invoice;
 use App\Models\InvoicePdf;
+use App\Support\BrandAssets;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -63,11 +64,10 @@ final class GenerateInvoicePdf
         $invoice->loadMissing('items');
         // DomPDF writes font metrics for the bundled Inter files here on first use.
         File::ensureDirectoryExists(storage_path('fonts'));
-        $logo = (string) file_get_contents(public_path('brand/logo-mark.svg'));
 
         $dompdf = Pdf::loadView('pdf.invoice', [
             'doc' => InvoiceDocument::from($invoice),
-            'logo' => 'data:image/svg+xml;base64,'.base64_encode($logo),
+            'logo' => BrandAssets::logoDataUri(),
         ])->setPaper('a4')->getDomPDF();
         $dompdf->render();
 

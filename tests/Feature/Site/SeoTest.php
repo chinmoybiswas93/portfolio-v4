@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
-beforeEach(fn () => config(['app.url' => 'https://chinmoybiswas.com']));
+beforeEach(fn () => config(['app.url' => 'https://example.com']));
 
 /**
  * @return array<string, mixed>
@@ -30,15 +30,15 @@ it('sets canonical, Open Graph and Twitter tags on every page', function (): voi
     $html = $this->get('/blog?page=2&utm_source=x')->assertOk()->getContent();
 
     expect($html)
-        ->toContain('<link rel="canonical" href="https://chinmoybiswas.com/blog?page=2">')
-        ->toContain('<meta property="og:url" content="https://chinmoybiswas.com/blog?page=2">')
+        ->toContain('<link rel="canonical" href="https://example.com/blog?page=2">')
+        ->toContain('<meta property="og:url" content="https://example.com/blog?page=2">')
         ->toContain('<meta name="twitter:card" content="summary_large_image">')
-        ->toContain('<meta property="og:image" content="https://chinmoybiswas.com/storage/og/')
+        ->toContain('<meta property="og:image" content="https://example.com/storage/og/')
         ->toContain('rel="alternate" type="application/rss+xml"');
 });
 
 it('keeps the canonical free of page=1 and other query strings', function (): void {
-    expect($this->get('/projects?page=1&ref=abc')->getContent())->toContain('<link rel="canonical" href="https://chinmoybiswas.com/projects">');
+    expect($this->get('/projects?page=1&ref=abc')->getContent())->toContain('<link rel="canonical" href="https://example.com/projects">');
 });
 
 it('describes the home page as a Person and WebSite', function (): void {
@@ -57,7 +57,7 @@ it('describes a post as a BlogPosting with breadcrumbs and article times', funct
         ->and($graph[0]['headline'])->toBe('Speed </script> tips')
         ->and($graph[0]['datePublished'])->toBe($post->published_at?->toAtomString())
         ->and($graph[1]['@type'])->toBe('BreadcrumbList')
-        ->and($graph[1]['itemListElement'][2]['item'])->toBe('https://chinmoybiswas.com/blog/speed')
+        ->and($graph[1]['itemListElement'][2]['item'])->toBe('https://example.com/blog/speed')
         ->and($html)->toContain('<meta property="og:type" content="article">')
         ->toContain('article:published_time');
 });
@@ -100,9 +100,9 @@ it('lists only published, public URLs in the sitemap', function (): void {
     }
 
     expect($locs)->toEqualCanonicalizing([
-        'https://chinmoybiswas.com/', 'https://chinmoybiswas.com/projects', 'https://chinmoybiswas.com/blog',
-        'https://chinmoybiswas.com/projects/case', 'https://chinmoybiswas.com/blog/live',
-        'https://chinmoybiswas.com/blog/category/wordpress', 'https://chinmoybiswas.com/blog/tag/speed',
+        'https://example.com/', 'https://example.com/projects', 'https://example.com/blog',
+        'https://example.com/projects/case', 'https://example.com/blog/live',
+        'https://example.com/blog/category/wordpress', 'https://example.com/blog/tag/speed',
     ]);
 });
 
@@ -129,7 +129,7 @@ it('blocks indexing outside production', function (): void {
 it('allows indexing in production and points crawlers to the sitemap', function (): void {
     app()->detectEnvironment(fn (): string => 'production');
 
-    $this->get('/robots.txt')->assertOk()->assertSee('Sitemap: https://chinmoybiswas.com/sitemap.xml', false)->assertDontSee("Disallow: /\n", false);
+    $this->get('/robots.txt')->assertOk()->assertSee('Sitemap: https://example.com/sitemap.xml', false)->assertDontSee("Disallow: /\n", false);
     $this->get('/')->assertHeaderMissing('X-Robots-Tag')->assertDontSee('name="robots"', false);
 });
 

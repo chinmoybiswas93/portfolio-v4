@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
-    <title>Allow {{ $client->name }}? · Chinmoy Biswas</title>
+    <title>Allow {{ $client->name }}? · {{ config('brand.admin_name') }}</title>
     <style>
         :root { color-scheme: dark; }
         body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0F172A; color: #94A3B8; font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
@@ -39,8 +39,8 @@
 <body>
 <main>
     <div class="brand">
-        <img src="{{ asset('brand/logo-mark-light.svg') }}" width="24" height="27" alt="">
-        <span>Chinmoy Biswas · Admin</span>
+        <img src="{{ \App\Support\BrandAssets::logoUrl('brand/logo-mark-light.svg') }}" width="24" height="27" alt="">
+        <span>{{ config('brand.admin_name') }} · Admin</span>
     </div>
     <section class="card" aria-labelledby="consent-title">
         <h1 id="consent-title">Allow {{ $client->name }} to access your site?</h1>

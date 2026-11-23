@@ -36,7 +36,7 @@ it('renders the home page from published content only', function (): void {
 
 it('falls back to the hello@ address and never shows a missing section', function (): void {
     $this->get('/')
-        ->assertSee('hello@chinmoybiswas.com')
+        ->assertSee('hello@example.com')
         ->assertDontSee('id="writing"', false)
         ->assertDontSee('id="services"', false);
 });

@@ -11,10 +11,10 @@ use App\Models\Project;
 use Illuminate\Database\Seeder;
 
 /**
- * Realistic content for Lighthouse CI (docs/TESTING.md §6): a case study and a post with real cover images,
- * so image delivery and LCP are measured. Run with QUEUE_CONNECTION=sync so image sizes are made at once.
+ * Fictional demo content for local trials and Lighthouse CI (docs/TESTING.md §6): a case study and a post with
+ * real cover images, so image delivery and LCP are measured. Never run it in production. Run with QUEUE_CONNECTION=sync so image sizes are made at once.
  */
-final class LighthouseSeeder extends Seeder
+final class DemoSeeder extends Seeder
 {
     public function run(): void
     {
@@ -24,12 +24,12 @@ final class LighthouseSeeder extends Seeder
         Experience::factory()->count(3)->create();
 
         $caseStudy = Project::factory()->caseStudy()->create([
-            'title' => 'TuFlamenco',
-            'slug' => 'tuflamenco',
+            'title' => 'Sample Shop',
+            'slug' => 'sample-shop',
             'is_featured' => true,
-            'summary' => 'A bilingual flamenco school site with online booking and payments.',
+            'summary' => 'A fictional online shop used to demo case studies, with online booking and payments.',
         ]);
-        $caseStudy->addMediaFromString(self::photo(1600, 1000))->usingFileName('tuflamenco.jpg')->toMediaCollection('cover');
+        $caseStudy->addMediaFromString(self::photo(1600, 1000))->usingFileName('sample-shop.jpg')->toMediaCollection('cover');
         Project::factory()->count(5)->create(['is_featured' => true]);
 
         $category = Category::query()->firstOrFail();

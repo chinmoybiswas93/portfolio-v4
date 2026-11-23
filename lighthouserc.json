@@ -5,7 +5,7 @@
       "startServerReadyPattern": "Server running",
       "url": [
         "http://127.0.0.1:8090/",
-        "http://127.0.0.1:8090/projects/tuflamenco",
+        "http://127.0.0.1:8090/projects/sample-shop",
         "http://127.0.0.1:8090/blog",
         "http://127.0.0.1:8090/blog/speeding-up-wordpress"
       ],

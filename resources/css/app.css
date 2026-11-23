@@ -3,7 +3,7 @@
 @source '../views/**/*.blade.php';
 
 /*
- * Design tokens from the approved Phase 2 canvas (docs/PROJECT_BRIEF.md, "Design decisions").
+ * Design tokens from the approved Phase 2 canvas (the approved design notes).
  * Dark is the default; [data-theme="light"] is set by public/theme-init.js before first paint.
  */
 :root {
