@@ -36,6 +36,8 @@ return [
             'driver' => 'local',
             'root' => storage_path('app/private'),
             'serve' => true,
+            // Signed URLs for private files get their own prefix, never /storage (public files).
+            'url' => rtrim((string) env('APP_URL', 'http://localhost'), '/').'/private-files',
             'throw' => false,
             'report' => false,
         ],

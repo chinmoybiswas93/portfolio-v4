@@ -97,8 +97,14 @@ it('has no state-changing routes beyond the allowed list', function (): void {
     expect($unexpected)->toBe([])->and($writes)->toHaveCount(count(WRITE_ROUTES) + 2);
 });
 
-it('only accepts signed storage uploads', function (): void {
-    $this->put('/storage/invoices/2026/evil.pdf', ['x' => 1])->assertForbidden();
+it('only accepts signed private-file uploads, and /storage takes no writes at all', function (): void {
+    $this->put('/private-files/invoices/2026/evil.pdf', ['x' => 1])->assertForbidden();
+    $this->get('/private-files/invoices/2026/INV-2026-0001-v1.pdf')->assertForbidden(); // unsigned read
+    $this->put('/storage/invoices/2026/evil.pdf', ['x' => 1])->assertStatus(405);
+});
+
+it('answers the health check without a session cookie, rate limited', function (): void {
+    $this->get('/up')->assertOk()->assertHeaderMissing('Set-Cookie')->assertHeader('X-RateLimit-Limit', '30');
 });
 
 it('rejects a tampered Livewire snapshot for the invoice editor', function (): void {

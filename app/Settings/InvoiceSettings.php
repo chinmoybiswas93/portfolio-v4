@@ -22,8 +22,6 @@ final class InvoiceSettings extends Settings
 
     public ?string $footer;
 
-    public ?string $logo_path;
-
     public static function group(): string
     {
         return 'invoicing';

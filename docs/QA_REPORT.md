@@ -47,13 +47,12 @@ The coverage report showed thin spots in security-sensitive code; each now has t
 
 Remaining files under 80% are thin Filament wiring (resource route bindings, form schemas) covered by the browser tests.
 
-## Open items (low, for the owner to decide or check on staging)
-- **Client IP behind the Hostinger CDN.** Login and MCP rate limits use the client IP. If PHP sees the CDN's address, they become global. Check `REMOTE_ADDR` on staging; configure trusted proxies if needed.
-- **Private files and `/storage`.** The private disk's signed URLs share the `/storage` prefix with public files. Give it its own prefix or turn serving off if Filament doesn't need it.
-- **`/up` health check** uses the session middleware and isn't throttled.
-- **No CSP on the admin.** Output escaping is correct; a CSP would be defence in depth.
-- **Invoicing logo upload is unused.** The PDF always uses the brand logo; remove the field or wire it up.
-- **Firefox and axe.** The test plugin's axe injection sees a blank document in Firefox. Accessibility is covered in Chromium and WebKit, and Firefox passes every functional test.
+## Low items (owner decisions, 2026-11-23)
+- **Client IP behind the Hostinger CDN: verified, no change.** Staging's MCP audit log records the visitor's real public IP, so the login and MCP rate limits are per visitor. No trusted-proxy setup is needed.
+- **Private files:** signed private-file URLs now use `/private-files/…`; `/storage` serves only public files and takes no writes.
+- **`/up` health check:** no session or cookies, 30 requests a minute per IP.
+- **Invoice logo upload removed:** the PDF always uses the brand logo (settings migration `2026_11_23_000013`).
+- **Not changed:** no CSP on the admin (escaping is correct; defence in depth only). Firefox can't run the axe checks in the test plugin; Chromium and WebKit cover accessibility.
 
 ## Still to do on staging (needs the owner)
 1. Lighthouse and PageSpeed Insights on the real Hostinger origin and CDN.
