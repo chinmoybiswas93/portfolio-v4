@@ -27,7 +27,7 @@ final class JsonLd
             'jobTitle' => $profile->title,
             'description' => $profile->tagline,
             'url' => Seo::absolute('/'),
-            'email' => 'mailto:'.($profile->email ?: 'hello@chinmoybiswas.com'),
+            'email' => 'mailto:'.($profile->email ?: config('brand.contact_email')),
             'address' => $profile->location_public ? ['@type' => 'PostalAddress', 'addressLocality' => $profile->location_public] : null,
             'sameAs' => array_map(fn (array $s): string => $s['url'], $profile->socials) ?: null,
         ]);

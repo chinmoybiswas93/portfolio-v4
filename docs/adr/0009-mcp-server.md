@@ -125,7 +125,7 @@ Plus `mcp:use`, which `laravel/mcp` registers. Every token must carry it.
 - Route inventory: `/mcp`, `/oauth/*` and `/.well-known/*` are added to the allowed list **on purpose**. The route walk covers the consent and admin MCP screens.
 
 ### 8. Delivery (slices, security review on each)
-- **3.9a:** Passport + `laravel/mcp`, discovery, registration, consent (admin + 2FA), kill switch, rate limit, scope middleware, audit recording, read tools (`content:read`, `invoices:read`, `settings:read`). Then: exact steps to connect Claude Code to `https://dev.chinmoybiswas.com/mcp` and verify the browser approval end to end.
+- **3.9a:** Passport + `laravel/mcp`, discovery, registration, consent (admin + 2FA), kill switch, rate limit, scope middleware, audit recording, read tools (`content:read`, `invoices:read`, `settings:read`). Then: exact steps to connect Claude Code to `https://dev.<domain>/mcp` and verify the browser approval end to end.
 - **3.9b:** content/SEO write, trash (soft deletes + admin trash UI), image upload.
 - **3.9c:** draft invoice tools, audit log UI, Settings → MCP tab, Connected apps (revoke).
 
@@ -149,4 +149,4 @@ Plus `mcp:use`, which `laravel/mcp` registers. Every token must carry it.
 ## Action items (after approval)
 1. Owner answers recorded (2026-11-23): rate limit 60/min and 1,000/day per app; audit retention 90 days; same-scope re-authorisation auto-approves; registration open (each app approved by the owner); all scopes ticked by default on the consent screen (unticking still narrows the grant).
 2. 3.9a as described; owner-approved server step to generate Passport keys on staging.
-3. Security review on every slice; update `docs/MANUAL_STEPS.md` with connect and revoke steps.
+3. Security review on every slice; document the connect and revoke steps (see the README).

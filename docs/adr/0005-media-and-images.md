@@ -8,7 +8,7 @@
 - Media covers project covers and galleries, post images, profile photo, CV PDF, OG images and the invoice logo.
 - The Lighthouse 95+ and LCP < 2.0s budget needs responsive, modern-format images with fixed dimensions (no CLS).
 - The server has GD and Imagick. PHP `symlink()` is disabled. Queues are drained by cron only (ADR-0006).
-- The old site's 6 project images (`.webp`) and the CV are saved locally in `.private/legacy-assets/` (git-ignored).
+- The old site's 6 project images (`.webp`) and the CV are saved locally in a git-ignored local folder (git-ignored).
 
 ## Decision
 - Use **`spatie/laravel-medialibrary` (v11)** + **`filament/spatie-laravel-media-library-plugin`** (check Filament 5 compatibility at install).
@@ -32,4 +32,4 @@
 ## Consequences
 - Easier: consistent, optimised images and easy galleries in case studies.
 - Harder: `public/storage` must be linked per release by shell. `media:regenerate` must run as an artisan command if conversions change. Run it via an owner-approved SSH command or a scheduled one-off.
-- The old images were downloaded on 2026-11-22 to the git-ignored local folder `.private/legacy-assets/`. The importer reads them from there.
+- The old images were downloaded on 2026-11-22 to the git-ignored local folder a git-ignored local folder. The importer reads them from there.

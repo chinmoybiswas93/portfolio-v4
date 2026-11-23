@@ -75,7 +75,7 @@ it('records a failed send with the error and does not send twice', function (): 
 
 it('builds an informative email with the summary, payment methods, signed link and the attached version', function (): void {
     $invoice = issuedInvoice();
-    $invoice->forceFill(['seller_snapshot' => ['name' => 'Chinmoy Biswas', 'email' => 'hello@example.com', 'bank_details' => 'IBAN X', 'paypal_email' => 'p@example.com']])->save();
+    $invoice->forceFill(['seller_snapshot' => ['name' => 'Jane Doe', 'email' => 'hello@example.com', 'bank_details' => 'IBAN X', 'paypal_email' => 'p@example.com']])->save();
     $pdf = $invoice->pdfs()->firstOrFail();
 
     $mail = new InvoiceMail($invoice, $pdf, 'Invoice '.$invoice->number, "Hi Jane,\nHere it is.");

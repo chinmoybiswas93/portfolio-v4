@@ -2,7 +2,7 @@
 
 **Status:** Accepted (owner, 2026-11-22)
 **Date:** 2026-11-22
-**Deciders:** Owner (Chinmoy Biswas)
+**Deciders:** Owner
 
 ## Context
 - The site is a public portfolio, blog and case studies (SEO-critical, UK/EU audience), plus a private admin with invoicing.

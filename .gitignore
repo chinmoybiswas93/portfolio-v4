@@ -53,3 +53,5 @@ Thumbs.db
 /database/lighthouse.sqlite
 /.env.lighthouse-backup
 /storage/fonts
+
+/CLAUDE.local.md

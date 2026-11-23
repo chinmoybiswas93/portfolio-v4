@@ -26,7 +26,7 @@ ENV
 
 rm -f database/lighthouse.sqlite && touch database/lighthouse.sqlite
 php artisan migrate --force -q
-php artisan db:seed --class=LighthouseSeeder --force -q
+php artisan db:seed --class=DemoSeeder --force -q
 php artisan storage:link -q 2>/dev/null || true
 php artisan optimize -q
 

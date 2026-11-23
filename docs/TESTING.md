@@ -22,7 +22,7 @@ Status: **Proposed (Phase 1)**, 2026-11-22. Every feature ships with tests (CLAU
 | **Lighthouse CI** (`@lhci/cli`) | Perf/a11y/SEO budgets | Assertions fail the job |
 | `composer audit`, `npm audit --omit=dev` | Known vulnerabilities | Fail on high or critical |
 
-The browser layer uses the Pest Browser plugin because it **is** Playwright under the hood, while sharing Laravel's test DB, factories and `RefreshDatabase`. That gives one test runner. The `playwright-cli` skill is used for manual or visual checks against the local and staging servers.
+The browser layer uses the Pest Browser plugin because it **is** Playwright under the hood, while sharing Laravel's test DB, factories and `RefreshDatabase`. That gives one test runner. The `playwright-cli` skill is used for manual or visual checks against the local Herd site (`https://portfolio-v4.test`).
 
 **DB:** CI uses a MariaDB 11 service, matching production (JSON, collation and locking behaviour). Locally, SQLite in-memory is allowed for unit and most feature tests, with a `@group mariadb` marker on tests that need row locks (invoice numbering).
 
@@ -65,7 +65,7 @@ Other units:
 - `/projects/{slug}`: published case study 200, draft 404, `has_case_study=false` 404, prev/next order.
 - Blog index pagination, category/tag archives, post page shows reading time and highlighted code.
 - **Cacheability:** public responses have **no `Set-Cookie`** and `Cache-Control` contains `s-maxage`. Admin responses are `private`/`no-store`.
-- SEO: canonical, OG tags, JSON-LD parses as valid JSON with the expected `@type`; `/feed.xml` is valid RSS; `/sitemap.xml` lists only published URLs; staging `robots.txt` disallows all and adds `X-Robots-Tag`.
+- SEO: canonical, OG tags, JSON-LD parses as valid JSON with the expected `@type`; `/feed.xml` is valid RSS; `/sitemap.xml` lists only published URLs; non-production `robots.txt` disallows all and adds `X-Robots-Tag`; production allows indexing.
 - `redirects` table → 301 with hit count. An unknown path gives the 404 view.
 - Security headers are present (CSP with nonce, nosniff, referrer policy).
 - `/cv` returns 200 with `Content-Disposition` when set and 404 when not.
@@ -115,7 +115,7 @@ Run against `php artisan serve` with production build and seeded realistic conte
 
 `php artisan serve` does not compress responses, so the gzip budgets for CSS and JS are checked on the built files by `scripts/asset-budgets.sh`. Lighthouse checks scores, LCP, CLS, TBT, total transfer and font count. Run it locally with `scripts/lighthouse.sh` (it uses its own SQLite database and restores `.env`). Reports are kept as a CI artifact for 14 days.
 
-Because CI runs from a US/EU runner against a local server, staging is also checked manually with the `playwright-cli` skill and PageSpeed Insights (real Hostinger origin and CDN) before each release to `main`.
+Because CI runs from a US/EU runner against a local server, production is also checked after each release with PageSpeed Insights (the Hostinger CDN blocks headless browsers from local machines, so local Lighthouse can't test the live site) (real Hostinger origin and CDN) before each release to `main`.
 
 ## 7. CI order (fail fast)
 `pint --test` → `phpstan` → `pest --parallel` (unit+feature+arch) → `npm run build` → browser smoke → Lighthouse CI. Deploy runs only after all of these are green (ADR-0003).
@@ -123,4 +123,4 @@ Because CI runs from a US/EU runner against a local server, staging is also chec
 ## 8. Gaps and risks
 - DomPDF visual fidelity is not asserted (only text and hash). The owner reviews a sample PDF per template change.
 - Email deliverability (SPF/DKIM/DMARC) cannot be unit-tested. Check it manually with mail-tester.com after the DNS move.
-- Hostinger CDN/server-cache behaviour is verified on staging only (headers via `curl -I`), not in CI.
+- Hostinger CDN/server-cache behaviour is verified on production after a release (headers via `curl -I`), not in CI. There is no staging site.

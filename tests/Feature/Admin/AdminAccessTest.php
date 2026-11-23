@@ -36,7 +36,7 @@ it('lets an admin with two-factor authentication into every screen', function (s
     '/projects', '/projects/create',
     '/posts', '/posts/create',
     '/categories', '/tags', '/redirects',
-    '/settings/profile', '/settings/seo', '/settings/invoicing', '/settings/payment',
+    '/settings/profile', '/settings/seo', '/settings/branding', '/settings/invoicing', '/settings/payment',
     '/clients', '/invoices', '/invoices/create',
     '/profile',
 ]);

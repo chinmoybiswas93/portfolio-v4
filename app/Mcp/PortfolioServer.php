@@ -24,7 +24,6 @@ use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Version;
 use ReflectionClass;
 
-#[Name('Chinmoy Biswas portfolio')]
 #[Version('1.0.0')]
 #[Instructions('Read and (with permission) edit the portfolio content in Markdown. Payment, invoicing and security settings are never available; deletes go to the trash; only draft invoices can be edited.')]
 final class PortfolioServer extends Server
@@ -46,6 +45,11 @@ final class PortfolioServer extends Server
     ];
 
     protected array $tools = self::TOOLS;
+
+    protected function boot(): void
+    {
+        $this->name = (string) config('brand.mcp_name');
+    }
 
     /** The scope a tool needs, by its MCP name; null for unknown tools (the server answers "not found"). */
     public static function scopeFor(string $toolName): ?string

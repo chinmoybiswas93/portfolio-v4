@@ -7,7 +7,7 @@
         'projects' => $projects->isNotEmpty() ? 'Projects' : null,
         'writing' => $posts->isNotEmpty() ? 'Writing' : null,
     ])->filter();
-    $email = $profile->email ?: 'hello@chinmoybiswas.com';
+    $email = $profile->email ?: config('brand.contact_email');
 @endphp
 <x-layouts.site :description="$profile->tagline" :json-ld="[\App\Support\Seo\JsonLd::person($profile), \App\Support\Seo\JsonLd::website(app(\App\Settings\SeoSettings::class))]">
     <div class="cb-wrap">

@@ -1,6 +1,6 @@
 # Architecture: portfolio-v4
 
-Status: **Proposed (Phase 1)**, 2026-11-22. Decisions are in `docs/adr/`. Scope is in `docs/PROJECT_BRIEF.md`.
+Status: **Proposed (Phase 1)**, 2026-11-22. Decisions are in `docs/adr/`. Scope notes are kept privately by the owner.
 
 ## 1. Requirements summary
 | Kind | Requirement |
@@ -311,7 +311,7 @@ Also: `/livewire/*` (Filament transport, behind the same Access rule), and `GET 
 Global headers (middleware): `Strict-Transport-Security: max-age=31536000; includeSubDomains` (once HTTPS is confirmed on both sites), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()`.
 
 ## 6. SEO
-- **Meta:** the `<x-seo>` component sets the title (`{page} · Chinmoy Biswas`), description, canonical (absolute, apex, no query except `page`), `og:*`, `twitter:card=summary_large_image`, `article:published_time`/`modified_time` for posts. Staging is `noindex`.
+- **Meta:** the `<x-seo>` component sets the title (`{page} · {site name}`), description, canonical (absolute, apex, no query except `page`), `og:*`, `twitter:card=summary_large_image`, `article:published_time`/`modified_time` for posts. Staging is `noindex`.
 - **OG images:** 1200×630 PNGs generated on save (Intervention/GD) from the title, type label and accent colour, stored as an `og` media collection. An uploaded override wins. The fallback is the default from SEO settings.
 - **JSON-LD** (`spatie/schema-org`): `Person` + `WebSite` on home, `BlogPosting` on posts, `CreativeWork` on case studies, and `BreadcrumbList` on detail pages.
 - **Sitemap:** home, `/projects`, case studies, `/blog`, posts, categories, tags with posts. `lastmod` = `updated_at`.

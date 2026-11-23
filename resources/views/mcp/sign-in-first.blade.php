@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
-    <title>Sign in first · Chinmoy Biswas</title>
+    <title>Sign in first · {{ config('brand.admin_name') }}</title>
     <style>
         :root { color-scheme: dark; }
         body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0F172A; color: #94A3B8; font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
