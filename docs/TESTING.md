@@ -85,8 +85,6 @@ Other units:
 - Email (`Mail::fake()`): sends to the client with the PDF attached, creates an `invoice_emails` row with an immutable copy path and hash, and sets status Sent. An SMTP failure creates a `failed` row with the error, and the status is unchanged.
 - `invoices:mark-overdue`: only Sent and past-due invoices change. Paid and Cancelled are untouched.
 
-**Importer** (`tests/Feature/Import/LegacyImportTest.php`): uses a **fixture** JSON with fake data, never the real export. It checks the mapping table in `docs/CONTENT_IMPORT.md`, idempotency (running twice produces no duplicates), and date parsing (`May 2024` → `2024-05-01`).
-
 **Arch tests** (`tests/ArchTest.php`): `preset()->laravel()`, `preset()->security()`, controllers do not use `DB::`, `App\Domain` does not depend on `Illuminate\Http`, no `dd/dump/ray`, Enums in `App\Enums`.
 
 ## 5. Browser smoke (Pest Browser / Playwright), about 10 tests
