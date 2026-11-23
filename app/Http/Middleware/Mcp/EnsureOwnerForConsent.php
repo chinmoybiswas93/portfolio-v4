@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Middleware\Mcp;
 
 use App\Models\User;
+use App\Support\Auth\AdminMfa;
 use Closure;
 use Filament\Auth\MultiFactor\MultiFactorChallenge;
 use Filament\Facades\Filament;
@@ -33,7 +34,7 @@ final class EnsureOwnerForConsent
                 ->header('Cache-Control', 'no-store')->header('X-Robots-Tag', 'noindex, nofollow')->header('X-Frame-Options', 'DENY');
         }
         abort_unless($user->is_admin, 403);
-        if (! MultiFactorChallenge::make()->hasEnabledProviders($user)) {
+        if (AdminMfa::required() && ! MultiFactorChallenge::make()->hasEnabledProviders($user)) {
             return redirect()->guest($panel->getSetUpRequiredMultiFactorAuthenticationUrl());
         }
 
