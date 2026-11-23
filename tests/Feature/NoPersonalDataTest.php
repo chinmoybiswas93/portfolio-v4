@@ -14,11 +14,6 @@ it('keeps personal terms out of tracked files', function (): void {
         'LICENSE',
         'README.md',
         'tests/Feature/NoPersonalDataTest.php',
-        // TEMPORARY: the traced logo files carry the owner's name in an aria-label. Remove this entry once the
-        // logo, favicon and share-image logo are Settings uploads with neutral placeholders in the repo.
-        'public/brand/logo-mark.svg',
-        'public/brand/logo-mark-dark.svg',
-        'public/brand/logo-mark-light.svg',
     ];
     $skipExtensions = ['png', 'jpg', 'jpeg', 'webp', 'ico', 'ttf', 'woff', 'woff2', 'pdf', 'lock'];
 
