@@ -13,13 +13,16 @@ use App\Actions\Invoicing\RecalculateInvoice;
 use App\Domain\Invoicing\InvalidInvoice;
 use App\Enums\InvoiceAction;
 use App\Enums\InvoiceStatus;
+use App\Enums\PaidPeriod;
 use App\Filament\Resources\Invoices\InvoiceResource;
 use App\Models\Invoice;
 use App\Models\User;
 use App\Support\Money;
+use Carbon\CarbonImmutable;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -118,8 +121,15 @@ class EditInvoice extends EditRecord
                 }),
             Action::make('markPaid')->label('Mark as paid')->icon(Heroicon::CheckCircle)->color('gray')
                 ->visible($allows(InvoiceAction::MarkPaid))
-                ->requiresConfirmation()
-                ->action(fn () => $this->changeStatus(InvoiceStatus::Paid, 'Marked as paid')),
+                ->modalHeading('Mark as paid')->modalWidth(Width::Medium)->modalSubmitActionLabel('Mark as paid')
+                ->schema([
+                    DatePicker::make('paid_on')->label('Payment received on')->required()->native(false)->displayFormat('j M Y')
+                        ->default(fn (): string => now(PaidPeriod::TIMEZONE)->toDateString())
+                        ->maxDate(fn (): string => now(PaidPeriod::TIMEZONE)->toDateString())
+                        ->minDate(fn (): ?string => $this->invoice()->issue_date?->toDateString())
+                        ->helperText('Counts towards Paid on the dashboard for this date.'),
+                ])
+                ->action(fn (array $data) => $this->changeStatus(InvoiceStatus::Paid, 'Marked as paid', CarbonImmutable::parse((string) $data['paid_on']))),
             Action::make('issue')->label('Issue invoice')
                 ->visible($allows(InvoiceAction::Issue))
                 ->requiresConfirmation()
@@ -154,10 +164,10 @@ class EditInvoice extends EditRecord
         return [];
     }
 
-    private function changeStatus(InvoiceStatus $to, string $message): void
+    private function changeStatus(InvoiceStatus $to, string $message, ?CarbonImmutable $paidOn = null): void
     {
         try {
-            app(ChangeInvoiceStatus::class)($this->invoice(), $to);
+            app(ChangeInvoiceStatus::class)($this->invoice(), $to, $paidOn);
             Notification::make()->success()->title($message)->send();
         } catch (InvalidInvoice $e) {
             Notification::make()->danger()->title($e->getMessage())->send();
