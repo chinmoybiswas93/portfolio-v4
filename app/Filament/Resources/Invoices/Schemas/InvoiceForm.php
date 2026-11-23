@@ -11,11 +11,13 @@ use App\Domain\Invoicing\TaxRules;
 use App\Enums\Currency;
 use App\Enums\DiscountType;
 use App\Enums\EmailStatus;
+use App\Filament\Resources\Clients\ClientModal;
 use App\Filament\Resources\Clients\Schemas\ClientForm;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Settings\InvoiceSettings;
 use App\Support\Money;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
@@ -47,6 +49,7 @@ class InvoiceForm
                 Section::make('Details')->columns(2)->schema([
                     Select::make('client_id')->label('Client')->relationship('client', 'company_name')->required()->searchable()->preload()->live()
                         ->createOptionForm(fn (Schema $schema): Schema => ClientForm::configure($schema))
+                        ->createOptionAction(fn (Action $action): Action => ClientModal::create($action))
                         ->afterStateUpdated(function (Set $set, ?string $state): void {
                             $client = $state ? Client::query()->find($state) : null;
                             if ($client) {

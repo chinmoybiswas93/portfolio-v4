@@ -116,6 +116,35 @@
     font-size: 0.78125rem;
 }
 
+/*
+ * Long titles (ADR-0010): from the sm breakpoint the header never wraps. The actions keep their place on the
+ * right and the title (and a long breadcrumb) is cut to one line with an ellipsis; the full title is its tooltip.
+ */
+.fi-header-heading {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fi-breadcrumbs-item-label {
+    max-width: 28rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (min-width: 40rem) {
+    .fi-header {
+        flex-wrap: nowrap;
+    }
+
+    .fi-header > div:first-child:not(.fi-header-actions-ctn) {
+        flex: 1 1 auto;
+        min-width: 0;
+        width: auto;
+    }
+}
+
 .fi-page > .fi-page-header-main-ctn,
 .fi-page-main {
     row-gap: 1rem;
