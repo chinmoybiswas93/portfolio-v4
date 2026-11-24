@@ -24,12 +24,13 @@ uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
     Service::factory()->count(2)->create();
+    Service::factory()->create(['title' => 'WooCommerce development', 'slug' => 'svc', 'is_published' => true, 'faq' => [['question' => 'Existing store?', 'answer' => 'Yes.']], 'cta_line' => 'Have a store in mind?']);
     Experience::factory()->current()->create();
     Project::factory()->caseStudy()->create(['title' => 'Case One', 'slug' => 'case-one', 'is_featured' => true]);
-    Post::factory()->for(Category::factory())->create(['title' => 'A post', 'slug' => 'a-post', 'body_md' => "## Heading\n\nText with a [link](https://example.com).\n\n```php\necho 1;\n```"]);
+    Post::factory()->for(Category::factory())->create(['title' => 'A post', 'slug' => 'a-post', 'published_at' => now()->subDays(10), 'reviewed_at' => now()->subDay(), 'takeaways' => ['Measure first', 'Fix the slowest step'], 'faq' => [['question' => 'Is caching enough?', 'answer' => 'Rarely on its own.']], 'body_md' => "## Heading\n\nText with a [link](https://example.com).\n\n```php\necho 1;\n```"]);
 });
 
-const QA_PUBLIC_PAGES = ['/', '/projects', '/projects/case-one', '/blog', '/blog/a-post', '/missing-page'];
+const QA_PUBLIC_PAGES = ['/', '/services', '/services/svc', '/projects', '/projects/case-one', '/blog', '/blog/a-post', '/missing-page'];
 
 it('has no accessibility issues on public pages (light, desktop)', function (string $url): void {
     visit($url)->assertNoAccessibilityIssues(3);
@@ -78,7 +79,7 @@ it('has no accessibility issues on the admin login', function (): void {
 });
 
 it('starts the tab order with a visible skip link that reaches the content', function (string $url): void {
-    $page = visit($url)->keys('[lang="en"]', 'Tab');
+    $page = visit($url)->keys('[lang]', 'Tab');
 
     expect($page->script("(() => { const a = document.activeElement; const r = a.getBoundingClientRect(); return a.classList.contains('skip-link') && r.top >= 0 && r.height > 0; })()"))->toBeTrue()
         ->and($page->script("document.getElementById(document.activeElement.getAttribute('href').slice(1)) !== null"))->toBeTrue();
@@ -86,7 +87,7 @@ it('starts the tab order with a visible skip link that reaches the content', fun
 
 it('shows a visible focus ring on every focusable element', function (string $url): void {
     // One real Tab puts the browser in keyboard mode, so focus() below matches :focus-visible like tabbing does.
-    $page = visit($url)->keys('[lang="en"]', 'Tab');
+    $page = visit($url)->keys('[lang]', 'Tab');
 
     $missing = $page->script(<<<'JS'
         (() => {

@@ -1,10 +1,11 @@
-<x-layouts.site :title="$heading ? 'Writing: '.$heading : 'Writing'" description="Notes from building and supporting WordPress and Laravel sites.">
+<x-layouts.site :title="$heading ? 'Writing: '.$heading : 'Writing'" :description="$description ?? 'Notes from building and supporting WordPress and Laravel sites: fixes, checklists and things I learned the hard way.'" :noindex="$noindex ?? false"
+    :json-ld="[\App\Support\Seo\JsonLd::collection($heading ? 'Writing: '.$heading : 'Writing', request()->getPathInfo(), $posts->map(fn ($p): array => [$p->title, route('posts.show', $p, false)])->values()->all())]">
     <div class="page-wrap">
         <x-site.topbar current="writing" />
         <main id="content" class="flex flex-col gap-10 pb-24 pt-8 md:pt-12">
             <div class="flex flex-col gap-3">
                 <h1 class="page-title">{{ $heading ?? 'Writing' }}</h1>
-                <p class="m-0 max-w-[560px]">Notes from building and supporting WordPress and Laravel sites: fixes, checklists and things I learned the hard way.</p>
+                <p class="m-0 max-w-[560px]">{{ $intro ?? 'Notes from building and supporting WordPress and Laravel sites: fixes, checklists and things I learned the hard way.' }}</p>
             </div>
 
             @if ($categories->isNotEmpty())

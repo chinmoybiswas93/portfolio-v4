@@ -9,12 +9,16 @@ use App\Http\Controllers\Site\InvoiceLinkController;
 use App\Http\Controllers\Site\PostController;
 use App\Http\Controllers\Site\ProjectController;
 use App\Http\Controllers\Site\SeoController;
+use App\Http\Controllers\Site\ServiceController;
 use Illuminate\Support\Facades\Route;
 
 /*
  * Public site: "public" middleware group (no session, no cookies, cached pages). See ADR-0007/0008.
  */
 Route::get('/', HomeController::class)->name('home');
+
+Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+Route::get('/services/{service:slug}', [ServiceController::class, 'show'])->name('services.show');
 
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
 Route::get('/projects/{project:slug}', [ProjectController::class, 'show'])->name('projects.show');
@@ -29,6 +33,8 @@ Route::get('/cv', CvController::class)->name('cv');
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 Route::get('/feed.xml', [SeoController::class, 'feed'])->name('feed');
 Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
+Route::get('/llms.txt', [SeoController::class, 'llms'])->name('llms');
+Route::get('/indexnow.txt', [SeoController::class, 'indexNowKey'])->name('indexnow.key');
 
 // Signed, expiring link to one invoice PDF version (sent in the invoice email). No login, no listing.
 Route::get('/invoice/{pdf}', InvoiceLinkController::class)->middleware(['signed', 'throttle:30,1'])->whereNumber('pdf')->name('invoices.link');

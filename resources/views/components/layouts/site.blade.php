@@ -1,10 +1,10 @@
-@props(['title' => null, 'description' => null, 'type' => 'website', 'image' => null, 'published' => null, 'modified' => null, 'jsonLd' => []])
+@props(['title' => null, 'description' => null, 'type' => 'website', 'image' => null, 'published' => null, 'modified' => null, 'jsonLd' => [], 'noindex' => false])
 @php
     use App\Support\Seo\Seo;
     use App\Support\Seo\OgImage;
     $profile = app(\App\Settings\ProfileSettings::class);
     $seo = app(\App\Settings\SeoSettings::class);
-    $pageTitle = $title ? $title.' · '.$seo->site_title : $seo->site_title;
+    $pageTitle = Seo::title($title, $seo->site_title, $profile->name);
     $metaDescription = \Illuminate\Support\Str::limit(trim((string) ($description ?: $seo->default_description)), 160);
     $canonical = Seo::canonical(request());
     $shareImage = $image ?? ($seo->default_og_image_path
@@ -12,7 +12,7 @@
         : Seo::absolute(OgImage::url($profile->title, $profile->tagline ?: $seo->site_title)));
 @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ config('brand.language') }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,6 +21,11 @@
     <link rel="canonical" href="{{ $canonical }}">
     @unless (Seo::indexable())
         <meta name="robots" content="noindex, nofollow">
+    @else
+        @if ($noindex)
+            {{-- Thin archives (ADR-0010): kept out of the index, links still followed. --}}
+            <meta name="robots" content="noindex, follow">
+        @endif
     @endunless
     <meta property="og:site_name" content="{{ $seo->site_title }}">
     <meta property="og:type" content="{{ $type }}">
@@ -30,7 +35,7 @@
     <meta property="og:image" content="{{ $shareImage }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:locale" content="en_GB">
+    <meta property="og:locale" content="{{ str_replace('-', '_', config('brand.language')) }}">
     <meta name="twitter:card" content="summary_large_image">
     @if ($published)
         <meta property="article:published_time" content="{{ $published }}">

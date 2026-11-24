@@ -138,8 +138,7 @@ class ProjectForm
                 ]),
 
                 Section::make('SEO')->schema([
-                    TextInput::make('seo_title')->label('Meta title')->maxLength(60)->live(debounce: 500)
-                        ->hint(fn (?string $state): string => mb_strlen((string) $state).' / 60'),
+                    Fields::seoTitle(),
                     Textarea::make('seo_description')->label('Meta description')->rows(3)->maxLength(160)->live(debounce: 500)
                         ->placeholder('Leave empty to use the summary.')
                         ->hint(fn (?string $state): string => mb_strlen((string) $state).' / 160'),

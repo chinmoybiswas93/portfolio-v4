@@ -1,9 +1,14 @@
-<x-layouts.site title="All projects" description="Every website, theme, plugin and app I have built, newest first.">
+@php
+    $caseStudies = $projects->filter(fn ($p) => $p->has_case_study)->map(fn ($p): array => [$p->title, route('projects.show', $p, false)])->values()->all();
+@endphp
+<x-layouts.site title="All projects" description="Every website, theme, plugin and app I have built, newest first, with case studies on the problem, the approach and the results."
+    :json-ld="[\App\Support\Seo\JsonLd::collection('All projects', '/projects', $caseStudies)]">
     <div class="page-wrap">
         <x-site.topbar current="projects" />
         <main id="content" class="pb-24 pt-8 md:pt-12">
             <a class="back text-[var(--text)] font-semibold" href="{{ route('home') }}"><span aria-hidden="true">←</span> {{ app(\App\Settings\ProfileSettings::class)->name }}</a>
             <h1 class="page-title mt-2">All projects</h1>
+            <p class="m-0 mt-3 max-w-[560px]">Websites, themes, plugins and apps I have built, newest first. The case studies explain the problem, the approach and the results.</p>
 
             <table class="pj-table">
                 <caption class="sr-only">Every project, newest first</caption>

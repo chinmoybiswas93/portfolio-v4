@@ -18,6 +18,12 @@ return [
     // Contact address used when Settings → Profile has no email.
     'contact_email' => env('BRAND_CONTACT_EMAIL', 'hello@example.com'),
 
+    // Content language (html lang, og:locale, inLanguage), e.g. en-GB.
+    'language' => env('BRAND_LANGUAGE', 'en-GB'),
+
+    // Markets served, for structured data (ISO 3166 codes or region names), e.g. "GB,EU".
+    'area_served' => array_values(array_filter(array_map('trim', explode(',', (string) env('BRAND_AREA_SERVED', ''))))),
+
     // Name in the admin panel header and on the MCP consent screens. Defaults to the site name.
     'admin_name' => env('BRAND_ADMIN_NAME', env('BRAND_SITE_NAME', 'Your Name')),
 

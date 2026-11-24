@@ -20,7 +20,7 @@ class Tag extends Model
     use HasSlug;
     use SoftDeletes;
 
-    protected $fillable = ['name', 'slug'];
+    protected $fillable = ['name', 'slug', 'description'];
 
     /** One shared pool: "WordPress", "wordpress" and "Word Press" all resolve to the same tag. */
     public static function findOrCreateByName(string $name): self
@@ -48,6 +48,14 @@ class Tag extends Model
     public function projects(): MorphToMany
     {
         return $this->morphedByMany(Project::class, 'taggable');
+    }
+
+    /**
+     * @return MorphToMany<Service, $this>
+     */
+    public function services(): MorphToMany
+    {
+        return $this->morphedByMany(Service::class, 'taggable');
     }
 
     /**

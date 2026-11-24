@@ -16,7 +16,8 @@ class CategoryForm
         return $schema->components([
             Grid::make(2)->columnSpanFull()->schema([
                 ...Fields::titleAndSlug('name', 'blog/category'),
-                Textarea::make('description')->rows(2)->maxLength(500)->columnSpanFull(),
+                Textarea::make('description')->rows(2)->maxLength(500)->columnSpanFull()
+                    ->helperText('Optional. Shown under the heading and in search results; one is written for you when empty.'),
             ]),
         ]);
     }

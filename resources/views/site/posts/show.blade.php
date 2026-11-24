@@ -4,10 +4,18 @@
     $jsonLd = [
         \App\Support\Seo\JsonLd::blogPosting($post, $shareImage),
         \App\Support\Seo\JsonLd::breadcrumbs([['Home', '/'], ['Writing', '/blog'], [$post->title, route('posts.show', $post, false)]]),
+        \App\Support\Seo\JsonLd::person(app(\App\Settings\ProfileSettings::class)),
     ];
+    if ($faq = \App\Support\Seo\JsonLd::faqPage($post)) {
+        $jsonLd[] = $faq;
+    }
+    $takeaways = $post->takeawayList();
+    $faqItems = $post->faqItems();
+    $updatedOn = $post->updatedOn();
+    $socials = collect($profile->socials)->whereIn('network', ['linkedin', 'github'])->values();
 @endphp
 <x-layouts.site :title="$post->seo_title ?: $post->title" :description="$post->seo_description ?: $post->excerpt" type="article" :image="$shareImage"
-    :published="$post->published_at?->toAtomString()" :modified="$post->updated_at?->toAtomString()" :json-ld="$jsonLd">
+    :published="$post->published_at?->toAtomString()" :modified="($updatedOn ?? $post->published_at)?->toAtomString()" :json-ld="$jsonLd">
     <div class="page-wrap">
         <x-site.topbar current="writing" />
         <div @class(['post-layout', 'has-contents' => $contents !== []])>
@@ -24,11 +32,25 @@
                     @if ($post->category)
                         <a class="cat" href="{{ route('posts.category', $post->category) }}">{{ $post->category->name }}</a> ·
                     @endif
-                    <time datetime="{{ $post->published_at?->toDateString() }}">{{ $post->published_at?->format('j M Y') }}</time> · {{ $post->reading_minutes }} min read
+                    <time datetime="{{ $post->published_at?->toDateString() }}">{{ $post->published_at?->format('j M Y') }}</time> ·
+                    @if ($updatedOn)
+                        <span class="post-updated">Updated <time datetime="{{ $updatedOn->toDateString() }}">{{ $updatedOn->format('j M Y') }}</time></span> ·
+                    @endif
+                    {{ $post->reading_minutes }} min read
                 </p>
                 <h1 class="post-title">{{ $post->title }}</h1>
                 @if ($post->excerpt)
                     <p class="post-lead">{{ $post->excerpt }}</p>
+                @endif
+                @if ($takeaways !== [])
+                    <aside class="takeaways" aria-labelledby="takeaways-h">
+                        <h2 id="takeaways-h" class="takeaways-title">Key takeaways</h2>
+                        <ul>
+                            @foreach ($takeaways as $line)
+                                <li>{{ $line }}</li>
+                            @endforeach
+                        </ul>
+                    </aside>
                 @endif
 
                 @if ($contents !== [])
@@ -49,6 +71,17 @@
                 @endif
 
                 <div class="prose">{!! $body !!}</div>
+                @if ($faqItems !== [])
+                    <section class="faq" aria-labelledby="faq-h">
+                        <h2 id="faq-h" class="faq-title">Frequently asked questions</h2>
+                        @foreach ($faqItems as $item)
+                            <div class="faq-item">
+                                <h3>{{ $item['question'] }}</h3>
+                                <p>{!! nl2br(e($item['answer'])) !!}</p>
+                            </div>
+                        @endforeach
+                    </section>
+                @endif
 
                 @php($topics = $post->tags)
                 @if ($topics->isNotEmpty())
@@ -70,8 +103,19 @@
                 </div>
 
                 <aside class="author-box" aria-label="About the author">
-                    <p class="font-semibold text-[var(--text)]">{{ $profile->name }}</p>
-                    <p class="text-[15.5px]">{{ $profile->tagline }} <a class="text-[var(--text)] underline decoration-[var(--dim)] underline-offset-4" href="{{ route('home') }}">More about me</a></p>
+                    @if ($profile->avatar_path)
+                        <img class="author-avatar" src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($profile->avatar_path) }}" alt="" width="48" height="48" loading="lazy" decoding="async">
+                    @endif
+                    <div class="author-text">
+                        <p class="font-semibold text-[var(--text)]">{{ $profile->name }}@if ($profile->title)<span class="author-role"> · {{ $profile->title }}</span>@endif</p>
+                        <p class="text-[15.5px]">{{ $profile->tagline }}</p>
+                        <p class="author-links">
+                            @foreach ($socials as $social)
+                                <a href="{{ $social['url'] }}" rel="me noopener" target="_blank">{{ $social['network'] === 'github' ? 'GitHub' : 'LinkedIn' }}</a> ·
+                            @endforeach
+                            <a href="{{ route('home') }}">More about me</a>
+                        </p>
+                    </div>
                 </aside>
 
                 @if ($previous || $next)

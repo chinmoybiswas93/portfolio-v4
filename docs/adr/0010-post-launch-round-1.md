@@ -25,7 +25,23 @@ After launch, the owner listed admin and public issues plus two new features (SE
 6. **Markdown fields:** the height can be resized by dragging (or with the arrow keys) and is remembered per field in the browser; defaults are 480 px for post bodies and 240 px elsewhere. Each field gets Write / Preview tabs, with the preview rendered on the server by the site's own Markdown renderer and stylesheet in a sandboxed frame (design approved 2026-11-24).
 7. **Analytics:** Cloudflare Web Analytics beacon (cookieless, no banner), with the token set in Settings → SEO → Analytics and loaded only in production. The site is added in Cloudflare with the manual JS snippet: no DNS change and no proxy.
 8. **Search Console:** the owner verified the site with Google's HTML file at the web root. Each deploy is a fresh release folder, so `deploy/activate.sh` copies every file from `app/shared/public/` into the new release's `public/` (no overwrite of the release's own files, safe names only). Verification files therefore live in `app/shared/public/` on the server, never in git. A DNS TXT record (Domain property) stays optional; any DNS change needs the owner's approval. The sitemap is submitted in Search Console.
-9. **SEO / GEO / AEO:** audit first (Lighthouse SEO, structured-data validation, crawl of the live site, sitemap/robots/canonicals, internal links, AI-crawler access and answer-ready content), then a report with recommendations and a keyword map for posts and case studies. Changes are built only after the owner approves the report. Keyword targets use Search Console data once it has collected some.
+9. **SEO / GEO / AEO:** audit done 2026-11-24 (private report). The owner approved four slices, each stopping for approval:
+   - **8a technical SEO:** titles of 60 characters or fewer, a description per archive, `noindex` on thin tags, structured-data fixes, `en-GB`, a one-hop `www` redirect.
+   - **8b AI crawl:** `/llms.txt` generated from live content; `robots.txt` names each allowed crawler (`config/seo.php`); IndexNow pings for a live post or case study when it's saved (production with `INDEXNOW_KEY` only, at most once per URL every 10 minutes, through the cron-drained queue; key file at `/indexnow.txt`); Bing Webmaster set up by the owner.
+   - **8c post template for answer engines** (design approved 2026-11-24). All optional, and also writable through MCP `save-content`:
+     - up to 5 key takeaways in a box under the lead
+     - up to 6 FAQ entries, always visible after the body, with `FAQPage` data
+     - a "Last reviewed" date, shown as "Updated" and used as `dateModified` (re-saving a post no longer changes it)
+     - an author box with role, LinkedIn and GitHub links and the profile photo
+   - **8d service landing pages** (design approved 2026-11-24):
+     - `/services` (index) and `/services/{slug}`. A published service gets a page once its details are filled in.
+     - Each page shows the details, Related work (published case studies and posts sharing the service's topics), an FAQ with `FAQPage` data, and a contact box. The box's "Email me" opens an email with the service as subject, plus a LinkedIn link.
+     - `Service` structured data; SEO title and description.
+     - The top bar reads Services · Projects · Writing, and home service titles link to their pages.
+     - Service pages appear in the sitemap, `llms.txt` and IndexNow, and MCP `save-content` accepts the new fields.
+
+   **AI crawler policy:** allow the search and answer bots (OAI-SearchBot, ChatGPT-User, PerplexityBot, ClaudeBot) **and** the training bots (GPTBot, Google-Extended). The owner relaxes the CDN bot setting in hPanel to match.
+   Original scope: audit first (Lighthouse SEO, structured-data validation, crawl of the live site, sitemap/robots/canonicals, internal links, AI-crawler access and answer-ready content), then a report with recommendations and a keyword map for posts and case studies. Changes are built only after the owner approves the report. Keyword targets use Search Console data once it has collected some.
 
 ## Order
 Contrast → header and client modal → dashboard → account security → Markdown editor → analytics and Search Console → SEO audit report → SEO changes. New or changed screens are drawn in the design canvas and approved before UI code (CLAUDE.md).

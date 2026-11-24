@@ -9,7 +9,7 @@
     ])->filter();
     $email = $profile->email ?: config('brand.contact_email');
 @endphp
-<x-layouts.site :description="$profile->tagline" :json-ld="[\App\Support\Seo\JsonLd::person($profile), \App\Support\Seo\JsonLd::website(app(\App\Settings\SeoSettings::class))]">
+<x-layouts.site :description="$profile->tagline" :json-ld="[\App\Support\Seo\JsonLd::person($profile), \App\Support\Seo\JsonLd::website(app(\App\Settings\SeoSettings::class)), \App\Support\Seo\JsonLd::professionalService(app(\App\Settings\SeoSettings::class), $profile, $services)]">
     <div class="cb-wrap">
         <header class="cb-left">
             <div class="flex flex-col gap-5">
@@ -56,7 +56,13 @@
                     <h2 id="services-h" class="eyebrow mb-1">Services</h2>
                     @foreach ($services as $service)
                         <div class="service">
-                            <h3>{{ $service->title }}</h3>
+                            <h3>
+                                @if ($service->hasPage())
+                                    <a class="service-link" href="{{ route('services.show', $service) }}">{{ $service->title }} <span aria-hidden="true">→</span></a>
+                                @else
+                                    {{ $service->title }}
+                                @endif
+                            </h3>
                             <p>{{ $service->summary }}</p>
                         </div>
                     @endforeach

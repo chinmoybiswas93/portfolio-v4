@@ -30,7 +30,7 @@ final class UpdateSeo extends ScopedTool
         return [
             'target' => $schema->string()->enum(['post', 'project', 'site'])->required(),
             'id' => $schema->integer()->description('Post or project id'),
-            'seo_title' => $schema->string()->description('Up to 70 characters'),
+            'seo_title' => $schema->string()->description('Up to 60 characters'),
             'seo_description' => $schema->string()->description('Up to 160 characters'),
             'site_title' => $schema->string(),
             'default_description' => $schema->string(),
@@ -42,7 +42,7 @@ final class UpdateSeo extends ScopedTool
         $data = $request->validate([
             'target' => ['required', 'in:post,project,site'],
             'id' => ['required_unless:target,site', 'nullable', 'integer'],
-            'seo_title' => ['nullable', 'string', 'max:70'],
+            'seo_title' => ['nullable', 'string', 'max:60'],
             'seo_description' => ['nullable', 'string', 'max:160'],
             'site_title' => ['required_if:target,site', 'nullable', 'string', 'max:70'],
             'default_description' => ['nullable', 'string', 'max:160'],

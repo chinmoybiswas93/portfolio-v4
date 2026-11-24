@@ -37,14 +37,15 @@ function darkContrastViolations(mixed $page): array
 
 beforeEach(function (): void {
     Service::factory()->count(2)->create();
+    Service::factory()->create(['title' => 'WooCommerce development', 'slug' => 'svc', 'is_published' => true, 'faq' => [['question' => 'Existing store?', 'answer' => 'Yes.']], 'cta_line' => 'Have a store in mind?']);
     Experience::factory()->current()->create();
     Project::factory()->caseStudy()->create(['title' => 'Case One', 'slug' => 'case-one', 'is_featured' => true]);
-    Post::factory()->for(Category::factory())->create(['title' => 'A post', 'slug' => 'a-post', 'body_md' => "## Heading\n\nText with a [link](https://example.com).\n\n> A quote\n\n```php\necho 'hi';\n```"]);
+    Post::factory()->for(Category::factory())->create(['title' => 'A post', 'slug' => 'a-post', 'published_at' => now()->subDays(10), 'reviewed_at' => now()->subDay(), 'takeaways' => ['Measure first', 'Fix the slowest step'], 'faq' => [['question' => 'Is caching enough?', 'answer' => 'Rarely on its own.']], 'body_md' => "## Heading\n\nText with a [link](https://example.com).\n\n> A quote\n\n```php\necho 'hi';\n```"]);
 });
 
 it('meets AAA contrast in dark mode on public pages', function (string $url): void {
     expect(darkContrastViolations(visit($url)->inDarkMode()->wait(0.3)))->toBe([]);
-})->with(['/', '/projects', '/projects/case-one', '/blog', '/blog/a-post']);
+})->with(['/', '/services', '/services/svc', '/projects', '/projects/case-one', '/blog', '/blog/a-post']);
 
 it('meets AAA contrast in dark mode on admin screens', function (): void {
     Storage::fake('local');
