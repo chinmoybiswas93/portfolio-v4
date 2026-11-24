@@ -98,7 +98,8 @@ final class JsonLd
             'mainEntityOfPage' => Seo::absolute(route('posts.show', $post, false)),
             'image' => $image,
             'datePublished' => $post->published_at?->toAtomString(),
-            'dateModified' => ($post->updated_at && $post->published_at && $post->updated_at->greaterThan($post->published_at) ? $post->updated_at : $post->published_at)?->toAtomString(),
+            // The owner's "last reviewed" day, not updated_at: re-saving a post is not a content update (ADR-0010).
+            'dateModified' => ($post->updatedOn() ?? $post->published_at)?->toAtomString(),
             'inLanguage' => config('brand.language'),
             'author' => self::personRef(),
             'publisher' => self::personRef(),
@@ -143,6 +144,30 @@ final class JsonLd
                 'name' => $item[0],
                 'item' => Seo::absolute($item[1]),
             ], $items, array_keys($items)),
+        ];
+    }
+
+    /**
+     * The post's FAQ as an FAQPage (questions and answers exactly as shown on the page), or null without one.
+     *
+     * @return array<string, mixed>|null
+     */
+    public static function faqPage(Post $post): ?array
+    {
+        $items = $post->faqItems();
+        if ($items === []) {
+            return null;
+        }
+
+        return [
+            '@type' => 'FAQPage',
+            'url' => Seo::absolute(route('posts.show', $post, false)).'#faq-h',
+            'inLanguage' => config('brand.language'),
+            'mainEntity' => array_map(fn (array $item): array => [
+                '@type' => 'Question',
+                'name' => $item['question'],
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => $item['answer']],
+            ], $items),
         ];
     }
 

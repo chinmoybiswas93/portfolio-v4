@@ -39,7 +39,7 @@ beforeEach(function (): void {
     Service::factory()->count(2)->create();
     Experience::factory()->current()->create();
     Project::factory()->caseStudy()->create(['title' => 'Case One', 'slug' => 'case-one', 'is_featured' => true]);
-    Post::factory()->for(Category::factory())->create(['title' => 'A post', 'slug' => 'a-post', 'body_md' => "## Heading\n\nText with a [link](https://example.com).\n\n> A quote\n\n```php\necho 'hi';\n```"]);
+    Post::factory()->for(Category::factory())->create(['title' => 'A post', 'slug' => 'a-post', 'published_at' => now()->subDays(10), 'reviewed_at' => now()->subDay(), 'takeaways' => ['Measure first', 'Fix the slowest step'], 'faq' => [['question' => 'Is caching enough?', 'answer' => 'Rarely on its own.']], 'body_md' => "## Heading\n\nText with a [link](https://example.com).\n\n> A quote\n\n```php\necho 'hi';\n```"]);
 });
 
 it('meets AAA contrast in dark mode on public pages', function (string $url): void {

@@ -28,7 +28,11 @@ After launch, the owner listed admin and public issues plus two new features (SE
 9. **SEO / GEO / AEO:** audit done 2026-11-24 (private report). The owner approved four slices, each stopping for approval:
    - **8a technical SEO:** titles of 60 characters or fewer, a description per archive, `noindex` on thin tags, structured-data fixes, `en-GB`, a one-hop `www` redirect.
    - **8b AI crawl:** `/llms.txt` generated from live content; `robots.txt` names each allowed crawler (`config/seo.php`); IndexNow pings for a live post or case study when it's saved (production with `INDEXNOW_KEY` only, at most once per URL every 10 minutes, through the cron-drained queue; key file at `/indexnow.txt`); Bing Webmaster set up by the owner.
-   - **8c post template for answer engines:** key takeaways, FAQ with schema, updated date, author box. Design first.
+   - **8c post template for answer engines** (design approved 2026-11-24). All optional, and also writable through MCP `save-content`:
+     - up to 5 key takeaways in a box under the lead
+     - up to 6 FAQ entries, always visible after the body, with `FAQPage` data
+     - a "Last reviewed" date, shown as "Updated" and used as `dateModified` (re-saving a post no longer changes it)
+     - an author box with role, LinkedIn and GitHub links and the profile photo
    - **8d service landing pages.** Design first.
 
    **AI crawler policy:** allow the search and answer bots (OAI-SearchBot, ChatGPT-User, PerplexityBot, ClaudeBot) **and** the training bots (GPTBot, Google-Extended). The owner relaxes the CDN bot setting in hPanel to match.

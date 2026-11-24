@@ -33,8 +33,15 @@ final class ContentRules
                 'category' => ['nullable', 'string', 'max:100'],
                 'tags' => ['sometimes', 'array', 'max:20'],
                 'tags.*' => ['string', 'max:64'],
-                'seo_title' => ['nullable', 'string', 'max:70'],
+                'seo_title' => ['nullable', 'string', 'max:60'],
                 'seo_description' => ['nullable', 'string', 'max:160'],
+                // Answer-ready fields (ADR-0010, slice 8c), with the admin's limits.
+                'takeaways' => ['nullable', 'array', 'max:5'],
+                'takeaways.*' => ['string', 'max:160'],
+                'faq' => ['nullable', 'array', 'max:6'],
+                'faq.*.question' => ['required', 'string', 'max:160'],
+                'faq.*.answer' => ['required', 'string', 'max:800'],
+                'reviewed_at' => ['nullable', 'date', 'before_or_equal:today'],
             ],
             'project' => [
                 'title' => [$required, 'string', 'max:255'],
@@ -60,7 +67,7 @@ final class ContentRules
                 'sort_order' => ['sometimes', 'integer', 'min:0'],
                 'tags' => ['sometimes', 'array', 'max:30'],
                 'tags.*' => ['string', 'max:64'],
-                'seo_title' => ['nullable', 'string', 'max:70'],
+                'seo_title' => ['nullable', 'string', 'max:60'],
                 'seo_description' => ['nullable', 'string', 'max:160'],
             ],
             'service' => [

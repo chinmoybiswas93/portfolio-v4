@@ -189,3 +189,22 @@ it('brings back a trashed tag or category when its name is used again', function
     $post = Post::query()->with(['tags', 'category'])->findOrFail($saved['id']);
     expect($post->tags->pluck('slug')->all())->toBe(['laravel'])->and($post->category?->slug)->toBe('notes');
 });
+
+// ADR-0010 slice 8c: assistants can write the answer-ready fields, within the admin's limits.
+it('saves key takeaways, FAQ and a review date on a post, and refuses an FAQ without an answer', function (): void {
+    asMcp(['content:write']);
+    $post = Post::factory()->for(Category::factory())->create();
+
+    callTool('save-content', ['type' => 'post', 'id' => $post->id, 'fields' => [
+        'takeaways' => ['Measure first', 'Fix the slowest query'],
+        'faq' => [['question' => 'Is caching enough?', 'answer' => 'Rarely on its own.']],
+        'reviewed_at' => now()->toDateString(),
+    ]]);
+    $post->refresh();
+    expect($post->takeawayList())->toBe(['Measure first', 'Fix the slowest query'])
+        ->and($post->faqItems())->toBe([['question' => 'Is caching enough?', 'answer' => 'Rarely on its own.']])
+        ->and($post->reviewed_at?->toDateString())->toBe(now()->toDateString());
+
+    $refused = callTool('save-content', ['type' => 'post', 'id' => $post->id, 'fields' => ['faq' => [['question' => 'Half a pair?']]]]);
+    expect(is_string($refused) ? $refused : json_encode($refused))->toContain('answer');
+});

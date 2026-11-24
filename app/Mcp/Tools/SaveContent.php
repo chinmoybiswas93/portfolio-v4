@@ -21,7 +21,7 @@ use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 
 #[Name('save-content')]
-#[Description('Create (no id) or update (with id) a post, project, service, experience entry, category or tag. Text fields are Markdown (body_md, problem_md, approach_md, results_md, description_md); HTML is not accepted. Use status "draft" to save without publishing. Tags are names; the post category is a name. Returns the saved item.')]
+#[Description('Create (no id) or update (with id) a post, project, service, experience entry, category or tag. Text fields are Markdown (body_md, problem_md, approach_md, results_md, description_md); HTML is not accepted. Use status "draft" to save without publishing. Tags are names; the post category is a name. Posts also take takeaways (up to 5 strings), faq (up to 6 {question, answer}) and reviewed_at (a date, shown as "Updated"). Returns the saved item.')]
 final class SaveContent extends ScopedTool
 {
     public static function scope(): string
