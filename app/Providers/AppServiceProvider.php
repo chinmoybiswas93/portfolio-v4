@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Support\Cache\FlushPageCache;
 use App\Support\Cache\PageCache;
 use App\Support\Markdown\MarkdownRenderer;
+use App\Support\Seo\NotifyIndexNow;
 use Illuminate\Contracts\Validation\UncompromisedVerifier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -73,6 +74,10 @@ class AppServiceProvider extends ServiceProvider
             $model::observe(FlushPageCache::class);
         }
         Event::listen(SettingsSaved::class, fn () => app(PageCache::class)->flush());
+
+        // Live posts and case studies ping IndexNow when saved (ADR-0010).
+        Post::observe(NotifyIndexNow::class);
+        Project::observe(NotifyIndexNow::class);
 
         // Catch N+1 queries and silently discarded attributes outside production. (Not "missing attributes":
         // freshly created models legitimately lack database-defaulted columns until refreshed.)

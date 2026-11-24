@@ -29,6 +29,8 @@ Route::get('/cv', CvController::class)->name('cv');
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 Route::get('/feed.xml', [SeoController::class, 'feed'])->name('feed');
 Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
+Route::get('/llms.txt', [SeoController::class, 'llms'])->name('llms');
+Route::get('/indexnow.txt', [SeoController::class, 'indexNowKey'])->name('indexnow.key');
 
 // Signed, expiring link to one invoice PDF version (sent in the invoice email). No login, no listing.
 Route::get('/invoice/{pdf}', InvoiceLinkController::class)->middleware(['signed', 'throttle:30,1'])->whereNumber('pdf')->name('invoices.link');

@@ -27,7 +27,7 @@ After launch, the owner listed admin and public issues plus two new features (SE
 8. **Search Console:** the owner verified the site with Google's HTML file at the web root. Each deploy is a fresh release folder, so `deploy/activate.sh` copies every file from `app/shared/public/` into the new release's `public/` (no overwrite of the release's own files, safe names only). Verification files therefore live in `app/shared/public/` on the server, never in git. A DNS TXT record (Domain property) stays optional; any DNS change needs the owner's approval. The sitemap is submitted in Search Console.
 9. **SEO / GEO / AEO:** audit done 2026-11-24 (private report). The owner approved four slices, each stopping for approval:
    - **8a technical SEO:** titles of 60 characters or fewer, a description per archive, `noindex` on thin tags, structured-data fixes, `en-GB`, a one-hop `www` redirect.
-   - **8b AI crawl:** `llms.txt`, an explicit `robots.txt` bot policy, IndexNow, Bing Webmaster.
+   - **8b AI crawl:** `/llms.txt` generated from live content; `robots.txt` names each allowed crawler (`config/seo.php`); IndexNow pings for a live post or case study when it's saved (production with `INDEXNOW_KEY` only, at most once per URL every 10 minutes, through the cron-drained queue; key file at `/indexnow.txt`); Bing Webmaster set up by the owner.
    - **8c post template for answer engines:** key takeaways, FAQ with schema, updated date, author box. Design first.
    - **8d service landing pages.** Design first.
 
