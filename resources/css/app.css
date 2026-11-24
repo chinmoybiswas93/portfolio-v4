@@ -1562,10 +1562,96 @@
         padding: 12px 0;
     }
 
-    .related time {
+    .related time,
+    .related .row-kind {
         flex: none;
         font-size: 13px;
         color: var(--dim);
+    }
+}
+
+/* ---------- Service pages (ADR-0010, slice 8d) ---------- */
+@layer components {
+    .service h2 {
+        margin: 0;
+        color: var(--text);
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+    }
+
+    .service-link,
+    .service h2 a {
+        color: var(--text);
+        transition: color 200ms;
+    }
+
+    .service-link:hover,
+    .service h2 a:hover {
+        color: var(--accent);
+    }
+
+    .services-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .cta-box {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 22px 24px;
+        border: 1px solid var(--card-line);
+        border-radius: 10px;
+        background: var(--card);
+    }
+
+    .cta-title {
+        margin: 0;
+        color: var(--text);
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+    }
+
+    .cta-actions {
+        margin: 6px 0 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
+        font-size: 15px;
+    }
+
+    .cta-button {
+        display: inline-flex;
+        align-items: center;
+        min-height: 40px;
+        padding: 0 18px;
+        border-radius: 8px;
+        background: var(--accent);
+        color: var(--bg);
+        font-weight: 600;
+    }
+
+    .cta-button:hover {
+        filter: brightness(1.08);
+    }
+
+    .cta-alt {
+        color: var(--text);
+        text-decoration: underline;
+        text-decoration-color: var(--dim);
+        text-underline-offset: 4px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .service-link,
+        .service h2 a {
+            transition: none;
+        }
     }
 }
 

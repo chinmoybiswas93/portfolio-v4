@@ -148,20 +148,30 @@ final class JsonLd
     }
 
     /**
-     * The post's FAQ as an FAQPage (questions and answers exactly as shown on the page), or null without one.
+     * The post's FAQ as an FAQPage, or null without one.
      *
      * @return array<string, mixed>|null
      */
     public static function faqPage(Post $post): ?array
     {
-        $items = $post->faqItems();
+        return self::faq(Seo::absolute(route('posts.show', $post, false)).'#faq-h', $post->faqItems());
+    }
+
+    /**
+     * An FAQPage with the questions and answers exactly as shown on the page, or null when there are none.
+     *
+     * @param  list<array{question: string, answer: string}>  $items
+     * @return array<string, mixed>|null
+     */
+    public static function faq(string $url, array $items): ?array
+    {
         if ($items === []) {
             return null;
         }
 
         return [
             '@type' => 'FAQPage',
-            'url' => Seo::absolute(route('posts.show', $post, false)).'#faq-h',
+            'url' => $url,
             'inLanguage' => config('brand.language'),
             'mainEntity' => array_map(fn (array $item): array => [
                 '@type' => 'Question',
@@ -169,6 +179,25 @@ final class JsonLd
                 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $item['answer']],
             ], $items),
         ];
+    }
+
+    /**
+     * A service landing page (ADR-0010, slice 8d).
+     *
+     * @return array<string, mixed>
+     */
+    public static function service(Service $service): array
+    {
+        return array_filter([
+            '@type' => 'Service',
+            'name' => $service->title,
+            'serviceType' => $service->title,
+            'description' => $service->seo_description ?: $service->summary,
+            'url' => Seo::absolute(route('services.show', $service, false)),
+            'provider' => self::personRef(),
+            'areaServed' => config('brand.area_served') ?: null,
+            'inLanguage' => config('brand.language'),
+        ]);
     }
 
     /**

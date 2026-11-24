@@ -9,12 +9,16 @@ use App\Http\Controllers\Site\InvoiceLinkController;
 use App\Http\Controllers\Site\PostController;
 use App\Http\Controllers\Site\ProjectController;
 use App\Http\Controllers\Site\SeoController;
+use App\Http\Controllers\Site\ServiceController;
 use Illuminate\Support\Facades\Route;
 
 /*
  * Public site: "public" middleware group (no session, no cookies, cached pages). See ADR-0007/0008.
  */
 Route::get('/', HomeController::class)->name('home');
+
+Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+Route::get('/services/{service:slug}', [ServiceController::class, 'show'])->name('services.show');
 
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
 Route::get('/projects/{project:slug}', [ProjectController::class, 'show'])->name('projects.show');

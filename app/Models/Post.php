@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\PostStatus;
+use App\Models\Concerns\HasFaq;
 use App\Models\Concerns\HasResponsiveImages;
 use App\Models\Concerns\HasSlug;
 use App\Models\Concerns\HasTags;
@@ -26,6 +27,7 @@ class Post extends Model implements HasMedia
     /** @use HasFactory<PostFactory> */
     use HasFactory;
 
+    use HasFaq;
     use HasResponsiveImages;
     use HasSlug;
     use HasTags;
@@ -112,25 +114,6 @@ class Post extends Model implements HasMedia
             fn (mixed $line): string => trim(is_array($line) ? (string) ($line['text'] ?? '') : (string) $line),
             (array) $this->takeaways,
         ), fn (string $line): bool => $line !== ''));
-    }
-
-    /**
-     * FAQ entries with both a question and an answer.
-     *
-     * @return list<array{question: string, answer: string}>
-     */
-    public function faqItems(): array
-    {
-        $items = [];
-        foreach ((array) $this->faq as $row) {
-            $question = trim((string) ($row['question'] ?? ''));
-            $answer = trim((string) ($row['answer'] ?? ''));
-            if ($question !== '' && $answer !== '') {
-                $items[] = ['question' => $question, 'answer' => $answer];
-            }
-        }
-
-        return $items;
     }
 
     /** The "last reviewed" day, when it is after the publish day (shown as "Updated" and used as dateModified). */

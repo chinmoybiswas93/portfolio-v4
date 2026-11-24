@@ -77,6 +77,15 @@ final class ContentRules
                 'body_md' => ['nullable', 'string', 'max:100000'],
                 'sort_order' => ['sometimes', 'integer', 'min:0'],
                 'is_published' => ['sometimes', 'boolean'],
+                // Landing page (ADR-0010, slice 8d), with the admin's limits.
+                'tags' => ['sometimes', 'array', 'max:20'],
+                'tags.*' => ['string', 'max:64'],
+                'faq' => ['nullable', 'array', 'max:6'],
+                'faq.*.question' => ['required', 'string', 'max:160'],
+                'faq.*.answer' => ['required', 'string', 'max:800'],
+                'cta_line' => ['nullable', 'string', 'max:160'],
+                'seo_title' => ['nullable', 'string', 'max:60'],
+                'seo_description' => ['nullable', 'string', 'max:160'],
             ],
             'experience' => [
                 'position' => [$required, 'string', 'max:255'],

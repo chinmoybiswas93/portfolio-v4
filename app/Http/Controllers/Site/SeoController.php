@@ -25,13 +25,16 @@ final class SeoController
     {
         $posts = Post::query()->published()->get(['id', 'slug', 'updated_at']);
         $projects = Project::query()->published()->where('has_case_study', true)->get(['id', 'slug', 'updated_at']);
+        $services = Service::query()->withPage()->get(['id', 'slug', 'updated_at']);
         $latestPost = $posts->max('updated_at');
 
         $urls = collect([
             ['/', collect([$latestPost, $projects->max('updated_at')])->filter()->max()],
             ['/projects', Project::query()->published()->max('updated_at')],
             ['/blog', $latestPost],
+            ['/services', Service::query()->published()->max('updated_at')],
         ])
+            ->concat($services->map(fn (Service $s): array => [route('services.show', $s, false), $s->updated_at]))
             ->concat($projects->map(fn (Project $p): array => [route('projects.show', $p, false), $p->updated_at]))
             ->concat($posts->map(fn (Post $p): array => [route('posts.show', $p, false), $p->updated_at]))
             ->concat(Category::query()->whereHas('posts', fn (Builder $q) => $q->published())->get(['slug'])
@@ -96,7 +99,7 @@ final class SeoController
         };
 
         $services = Service::query()->published()->get()
-            ->map(fn (Service $s): array => [$s->title, Seo::absolute('/#services'), $s->summary]);
+            ->map(fn (Service $s): array => [$s->title, Seo::absolute($s->hasPage() ? route('services.show', $s, false) : '/#services'), $s->summary]);
         $projects = Project::query()->published()->where('has_case_study', true)->get()
             ->map(fn (Project $p): array => [$p->title, Seo::absolute(route('projects.show', $p, false)), $p->seo_description ?: $p->summary]);
         $posts = Post::query()->published()->get()

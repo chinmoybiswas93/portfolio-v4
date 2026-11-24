@@ -33,7 +33,12 @@ After launch, the owner listed admin and public issues plus two new features (SE
      - up to 6 FAQ entries, always visible after the body, with `FAQPage` data
      - a "Last reviewed" date, shown as "Updated" and used as `dateModified` (re-saving a post no longer changes it)
      - an author box with role, LinkedIn and GitHub links and the profile photo
-   - **8d service landing pages.** Design first.
+   - **8d service landing pages** (design approved 2026-11-24):
+     - `/services` (index) and `/services/{slug}`. A published service gets a page once its details are filled in.
+     - Each page shows the details, Related work (published case studies and posts sharing the service's topics), an FAQ with `FAQPage` data, and a contact box. The box's "Email me" opens an email with the service as subject, plus a LinkedIn link.
+     - `Service` structured data; SEO title and description.
+     - The top bar reads Services · Projects · Writing, and home service titles link to their pages.
+     - Service pages appear in the sitemap, `llms.txt` and IndexNow, and MCP `save-content` accepts the new fields.
 
    **AI crawler policy:** allow the search and answer bots (OAI-SearchBot, ChatGPT-User, PerplexityBot, ClaudeBot) **and** the training bots (GPTBot, Google-Extended). The owner relaxes the CDN bot setting in hPanel to match.
    Original scope: audit first (Lighthouse SEO, structured-data validation, crawl of the live site, sitemap/robots/canonicals, internal links, AI-crawler access and answer-ready content), then a report with recommendations and a keyword map for posts and case studies. Changes are built only after the owner approves the report. Keyword targets use Search Console data once it has collected some.

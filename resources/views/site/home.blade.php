@@ -56,7 +56,13 @@
                     <h2 id="services-h" class="eyebrow mb-1">Services</h2>
                     @foreach ($services as $service)
                         <div class="service">
-                            <h3>{{ $service->title }}</h3>
+                            <h3>
+                                @if ($service->hasPage())
+                                    <a class="service-link" href="{{ route('services.show', $service) }}">{{ $service->title }} <span aria-hidden="true">→</span></a>
+                                @else
+                                    {{ $service->title }}
+                                @endif
+                            </h3>
                             <p>{{ $service->summary }}</p>
                         </div>
                     @endforeach

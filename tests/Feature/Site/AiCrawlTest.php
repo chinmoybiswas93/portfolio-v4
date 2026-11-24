@@ -47,7 +47,7 @@ it('serves llms.txt built from live content only', function (): void {
     $profile->name = 'Sam Example';
     $profile->title = 'WordPress developer';
     $profile->save();
-    Service::factory()->create(['title' => 'WooCommerce [stores]', 'summary' => 'Checkout fixes.', 'is_published' => true]);
+    Service::factory()->create(['title' => 'WooCommerce [stores]', 'slug' => 'woocommerce-stores', 'summary' => 'Checkout fixes.', 'is_published' => true]);
     Project::factory()->caseStudy()->create(['title' => 'Law firm site', 'slug' => 'law-firm', 'seo_description' => 'A redesign.']);
     Post::factory()->for(Category::factory())->create(['title' => 'Live post', 'slug' => 'live', 'seo_description' => 'Fixing it.']);
     Post::factory()->draft()->create(['title' => 'Draft post']);
@@ -56,7 +56,7 @@ it('serves llms.txt built from live content only', function (): void {
 
     expect($body)->toStartWith("# Sam Example\n\n> ")
         ->toContain('Sam Example — WordPress developer.')
-        ->toContain("## Services\n\n- [WooCommerce \\[stores\\]](https://example.com/#services): Checkout fixes.")
+        ->toContain("## Services\n\n- [WooCommerce \\[stores\\]](https://example.com/services/woocommerce-stores): Checkout fixes.")
         ->toContain('- [Law firm site](https://example.com/projects/law-firm): A redesign.')
         ->toContain('- [Live post](https://example.com/blog/live): Fixing it.')
         ->toContain('- [Sitemap](https://example.com/sitemap.xml)')

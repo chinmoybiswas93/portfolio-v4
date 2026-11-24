@@ -8,11 +8,14 @@ use App\Models\Tag;
 use App\Support\Seo\Seo;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Alignment;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
@@ -107,5 +110,18 @@ final class Fields
             ->label('SEO description')
             ->maxLength(160)
             ->helperText('Up to 160 characters, shown in search results.');
+    }
+
+    /** FAQ entries for posts and service pages (ADR-0010): up to 6, plain-text answers, shown as an FAQPage. */
+    public static function faq(): Repeater
+    {
+        return Repeater::make('faq')->label('FAQ')->schema([
+            TextInput::make('question')->required()->maxLength(160),
+            Textarea::make('answer')->required()->rows(3)->maxLength(800)
+                ->helperText('Plain text, two to four sentences.'),
+        ])->maxItems(6)->defaultItems(0)->reorderable()->compact()
+            ->itemLabel(fn (array $state): ?string => $state['question'] ?? null)->collapsible()
+            ->addActionLabel('+ Add question')->addActionAlignment(Alignment::Start)
+            ->addAction(fn (Action $action) => $action->link()->size('sm'));
     }
 }

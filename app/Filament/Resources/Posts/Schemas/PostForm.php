@@ -44,14 +44,7 @@ class PostForm
                             ->addActionLabel('+ Add takeaway')->addActionAlignment(Alignment::Start)
                             ->addAction(fn (Action $action) => $action->link()->size('sm'))
                             ->helperText('Up to 5 one-line points, shown in a box under the lead.'),
-                        Repeater::make('faq')->label('FAQ')->schema([
-                            TextInput::make('question')->required()->maxLength(160),
-                            Textarea::make('answer')->required()->rows(3)->maxLength(800)
-                                ->helperText('Plain text, two to four sentences.'),
-                        ])->maxItems(6)->defaultItems(0)->reorderable()->compact()
-                            ->itemLabel(fn (array $state): ?string => $state['question'] ?? null)->collapsible()
-                            ->addActionLabel('+ Add question')->addActionAlignment(Alignment::Start)
-                            ->addAction(fn (Action $action) => $action->link()->size('sm')),
+                        Fields::faq(),
                         DatePicker::make('reviewed_at')->label('Last reviewed')->native(false)->displayFormat('j M Y')
                             ->maxDate(now())
                             ->helperText('Set it when you update the content. The post then shows "Updated" with this date; typo fixes don\'t need it.'),

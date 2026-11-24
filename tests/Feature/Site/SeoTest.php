@@ -100,7 +100,7 @@ it('lists only published, public URLs in the sitemap', function (): void {
     }
 
     expect($locs)->toEqualCanonicalizing([
-        'https://example.com/', 'https://example.com/projects', 'https://example.com/blog',
+        'https://example.com/', 'https://example.com/projects', 'https://example.com/blog', 'https://example.com/services',
         'https://example.com/projects/case', 'https://example.com/blog/live',
         // The one-post tag archive is thin (noindex, ADR-0010), so it is not listed.
         'https://example.com/blog/category/wordpress',

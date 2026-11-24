@@ -66,6 +66,7 @@ class AppServiceProvider extends ServiceProvider
             'experience' => Experience::class,
             'post' => Post::class,
             'project' => Project::class,
+            'service' => Service::class,
             'user' => User::class,
         ]);
 
@@ -75,9 +76,10 @@ class AppServiceProvider extends ServiceProvider
         }
         Event::listen(SettingsSaved::class, fn () => app(PageCache::class)->flush());
 
-        // Live posts and case studies ping IndexNow when saved (ADR-0010).
+        // Live posts, case studies and service pages ping IndexNow when saved (ADR-0010).
         Post::observe(NotifyIndexNow::class);
         Project::observe(NotifyIndexNow::class);
+        Service::observe(NotifyIndexNow::class);
 
         // Catch N+1 queries and silently discarded attributes outside production. (Not "missing attributes":
         // freshly created models legitimately lack database-defaulted columns until refreshed.)

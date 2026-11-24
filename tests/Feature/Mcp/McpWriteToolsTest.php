@@ -208,3 +208,22 @@ it('saves key takeaways, FAQ and a review date on a post, and refuses an FAQ wit
     $refused = callTool('save-content', ['type' => 'post', 'id' => $post->id, 'fields' => ['faq' => [['question' => 'Half a pair?']]]]);
     expect(is_string($refused) ? $refused : json_encode($refused))->toContain('answer');
 });
+
+// ADR-0010 slice 8d: assistants can fill in a service landing page.
+it('saves a service page with topics, FAQ, contact heading and SEO', function (): void {
+    asMcp(['content:write']);
+    $service = Service::factory()->create();
+
+    $saved = callTool('save-content', ['type' => 'service', 'id' => $service->id, 'fields' => [
+        'tags' => ['WooCommerce'],
+        'faq' => [['question' => 'Do you build from scratch?', 'answer' => 'Yes, or improve what you have.']],
+        'cta_line' => 'Have a store in mind?',
+        'seo_title' => 'WooCommerce development',
+    ]]);
+
+    $service->refresh();
+    expect($saved['_isError'] ?? false)->toBeFalse()
+        ->and($service->tags->pluck('name')->all())->toBe(['WooCommerce'])
+        ->and($service->faqItems()[0]['question'])->toBe('Do you build from scratch?')
+        ->and($service->cta_line)->toBe('Have a store in mind?');
+});
