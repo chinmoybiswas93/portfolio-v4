@@ -27,7 +27,7 @@ final class PostController
 
     public function category(Category $category): View
     {
-        $count = $category->posts()->published()->count();
+        $count = $category->posts()->published()->reorder()->count();
 
         return $this->list(
             Post::query()->whereBelongsTo($category), $category->name, $category->slug,
@@ -38,7 +38,7 @@ final class PostController
 
     public function tag(Tag $tag): View
     {
-        $count = $tag->posts()->published()->count();
+        $count = $tag->posts()->published()->reorder()->count();
         abort_if($count === 0, 404);
 
         return $this->list(

@@ -30,17 +30,18 @@ final class SeoController
 
         $urls = collect([
             ['/', collect([$latestPost, $projects->max('updated_at')])->filter()->max()],
-            ['/projects', Project::query()->published()->max('updated_at')],
+            ['/projects', Project::query()->published()->reorder()->max('updated_at')],
             ['/blog', $latestPost],
-            ['/services', Service::query()->published()->max('updated_at')],
+            ['/services', Service::query()->published()->reorder()->max('updated_at')],
         ])
             ->concat($services->map(fn (Service $s): array => [route('services.show', $s, false), $s->updated_at]))
             ->concat($projects->map(fn (Project $p): array => [route('projects.show', $p, false), $p->updated_at]))
             ->concat($posts->map(fn (Post $p): array => [route('posts.show', $p, false), $p->updated_at]))
             ->concat(Category::query()->whereHas('posts', fn (Builder $q) => $q->published())->get(['slug'])
                 ->map(fn (Category $c): array => [route('posts.category', $c, false), null]))
-            // Thin tag archives are noindex, so they stay out of the sitemap (ADR-0010).
-            ->concat(Tag::query()->whereHas('posts', fn (Builder $q) => $q->published(), '>=', PostController::MIN_INDEXED_TAG_POSTS)
+            // Thin tag archives are noindex, so they stay out of the sitemap (ADR-0010). Aggregates drop the
+            // scopes' ORDER BY: MariaDB rejects ordering inside COUNT/MAX queries.
+            ->concat(Tag::query()->whereHas('posts', fn (Builder $q) => $q->published()->reorder(), '>=', PostController::MIN_INDEXED_TAG_POSTS)
                 ->whereNotIn('slug', Category::query()->select('slug'))->get(['slug'])
                 ->map(fn (Tag $t): array => [route('posts.tag', $t, false), null]))
             ->map(fn (array $u): array => ['loc' => Seo::absolute($u[0]), 'lastmod' => $u[1] ? Carbon::parse($u[1])->toAtomString() : null]);
