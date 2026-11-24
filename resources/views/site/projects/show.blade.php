@@ -12,6 +12,7 @@
     $jsonLd = [
         \App\Support\Seo\JsonLd::creativeWork($project, $shareImage),
         \App\Support\Seo\JsonLd::breadcrumbs([['Home', '/'], ['Projects', '/projects'], [$project->title, route('projects.show', $project, false)]]),
+        \App\Support\Seo\JsonLd::person(app(\App\Settings\ProfileSettings::class)),
     ];
 @endphp
 <x-layouts.site :title="$project->seo_title ?: $project->title" :description="$project->seo_description ?: $project->summary" type="article" :image="$shareImage" :json-ld="$jsonLd">
@@ -112,7 +113,8 @@
                     <button type="button" class="lightbox-btn" data-lightbox-close aria-label="Close gallery (Esc)">×</button>
                 </div>
                 <figure class="lightbox-figure">
-                    <img data-lightbox-img src="" alt="">
+                    {{-- A real first slide (lazy, not fetched while the dialog is closed); the script swaps it on open. --}}
+                    <img data-lightbox-img src="{{ data_get($slides, '0.src', '') }}" alt="{{ data_get($slides, '0.alt', '') }}" loading="lazy" decoding="async">
                     <figcaption data-lightbox-caption></figcaption>
                 </figure>
                 @if ($gallery->count() > 1)

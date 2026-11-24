@@ -34,7 +34,9 @@ final class SeoController
             ->concat($posts->map(fn (Post $p): array => [route('posts.show', $p, false), $p->updated_at]))
             ->concat(Category::query()->whereHas('posts', fn (Builder $q) => $q->published())->get(['slug'])
                 ->map(fn (Category $c): array => [route('posts.category', $c, false), null]))
-            ->concat(Tag::query()->whereHas('posts', fn (Builder $q) => $q->published())->get(['slug'])
+            // Thin tag archives are noindex, so they stay out of the sitemap (ADR-0010).
+            ->concat(Tag::query()->whereHas('posts', fn (Builder $q) => $q->published(), '>=', PostController::MIN_INDEXED_TAG_POSTS)
+                ->whereNotIn('slug', Category::query()->select('slug'))->get(['slug'])
                 ->map(fn (Tag $t): array => [route('posts.tag', $t, false), null]))
             ->map(fn (array $u): array => ['loc' => Seo::absolute($u[0]), 'lastmod' => $u[1] ? Carbon::parse($u[1])->toAtomString() : null]);
 

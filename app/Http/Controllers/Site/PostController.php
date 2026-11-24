@@ -17,6 +17,9 @@ final class PostController
 {
     public const PER_PAGE = 10;
 
+    /** Tag archives with fewer published posts are thin: noindex, follow, and left out of the sitemap (ADR-0010). */
+    public const MIN_INDEXED_TAG_POSTS = 3;
+
     public function index(): View
     {
         return $this->list(Post::query());
@@ -24,14 +27,40 @@ final class PostController
 
     public function category(Category $category): View
     {
-        return $this->list(Post::query()->whereBelongsTo($category), $category->name, $category->slug);
+        $count = $category->posts()->published()->count();
+
+        return $this->list(
+            Post::query()->whereBelongsTo($category), $category->name, $category->slug,
+            description: $category->description ?: self::archiveDescription($count, 'about '.$category->name),
+            intro: $category->description,
+        );
     }
 
     public function tag(Tag $tag): View
     {
-        abort_unless($tag->posts()->published()->exists(), 404);
+        $count = $tag->posts()->published()->count();
+        abort_if($count === 0, 404);
 
-        return $this->list(Post::query()->whereHas('tags', fn (Builder $q) => $q->whereKey($tag->getKey())), '#'.$tag->name);
+        return $this->list(
+            Post::query()->whereHas('tags', fn (Builder $q) => $q->whereKey($tag->getKey())), '#'.$tag->name,
+            description: $tag->description ?: self::archiveDescription($count, 'tagged '.$tag->name),
+            noindex: ! self::tagIsIndexable($tag, $count),
+        );
+    }
+
+    /**
+     * A tag archive is indexed when it has enough posts and does not repeat a category with the same slug (the
+     * category is the hub for that topic).
+     */
+    public static function tagIsIndexable(Tag $tag, int $publishedPosts): bool
+    {
+        return $publishedPosts >= self::MIN_INDEXED_TAG_POSTS && ! Category::query()->where('slug', $tag->slug)->exists();
+    }
+
+    /** A unique description for an archive page, e.g. "4 posts about WordPress: fixes, case notes and how-tos …". */
+    public static function archiveDescription(int $count, string $topic): string
+    {
+        return $count.' '.str('post')->plural($count).' '.$topic.': real client problems, how I fixed them, and what to check on your own site.';
     }
 
     public function show(Post $post): View
@@ -56,7 +85,7 @@ final class PostController
     /**
      * @param  Builder<Post>  $query
      */
-    private function list(Builder $query, ?string $heading = null, ?string $activeCategory = null): View
+    private function list(Builder $query, ?string $heading = null, ?string $activeCategory = null, ?string $description = null, ?string $intro = null, bool $noindex = false): View
     {
         $posts = $query->published()->with(['category', 'media'])->paginate(self::PER_PAGE);
         abort_if($posts->currentPage() > max(1, $posts->lastPage()), 404); // no endless empty pages
@@ -66,6 +95,9 @@ final class PostController
             'categories' => Category::query()->whereHas('posts', fn (Builder $q) => $q->published())->orderBy('name')->get(),
             'heading' => $heading,
             'activeCategory' => $activeCategory,
+            'description' => $description,
+            'intro' => $intro,
+            'noindex' => $noindex,
         ]);
     }
 

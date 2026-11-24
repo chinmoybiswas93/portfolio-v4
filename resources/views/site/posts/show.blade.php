@@ -4,6 +4,7 @@
     $jsonLd = [
         \App\Support\Seo\JsonLd::blogPosting($post, $shareImage),
         \App\Support\Seo\JsonLd::breadcrumbs([['Home', '/'], ['Writing', '/blog'], [$post->title, route('posts.show', $post, false)]]),
+        \App\Support\Seo\JsonLd::person(app(\App\Settings\ProfileSettings::class)),
     ];
 @endphp
 <x-layouts.site :title="$post->seo_title ?: $post->title" :description="$post->seo_description ?: $post->excerpt" type="article" :image="$shareImage"

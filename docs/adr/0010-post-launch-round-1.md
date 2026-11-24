@@ -25,7 +25,14 @@ After launch, the owner listed admin and public issues plus two new features (SE
 6. **Markdown fields:** the height can be resized by dragging (or with the arrow keys) and is remembered per field in the browser; defaults are 480 px for post bodies and 240 px elsewhere. Each field gets Write / Preview tabs, with the preview rendered on the server by the site's own Markdown renderer and stylesheet in a sandboxed frame (design approved 2026-11-24).
 7. **Analytics:** Cloudflare Web Analytics beacon (cookieless, no banner), with the token set in Settings → SEO → Analytics and loaded only in production. The site is added in Cloudflare with the manual JS snippet: no DNS change and no proxy.
 8. **Search Console:** the owner verified the site with Google's HTML file at the web root. Each deploy is a fresh release folder, so `deploy/activate.sh` copies every file from `app/shared/public/` into the new release's `public/` (no overwrite of the release's own files, safe names only). Verification files therefore live in `app/shared/public/` on the server, never in git. A DNS TXT record (Domain property) stays optional; any DNS change needs the owner's approval. The sitemap is submitted in Search Console.
-9. **SEO / GEO / AEO:** audit first (Lighthouse SEO, structured-data validation, crawl of the live site, sitemap/robots/canonicals, internal links, AI-crawler access and answer-ready content), then a report with recommendations and a keyword map for posts and case studies. Changes are built only after the owner approves the report. Keyword targets use Search Console data once it has collected some.
+9. **SEO / GEO / AEO:** audit done 2026-11-24 (private report). The owner approved four slices, each stopping for approval:
+   - **8a technical SEO:** titles of 60 characters or fewer, a description per archive, `noindex` on thin tags, structured-data fixes, `en-GB`, a one-hop `www` redirect.
+   - **8b AI crawl:** `llms.txt`, an explicit `robots.txt` bot policy, IndexNow, Bing Webmaster.
+   - **8c post template for answer engines:** key takeaways, FAQ with schema, updated date, author box. Design first.
+   - **8d service landing pages.** Design first.
+
+   **AI crawler policy:** allow the search and answer bots (OAI-SearchBot, ChatGPT-User, PerplexityBot, ClaudeBot) **and** the training bots (GPTBot, Google-Extended). The owner relaxes the CDN bot setting in hPanel to match.
+   Original scope: audit first (Lighthouse SEO, structured-data validation, crawl of the live site, sitemap/robots/canonicals, internal links, AI-crawler access and answer-ready content), then a report with recommendations and a keyword map for posts and case studies. Changes are built only after the owner approves the report. Keyword targets use Search Console data once it has collected some.
 
 ## Order
 Contrast → header and client modal → dashboard → account security → Markdown editor → analytics and Search Console → SEO audit report → SEO changes. New or changed screens are drawn in the design canvas and approved before UI code (CLAUDE.md).

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Support;
 
 use App\Models\Tag;
+use App\Support\Seo\Seo;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -95,8 +96,9 @@ final class Fields
     {
         return TextInput::make('seo_title')
             ->label('SEO title')
-            ->maxLength(70)
-            ->helperText('Up to 70 characters. Leave empty to use the title.');
+            ->maxLength(Seo::TITLE_MAX)->live(debounce: 500)
+            ->hint(fn (?string $state): string => mb_strlen((string) $state).' / '.Seo::TITLE_MAX)
+            ->helperText('Shown in search results. Your name is added when it still fits in 60 characters. Leave empty to use the title.');
     }
 
     public static function seoDescription(): TextInput

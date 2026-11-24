@@ -78,7 +78,7 @@ it('has no accessibility issues on the admin login', function (): void {
 });
 
 it('starts the tab order with a visible skip link that reaches the content', function (string $url): void {
-    $page = visit($url)->keys('[lang="en"]', 'Tab');
+    $page = visit($url)->keys('[lang]', 'Tab');
 
     expect($page->script("(() => { const a = document.activeElement; const r = a.getBoundingClientRect(); return a.classList.contains('skip-link') && r.top >= 0 && r.height > 0; })()"))->toBeTrue()
         ->and($page->script("document.getElementById(document.activeElement.getAttribute('href').slice(1)) !== null"))->toBeTrue();
@@ -86,7 +86,7 @@ it('starts the tab order with a visible skip link that reaches the content', fun
 
 it('shows a visible focus ring on every focusable element', function (string $url): void {
     // One real Tab puts the browser in keyboard mode, so focus() below matches :focus-visible like tabbing does.
-    $page = visit($url)->keys('[lang="en"]', 'Tab');
+    $page = visit($url)->keys('[lang]', 'Tab');
 
     $missing = $page->script(<<<'JS'
         (() => {

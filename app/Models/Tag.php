@@ -20,7 +20,7 @@ class Tag extends Model
     use HasSlug;
     use SoftDeletes;
 
-    protected $fillable = ['name', 'slug'];
+    protected $fillable = ['name', 'slug', 'description'];
 
     /** One shared pool: "WordPress", "wordpress" and "Word Press" all resolve to the same tag. */
     public static function findOrCreateByName(string $name): self

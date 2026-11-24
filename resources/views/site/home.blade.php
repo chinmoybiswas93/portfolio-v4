@@ -9,7 +9,7 @@
     ])->filter();
     $email = $profile->email ?: config('brand.contact_email');
 @endphp
-<x-layouts.site :description="$profile->tagline" :json-ld="[\App\Support\Seo\JsonLd::person($profile), \App\Support\Seo\JsonLd::website(app(\App\Settings\SeoSettings::class))]">
+<x-layouts.site :description="$profile->tagline" :json-ld="[\App\Support\Seo\JsonLd::person($profile), \App\Support\Seo\JsonLd::website(app(\App\Settings\SeoSettings::class)), \App\Support\Seo\JsonLd::professionalService(app(\App\Settings\SeoSettings::class), $profile, $services)]">
     <div class="cb-wrap">
         <header class="cb-left">
             <div class="flex flex-col gap-5">

@@ -41,10 +41,10 @@ it('keeps the canonical free of page=1 and other query strings', function (): vo
     expect($this->get('/projects?page=1&ref=abc')->getContent())->toContain('<link rel="canonical" href="https://example.com/projects">');
 });
 
-it('describes the home page as a Person and WebSite', function (): void {
+it('describes the home page as a Person, WebSite and ProfessionalService', function (): void {
     $types = collect(jsonLdGraph((string) $this->get('/')->getContent())['@graph'])->pluck('@type')->all();
 
-    expect($types)->toBe(['Person', 'WebSite']);
+    expect($types)->toBe(['Person', 'WebSite', 'ProfessionalService']);
 });
 
 it('describes a post as a BlogPosting with breadcrumbs and article times', function (): void {
@@ -102,7 +102,8 @@ it('lists only published, public URLs in the sitemap', function (): void {
     expect($locs)->toEqualCanonicalizing([
         'https://example.com/', 'https://example.com/projects', 'https://example.com/blog',
         'https://example.com/projects/case', 'https://example.com/blog/live',
-        'https://example.com/blog/category/wordpress', 'https://example.com/blog/tag/speed',
+        // The one-post tag archive is thin (noindex, ADR-0010), so it is not listed.
+        'https://example.com/blog/category/wordpress',
     ]);
 });
 

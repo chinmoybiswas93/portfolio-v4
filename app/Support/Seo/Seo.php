@@ -9,6 +9,24 @@ use Spatie\MediaLibrary\HasMedia;
 
 final class Seo
 {
+    /** Longest title shown in full in search results (characters; Google cuts at about 600 px). */
+    public const int TITLE_MAX = 60;
+
+    /**
+     * Document title (ADR-0010): the page title plus " · {name}" while that fits in TITLE_MAX characters, else
+     * the page title alone. Pages without a title use the site title.
+     */
+    public static function title(?string $title, string $siteTitle, string $name): string
+    {
+        $title = trim((string) $title);
+        if ($title === '') {
+            return $siteTitle;
+        }
+        $withName = $title.' · '.$name;
+
+        return mb_strlen($withName) <= self::TITLE_MAX ? $withName : $title;
+    }
+
     /** Absolute URL on the site's configured origin (APP_URL), never the request host. */
     public static function absolute(string $path): string
     {
