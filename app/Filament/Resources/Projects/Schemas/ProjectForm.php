@@ -44,10 +44,14 @@ class ProjectForm
                     TextInput::make('client_name')->label('Client')->maxLength(255),
                     TextInput::make('sector')->maxLength(255),
                     TextInput::make('role')->label('My role')->maxLength(255)->placeholder('e.g. Developer and maintainer'),
-                    TextInput::make('year')->numeric()->minValue(2000)->maxValue(2100),
-                    DatePicker::make('started_on')->label('Started')->native(false)->displayFormat('M Y'),
-                    DatePicker::make('ended_on')->label('Finished')->native(false)->displayFormat('M Y')
-                        ->afterOrEqual('started_on')->placeholder('Ongoing'),
+                    TextInput::make('made_at')->label('Made at')->maxLength(255)->placeholder('e.g. Freelance or an agency name')
+                        ->helperText('Shown in the project archive.'),
+                    Grid::make(3)->columnSpanFull()->schema([
+                        TextInput::make('year')->numeric()->minValue(2000)->maxValue(2100),
+                        DatePicker::make('started_on')->label('Started')->native(false)->displayFormat('M Y'),
+                        DatePicker::make('ended_on')->label('Finished')->native(false)->displayFormat('M Y')
+                            ->afterOrEqual('started_on')->placeholder('Ongoing'),
+                    ]),
                 ]),
 
                 Section::make('Case study')
