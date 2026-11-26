@@ -50,6 +50,7 @@ final class ContentRules
                 'client_name' => ['nullable', 'string', 'max:255'],
                 'sector' => ['nullable', 'string', 'max:255'],
                 'role' => ['nullable', 'string', 'max:255'],
+                'made_at' => ['nullable', 'string', 'max:255'],
                 'year' => ['nullable', 'integer', 'min:2000', 'max:2100'],
                 'started_on' => ['nullable', 'date'],
                 'ended_on' => ['nullable', 'date'],

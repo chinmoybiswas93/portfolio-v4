@@ -44,6 +44,16 @@ it('creates a project and sets the publish date when published', function (): vo
     expect(Project::query()->where('slug', 'new-site')->firstOrFail()->published_at)->not->toBeNull();
 });
 
+it('saves made at from the project editor and shows it in the archive', function (): void {
+    Livewire::test(CreateProject::class)
+        ->fillForm(['title' => 'Agency Site', 'slug' => 'agency-site', 'made_at' => 'Acme Studio', 'status' => PublishStatus::Published->value])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(Project::query()->where('slug', 'agency-site')->value('made_at'))->toBe('Acme Studio');
+    $this->get(route('projects.index'))->assertOk()->assertSee('Acme Studio');
+});
+
 it('rejects duplicate slugs and cleans unsafe slug characters', function (): void {
     Project::factory()->create(['slug' => 'taken']);
 
