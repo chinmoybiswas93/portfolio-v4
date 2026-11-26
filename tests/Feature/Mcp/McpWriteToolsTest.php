@@ -70,6 +70,14 @@ it('updates only the given fields and refuses HTML and unknown fields', function
     expect($refused)->toContain('cannot be set: body_html');
 });
 
+it('sets made at on a project', function (): void {
+    asMcp(['content:write']);
+    $project = Project::factory()->create(['made_at' => null]);
+
+    callTool('save-content', ['type' => 'project', 'id' => $project->id, 'fields' => ['made_at' => 'Personal']]);
+    expect($project->refresh()->made_at)->toBe('Personal');
+});
+
 it('escapes raw HTML written as Markdown', function (): void {
     asMcp(['content:write']);
 
